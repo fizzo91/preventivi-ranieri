@@ -5,8 +5,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
-import { Save, Download, Upload, Trash2 } from "lucide-react"
+import { Switch } from "@/components/ui/switch"
+import { Save, Download, Upload, Trash2, FileSpreadsheet } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import * as XLSX from 'xlsx'
 
 interface CompanySettings {
   companyName: string
@@ -20,8 +22,18 @@ interface CompanySettings {
   logo: string
 }
 
+interface Product {
+  id: string
+  name: string
+  description: string
+  price: number
+  category: string
+  unit: string
+}
+
 const Settings = () => {
   const { toast } = useToast()
+  const [overwriteProducts, setOverwriteProducts] = useState(false)
   const [settings, setSettings] = useState<CompanySettings>({
     companyName: "",
     address: "",
@@ -68,6 +80,125 @@ const Settings = () => {
     toast({
       title: "Backup Esportato",
       description: "Il backup dei dati è stato scaricato con successo",
+    })
+  }
+
+  const importExcelProducts = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer)
+        const workbook = XLSX.read(data, { type: 'array' })
+        const sheetName = workbook.SheetNames[0]
+        const worksheet = workbook.Sheets[sheetName]
+        const jsonData = XLSX.utils.sheet_to_json(worksheet)
+
+        if (jsonData.length === 0) {
+          toast({
+            title: "Errore",
+            description: "Il file Excel è vuoto",
+            variant: "destructive"
+          })
+          return
+        }
+
+        // Verifica le colonne necessarie
+        const firstRow = jsonData[0] as any
+        const requiredColumns = ['nome', 'descrizione', 'categoria', 'prezzo', 'unità']
+        const availableColumns = Object.keys(firstRow).map(k => k.toLowerCase())
+        
+        const missingColumns = requiredColumns.filter(col => 
+          !availableColumns.some(avail => avail.includes(col))
+        )
+
+        if (missingColumns.length > 0) {
+          toast({
+            title: "Errore Formato",
+            description: `Colonne mancanti: ${missingColumns.join(', ')}. Il file deve contenere: Nome, Descrizione, Categoria, Prezzo, Unità`,
+            variant: "destructive"
+          })
+          return
+        }
+
+        // Mappa i prodotti
+        const products: Product[] = jsonData.map((row: any, index) => {
+          const keys = Object.keys(row)
+          const nameKey = keys.find(k => k.toLowerCase().includes('nome'))
+          const descKey = keys.find(k => k.toLowerCase().includes('descrizione'))
+          const categoryKey = keys.find(k => k.toLowerCase().includes('categoria'))
+          const priceKey = keys.find(k => k.toLowerCase().includes('prezzo'))
+          const unitKey = keys.find(k => k.toLowerCase().includes('unità') || k.toLowerCase().includes('unita'))
+
+          return {
+            id: `excel-${Date.now()}-${index}`,
+            name: row[nameKey!] || '',
+            description: row[descKey!] || '',
+            category: row[categoryKey!] || '',
+            price: parseFloat(row[priceKey!]) || 0,
+            unit: row[unitKey!] || 'pz'
+          }
+        }).filter(product => product.name.trim() !== '') // Filtra righe vuote
+
+        if (products.length === 0) {
+          toast({
+            title: "Errore",
+            description: "Nessun prodotto valido trovato nel file",
+            variant: "destructive"
+          })
+          return
+        }
+
+        // Salva i prodotti
+        const existingProducts = overwriteProducts ? [] : JSON.parse(localStorage.getItem('products') || '[]')
+        const allProducts = [...existingProducts, ...products]
+        localStorage.setItem('products', JSON.stringify(allProducts))
+
+        toast({
+          title: "Import Completato",
+          description: `${products.length} prodotti importati con successo`,
+        })
+
+      } catch (error) {
+        console.error('Errore durante l\'importazione:', error)
+        toast({
+          title: "Errore Import",
+          description: "Errore durante la lettura del file Excel",
+          variant: "destructive"
+        })
+      }
+    }
+    reader.readAsArrayBuffer(file)
+  }
+
+  const exportExcelTemplate = () => {
+    const template = [
+      {
+        'Nome': 'Consulenza IT',
+        'Descrizione': 'Consulenza tecnica informatica',
+        'Categoria': 'Servizi',
+        'Prezzo': 80,
+        'Unità': 'ora'
+      },
+      {
+        'Nome': 'Sviluppo Web',
+        'Descrizione': 'Sviluppo sito web responsive',
+        'Categoria': 'Sviluppo',
+        'Prezzo': 2500,
+        'Unità': 'progetto'
+      }
+    ]
+
+    const ws = XLSX.utils.json_to_sheet(template)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Listino Prodotti')
+    XLSX.writeFile(wb, 'template-listino-prodotti.xlsx')
+
+    toast({
+      title: "Template Scaricato",
+      description: "Template Excel scaricato con successo",
     })
   }
 
@@ -288,7 +419,52 @@ const Settings = () => {
               </div>
             </div>
 
-            <Separator />
+      <Separator />
+
+      {/* Excel Import */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Importa Listino da Excel</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Importa i tuoi prodotti da un file Excel. Il file deve contenere le colonne: Nome, Descrizione, Categoria, Prezzo, Unità.
+          </p>
+          
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="overwrite"
+              checked={overwriteProducts}
+              onCheckedChange={setOverwriteProducts}
+            />
+            <Label htmlFor="overwrite" className="text-sm">
+              Sostituisci prodotti esistenti (altrimenti vengono aggiunti)
+            </Label>
+          </div>
+
+          <div className="flex gap-4">
+            <Button onClick={exportExcelTemplate} variant="outline" className="gap-2">
+              <FileSpreadsheet className="h-4 w-4" />
+              Scarica Template
+            </Button>
+            <div>
+              <input
+                type="file"
+                accept=".xlsx,.xls"
+                onChange={importExcelProducts}
+                className="hidden"
+                id="excel-import"
+              />
+              <Button className="gap-2" onClick={() => document.getElementById('excel-import')?.click()}>
+                <Upload className="h-4 w-4" />
+                Importa Excel
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Separator />
 
             <div>
               <h3 className="text-lg font-semibold mb-2 text-destructive">Zona Pericolosa</h3>
