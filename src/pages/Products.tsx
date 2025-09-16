@@ -13,6 +13,7 @@ interface Product {
   description: string
   price: number
   category: string
+  unit: string
 }
 
 const Products = () => {
@@ -24,7 +25,8 @@ const Products = () => {
     name: "",
     description: "",
     price: 0,
-    category: ""
+    category: "",
+    unit: ""
   })
 
   useEffect(() => {
@@ -38,21 +40,24 @@ const Products = () => {
           name: "Consulenza Strategica",
           description: "Consulenza strategica aziendale per ottimizzazione processi",
           price: 500,
-          category: "Servizi"
+          category: "Servizi",
+          unit: "ora"
         },
         {
           id: "2", 
           name: "Sviluppo Software",
           description: "Sviluppo applicazioni web personalizzate",
           price: 80,
-          category: "Sviluppo"
+          category: "Sviluppo",
+          unit: "ora"
         },
         {
           id: "3",
           name: "Formazione Team",
           description: "Corso di formazione per team aziendali",
           price: 300,
-          category: "Formazione"
+          category: "Formazione",
+          unit: "giorno"
         }
       ]
       setProducts(defaultProducts)
@@ -75,7 +80,7 @@ const Products = () => {
     const updatedProducts = [...products, newProduct]
     saveProducts(updatedProducts)
     setIsAdding(false)
-    setEditForm({ name: "", description: "", price: 0, category: "" })
+    setEditForm({ name: "", description: "", price: 0, category: "", unit: "" })
     toast({
       title: "Prodotto Aggiunto",
       description: "Il nuovo prodotto è stato salvato con successo",
@@ -90,7 +95,7 @@ const Products = () => {
     )
     saveProducts(updatedProducts)
     setIsEditing(null)
-    setEditForm({ name: "", description: "", price: 0, category: "" })
+    setEditForm({ name: "", description: "", price: 0, category: "", unit: "" })
     toast({
       title: "Prodotto Aggiornato",
       description: "Le modifiche sono state salvate con successo",
@@ -112,14 +117,15 @@ const Products = () => {
       name: product.name,
       description: product.description,
       price: product.price,
-      category: product.category
+      category: product.category,
+      unit: product.unit
     })
   }
 
   const cancelEdit = () => {
     setIsEditing(null)
     setIsAdding(false)
-    setEditForm({ name: "", description: "", price: 0, category: "" })
+    setEditForm({ name: "", description: "", price: 0, category: "", unit: "" })
   }
 
   const categories = [...new Set(products.map(p => p.category))]
@@ -206,17 +212,28 @@ const Products = () => {
                 rows={3}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="product-price">Prezzo (€)</Label>
-              <Input
-                id="product-price"
-                type="number"
-                step="0.01"
-                min="0"
-                value={editForm.price}
-                onChange={(e) => setEditForm({...editForm, price: parseFloat(e.target.value) || 0})}
-                placeholder="0.00"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="product-price">Prezzo (€)</Label>
+                <Input
+                  id="product-price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={editForm.price}
+                  onChange={(e) => setEditForm({...editForm, price: parseFloat(e.target.value) || 0})}
+                  placeholder="0.00"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="product-unit">Unità di Misura</Label>
+                <Input
+                  id="product-unit"
+                  value={editForm.unit}
+                  onChange={(e) => setEditForm({...editForm, unit: e.target.value})}
+                  placeholder="Es. ora, pz, m2, giorno"
+                />
+              </div>
             </div>
             <div className="flex gap-2">
               <Button 
@@ -267,8 +284,10 @@ const Products = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 {product.description}
               </p>
-              <div className="text-2xl font-bold text-success">
-                € {product.price.toFixed(2)}
+              <div className="flex justify-between items-center">
+                <div className="text-2xl font-bold text-success">
+                  € {product.price.toFixed(2)} / {product.unit}
+                </div>
               </div>
             </CardContent>
           </Card>

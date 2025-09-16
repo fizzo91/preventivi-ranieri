@@ -1,22 +1,35 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Trash2, Save, Eye } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
+interface Product {
+  id: string
+  name: string
+  description: string
+  price: number
+  category: string
+  unit: string
+}
+
 interface QuoteItem {
   id: string
+  productId: string
   description: string
   quantity: number
   price: number
+  unit: string
   total: number
 }
 
 const NewQuote = () => {
   const { toast } = useToast()
+  const [products, setProducts] = useState<Product[]>([])
   const [clientData, setClientData] = useState({
     name: "",
     email: "",
@@ -33,18 +46,26 @@ const NewQuote = () => {
   })
 
   const [items, setItems] = useState<QuoteItem[]>([
-    { id: "1", description: "", quantity: 1, price: 0, total: 0 }
+    { id: "1", productId: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
   ])
 
   const [discount, setDiscount] = useState(0)
   const [taxRate, setTaxRate] = useState(22) // IVA 22%
 
+  useEffect(() => {
+    // Carica prodotti dal localStorage
+    const savedProducts = JSON.parse(localStorage.getItem('products') || '[]')
+    setProducts(savedProducts)
+  }, [])
+
   const addItem = () => {
     const newItem: QuoteItem = {
       id: Date.now().toString(),
+      productId: "",
       description: "",
       quantity: 1,
       price: 0,
+      unit: "",
       total: 0
     }
     setItems([...items, newItem])
@@ -53,6 +74,26 @@ const NewQuote = () => {
   const removeItem = (id: string) => {
     if (items.length > 1) {
       setItems(items.filter(item => item.id !== id))
+    }
+  }
+
+  const selectProduct = (itemId: string, productId: string) => {
+    const selectedProduct = products.find(p => p.id === productId)
+    if (selectedProduct) {
+      setItems(items.map(item => {
+        if (item.id === itemId) {
+          const updated = {
+            ...item,
+            productId: productId,
+            description: selectedProduct.name,
+            price: selectedProduct.price,
+            unit: selectedProduct.unit,
+            total: item.quantity * selectedProduct.price
+          }
+          return updated
+        }
+        return item
+      }))
     }
   }
 
@@ -226,22 +267,33 @@ const NewQuote = () => {
         <CardContent className="space-y-4">
           {items.map((item, index) => (
             <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end p-4 border rounded-lg">
-              <div className="md:col-span-5 space-y-2">
-                <Label>Descrizione</Label>
-                <Input
-                  value={item.description}
-                  onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-                  placeholder="Descrizione del prodotto/servizio"
-                />
+              <div className="md:col-span-4 space-y-2">
+                <Label>Prodotto</Label>
+                <Select onValueChange={(value) => selectProduct(item.id, value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleziona prodotto" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products.map((product) => (
+                      <SelectItem key={product.id} value={product.id}>
+                        {product.name} - €{product.price.toFixed(2)}/{product.unit}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="md:col-span-2 space-y-2">
                 <Label>Quantità</Label>
-                <Input
-                  type="number"
-                  min="1"
-                  value={item.quantity}
-                  onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 1)}
-                />
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    min="1"
+                    step="0.01"
+                    value={item.quantity}
+                    onChange={(e) => updateItem(item.id, 'quantity', parseFloat(e.target.value) || 1)}
+                  />
+                  {item.unit && <span className="text-sm text-muted-foreground">{item.unit}</span>}
+                </div>
               </div>
               <div className="md:col-span-2 space-y-2">
                 <Label>Prezzo €</Label>
@@ -259,7 +311,8 @@ const NewQuote = () => {
                   € {item.total.toFixed(2)}
                 </div>
               </div>
-              <div className="md:col-span-1">
+              <div className="md:col-span-1 space-y-2">
+                <Label className="invisible">Azioni</Label>
                 <Button
                   variant="outline"
                   size="sm"
