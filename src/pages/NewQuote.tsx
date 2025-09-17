@@ -243,13 +243,15 @@ const NewQuote = () => {
     }
   }, [])
 
-  // Ricalcola totali delle sezioni
+  // Ricalcola totali delle sezioni quando cambia il contenuto degli items
   useEffect(() => {
-    setSections(sections.map(section => ({
-      ...section,
-      total: section.items.reduce((sum, item) => sum + item.total, 0)
-    })))
-  }, [sections])
+    setSections(prevSections => 
+      prevSections.map(section => {
+        const newTotal = section.items.reduce((sum, item) => sum + item.total, 0)
+        return newTotal !== section.total ? { ...section, total: newTotal } : section
+      })
+    )
+  }, [sections.flatMap(s => s.items.map(i => `${i.id}-${i.total}`))])
 
   const addSection = () => {
     const newSection: QuoteSection = {
