@@ -58,9 +58,10 @@ export function Combobox({
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
-                  value={option.value}
+                  value={option.label}
                   onSelect={(currentValue) => {
-                    onSelect(currentValue === value ? "" : currentValue)
+                    const selectedOption = options.find(opt => opt.label === currentValue)
+                    onSelect(selectedOption ? selectedOption.value : "")
                     setOpen(false)
                   }}
                 >
