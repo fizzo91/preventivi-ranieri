@@ -4,9 +4,27 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Trash2, Save, Eye } from "lucide-react"
+import { Combobox } from "@/components/ui/combobox"
+import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import {
+  useSortable,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 interface Product {
   id: string
@@ -17,6 +35,13 @@ interface Product {
   unit: string
 }
 
+interface QuoteSection {
+  id: string
+  name: string
+  items: QuoteItem[]
+  total: number
+}
+
 interface QuoteItem {
   id: string
   productId: string
@@ -25,6 +50,105 @@ interface QuoteItem {
   price: number
   unit: string
   total: number
+}
+
+interface SortableItemProps {
+  item: QuoteItem
+  products: Product[]
+  onSelectProduct: (itemId: string, productId: string) => void
+  onUpdateItem: (id: string, field: keyof QuoteItem, value: any) => void
+  onRemoveItem: (id: string) => void
+  canRemove: boolean
+}
+
+function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveItem, canRemove }: SortableItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: item.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
+  const productOptions = products.map(product => ({
+    value: product.id,
+    label: product.name,
+    price: product.price,
+    unit: product.unit
+  }))
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end p-4 border rounded-lg bg-card"
+    >
+      <div className="md:col-span-1 flex items-end">
+        <div
+          {...attributes}
+          {...listeners}
+          className="p-2 hover:bg-muted rounded cursor-move"
+        >
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </div>
+      </div>
+      <div className="md:col-span-4 space-y-2">
+        <Label>Prodotto</Label>
+        <Combobox
+          options={productOptions}
+          value={item.productId}
+          placeholder="Cerca prodotto..."
+          searchPlaceholder="Digita per cercare..."
+          onSelect={(value) => onSelectProduct(item.id, value)}
+        />
+      </div>
+      <div className="md:col-span-2 space-y-2">
+        <Label>Quantità</Label>
+        <div className="flex items-center gap-2">
+          <Input
+            type="number"
+            min="1"
+            step="0.01"
+            value={item.quantity}
+            onChange={(e) => onUpdateItem(item.id, 'quantity', parseFloat(e.target.value) || 1)}
+          />
+          {item.unit && <span className="text-sm text-muted-foreground">{item.unit}</span>}
+        </div>
+      </div>
+      <div className="md:col-span-2 space-y-2">
+        <Label>Prezzo €</Label>
+        <Input
+          type="number"
+          step="0.01"
+          min="0"
+          value={item.price}
+          onChange={(e) => onUpdateItem(item.id, 'price', parseFloat(e.target.value) || 0)}
+        />
+      </div>
+      <div className="md:col-span-2 space-y-2">
+        <Label>Totale</Label>
+        <div className="h-10 px-3 py-2 bg-muted rounded-md flex items-center font-medium">
+          € {item.total.toFixed(2)}
+        </div>
+      </div>
+      <div className="md:col-span-1 space-y-2">
+        <Label className="invisible">Azioni</Label>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onRemoveItem(item.id)}
+          disabled={!canRemove}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  )
 }
 
 const NewQuote = () => {
@@ -45,20 +169,113 @@ const NewQuote = () => {
     notes: ""
   })
 
-  const [items, setItems] = useState<QuoteItem[]>([
-    { id: "1", productId: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
+  const [sections, setSections] = useState<QuoteSection[]>([
+    {
+      id: "main",
+      name: "Progetto Principale",
+      items: [
+        { id: "1", productId: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
+      ],
+      total: 0
+    }
   ])
 
   const [discount, setDiscount] = useState(0)
   const [taxRate, setTaxRate] = useState(22) // IVA 22%
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
   useEffect(() => {
-    // Carica prodotti dal localStorage
+    // Carica prodotti dal localStorage, se non ci sono carica quelli di default per pietra lavica
     const savedProducts = JSON.parse(localStorage.getItem('products') || '[]')
-    setProducts(savedProducts)
+    if (savedProducts.length === 0) {
+      const defaultProducts: Product[] = [
+        {
+          id: "1",
+          name: "Pietra Lavica Grezza",
+          description: "Pietra lavica naturale non lavorata",
+          price: 45.00,
+          category: "Pietra",
+          unit: "mq"
+        },
+        {
+          id: "2", 
+          name: "Taglio Pietra",
+          description: "Servizio di taglio e sagomatura pietra lavica",
+          price: 25.00,
+          category: "Taglio",
+          unit: "ml"
+        },
+        {
+          id: "3",
+          name: "Smaltatura Base",
+          description: "Smaltatura colore base per pietra lavica",
+          price: 35.00,
+          category: "Smaltatura", 
+          unit: "mq"
+        },
+        {
+          id: "4",
+          name: "Smaltatura Decorativa",
+          description: "Smaltatura con decorazioni personalizzate",
+          price: 65.00,
+          category: "Smaltatura",
+          unit: "mq"
+        },
+        {
+          id: "5",
+          name: "Finitura Lucida",
+          description: "Trattamento di finitura lucida",
+          price: 15.00,
+          category: "Finitura",
+          unit: "mq"
+        }
+      ]
+      setProducts(defaultProducts)
+      localStorage.setItem('products', JSON.stringify(defaultProducts))
+    } else {
+      setProducts(savedProducts)
+    }
   }, [])
 
-  const addItem = () => {
+  // Ricalcola totali delle sezioni
+  useEffect(() => {
+    setSections(sections.map(section => ({
+      ...section,
+      total: section.items.reduce((sum, item) => sum + item.total, 0)
+    })))
+  }, [sections])
+
+  const addSection = () => {
+    const newSection: QuoteSection = {
+      id: Date.now().toString(),
+      name: `Sezione ${sections.length + 1}`,
+      items: [
+        { id: Date.now().toString() + "-item", productId: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
+      ],
+      total: 0
+    }
+    setSections([...sections, newSection])
+  }
+
+  const updateSectionName = (sectionId: string, newName: string) => {
+    setSections(sections.map(section => 
+      section.id === sectionId ? { ...section, name: newName } : section
+    ))
+  }
+
+  const removeSection = (sectionId: string) => {
+    if (sections.length > 1) {
+      setSections(sections.filter(section => section.id !== sectionId))
+    }
+  }
+
+  const addItem = (sectionId: string) => {
     const newItem: QuoteItem = {
       id: Date.now().toString(),
       productId: "",
@@ -68,60 +285,108 @@ const NewQuote = () => {
       unit: "",
       total: 0
     }
-    setItems([...items, newItem])
+    setSections(sections.map(section => 
+      section.id === sectionId 
+        ? { ...section, items: [...section.items, newItem] }
+        : section
+    ))
   }
 
-  const removeItem = (id: string) => {
-    if (items.length > 1) {
-      setItems(items.filter(item => item.id !== id))
-    }
+  const removeItem = (sectionId: string, itemId: string) => {
+    setSections(sections.map(section => {
+      if (section.id === sectionId && section.items.length > 1) {
+        return { ...section, items: section.items.filter(item => item.id !== itemId) }
+      }
+      return section
+    }))
   }
 
-  const selectProduct = (itemId: string, productId: string) => {
+  const selectProduct = (sectionId: string, itemId: string, productId: string) => {
     const selectedProduct = products.find(p => p.id === productId)
     if (selectedProduct) {
-      setItems(items.map(item => {
-        if (item.id === itemId) {
-          const updated = {
-            ...item,
-            productId: productId,
-            description: selectedProduct.name,
-            price: selectedProduct.price,
-            unit: selectedProduct.unit,
-            total: item.quantity * selectedProduct.price
+      setSections(sections.map(section => {
+        if (section.id === sectionId) {
+          return {
+            ...section,
+            items: section.items.map(item => {
+              if (item.id === itemId) {
+                return {
+                  ...item,
+                  productId: productId,
+                  description: selectedProduct.name,
+                  price: selectedProduct.price,
+                  unit: selectedProduct.unit,
+                  total: item.quantity * selectedProduct.price
+                }
+              }
+              return item
+            })
           }
-          return updated
         }
-        return item
+        return section
       }))
     }
   }
 
-  const updateItem = (id: string, field: keyof QuoteItem, value: any) => {
-    setItems(items.map(item => {
-      if (item.id === id) {
-        const updated = { ...item, [field]: value }
-        if (field === 'quantity' || field === 'price') {
-          updated.total = updated.quantity * updated.price
+  const updateItem = (sectionId: string, itemId: string, field: keyof QuoteItem, value: any) => {
+    setSections(sections.map(section => {
+      if (section.id === sectionId) {
+        return {
+          ...section,
+          items: section.items.map(item => {
+            if (item.id === itemId) {
+              const updated = { ...item, [field]: value }
+              if (field === 'quantity' || field === 'price') {
+                updated.total = updated.quantity * updated.price
+              }
+              return updated
+            }
+            return item
+          })
         }
-        return updated
       }
-      return item
+      return section
     }))
   }
 
-  const subtotal = items.reduce((sum, item) => sum + item.total, 0)
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event
+
+    if (active.id !== over.id) {
+      // Find which section contains the dragged item
+      const activeSection = sections.find(section => 
+        section.items.some(item => item.id === active.id)
+      )
+      
+      if (activeSection) {
+        const oldIndex = activeSection.items.findIndex(item => item.id === active.id)
+        const newIndex = activeSection.items.findIndex(item => item.id === over.id)
+        
+        setSections(sections.map(section => {
+          if (section.id === activeSection.id) {
+            return {
+              ...section,
+              items: arrayMove(section.items, oldIndex, newIndex)
+            }
+          }
+          return section
+        }))
+      }
+    }
+  }
+
+  const allItems = sections.flatMap(section => section.items)
+  const subtotal = sections.reduce((sum, section) => sum + section.total, 0)
   const discountAmount = subtotal * (discount / 100)
   const taxableAmount = subtotal - discountAmount
   const taxAmount = taxableAmount * (taxRate / 100)
   const totalAmount = taxableAmount + taxAmount
 
   const saveQuote = () => {
-    // Salva nel localStorage per ora
     const quote = {
       ...quoteData,
       client: clientData,
-      items,
+      sections,
       discount,
       taxRate,
       subtotal,
@@ -143,12 +408,12 @@ const NewQuote = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Nuovo Preventivo</h1>
           <p className="text-muted-foreground mt-1">
-            Crea un preventivo professionale
+            Lavorazione Pietra Lavica Smaltata
           </p>
         </div>
         <div className="flex gap-2">
@@ -255,82 +520,85 @@ const NewQuote = () => {
         </CardContent>
       </Card>
 
-      {/* Articoli */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Articoli e Servizi</CardTitle>
-          <Button onClick={addItem} size="sm" className="gap-2">
-            <Plus className="h-4 w-4" />
-            Aggiungi
+      {/* Sezioni del Preventivo */}
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-semibold">Progetti e Lavorazioni</h2>
+          <Button onClick={addSection} variant="outline" className="gap-2">
+            <FolderPlus className="h-4 w-4" />
+            Nuova Sezione
           </Button>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {items.map((item, index) => (
-            <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end p-4 border rounded-lg">
-              <div className="md:col-span-4 space-y-2">
-                <Label>Prodotto</Label>
-                <Select onValueChange={(value) => selectProduct(item.id, value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleziona prodotto" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {products.map((product) => (
-                      <SelectItem key={product.id} value={product.id}>
-                        {product.name} - €{product.price.toFixed(2)}/{product.unit}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="md:col-span-2 space-y-2">
-                <Label>Quantità</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    min="1"
-                    step="0.01"
-                    value={item.quantity}
-                    onChange={(e) => updateItem(item.id, 'quantity', parseFloat(e.target.value) || 1)}
-                  />
-                  {item.unit && <span className="text-sm text-muted-foreground">{item.unit}</span>}
-                </div>
-              </div>
-              <div className="md:col-span-2 space-y-2">
-                <Label>Prezzo €</Label>
+        </div>
+
+        {sections.map((section) => (
+          <Card key={section.id} className="border-l-4 border-l-primary">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div className="flex-1">
                 <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={item.price}
-                  onChange={(e) => updateItem(item.id, 'price', parseFloat(e.target.value) || 0)}
+                  value={section.name}
+                  onChange={(e) => updateSectionName(section.id, e.target.value)}
+                  className="text-lg font-semibold border-none p-0 h-auto bg-transparent"
                 />
               </div>
-              <div className="md:col-span-2 space-y-2">
-                <Label>Totale</Label>
-                <div className="h-10 px-3 py-2 bg-muted rounded-md flex items-center font-medium">
-                  € {item.total.toFixed(2)}
+              <div className="flex items-center gap-4">
+                <div className="text-lg font-bold text-primary">
+                  Totale: € {section.total.toFixed(2)}
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => addItem(section.id)} 
+                    size="sm" 
+                    variant="outline" 
+                    className="gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Aggiungi Voce
+                  </Button>
+                  {sections.length > 1 && (
+                    <Button
+                      onClick={() => removeSection(section.id)}
+                      size="sm"
+                      variant="outline"
+                      className="gap-2 text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
-              <div className="md:col-span-1 space-y-2">
-                <Label className="invisible">Azioni</Label>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => removeItem(item.id)}
-                  disabled={items.length === 1}
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={section.items.map(item => item.id)}
+                  strategy={verticalListSortingStrategy}
                 >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+                  {section.items.map((item) => (
+                    <SortableItem
+                      key={item.id}
+                      item={item}
+                      products={products}
+                      onSelectProduct={(itemId, productId) => selectProduct(section.id, itemId, productId)}
+                      onUpdateItem={(itemId, field, value) => updateItem(section.id, itemId, field, value)}
+                      onRemoveItem={(itemId) => removeItem(section.id, itemId)}
+                      canRemove={section.items.length > 1}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
       {/* Totali */}
       <Card>
         <CardHeader>
-          <CardTitle>Riepilogo</CardTitle>
+          <CardTitle>Riepilogo Finale</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -358,6 +626,17 @@ const NewQuote = () => {
             </div>
           </div>
 
+          {/* Totali per sezione */}
+          <div className="border-t pt-4 space-y-2">
+            <h3 className="font-semibold">Totali per Sezione:</h3>
+            {sections.map((section) => (
+              <div key={section.id} className="flex justify-between text-sm">
+                <span>{section.name}:</span>
+                <span>€ {section.total.toFixed(2)}</span>
+              </div>
+            ))}
+          </div>
+
           <div className="border-t pt-4 space-y-2">
             <div className="flex justify-between">
               <span>Subtotale:</span>
@@ -377,9 +656,9 @@ const NewQuote = () => {
               <span>IVA ({taxRate}%):</span>
               <span>€ {taxAmount.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-lg font-bold border-t pt-2">
-              <span>TOTALE:</span>
-              <span className="text-success">€ {totalAmount.toFixed(2)}</span>
+            <div className="flex justify-between text-xl font-bold border-t pt-2">
+              <span>TOTALE GENERALE:</span>
+              <span className="text-primary">€ {totalAmount.toFixed(2)}</span>
             </div>
           </div>
         </CardContent>
@@ -394,7 +673,7 @@ const NewQuote = () => {
           <Textarea
             value={quoteData.notes}
             onChange={(e) => setQuoteData({...quoteData, notes: e.target.value})}
-            placeholder="Note aggiuntive per il cliente..."
+            placeholder="Note aggiuntive per il cliente (condizioni di pagamento, tempi di consegna, etc.)..."
             rows={4}
           />
         </CardContent>
