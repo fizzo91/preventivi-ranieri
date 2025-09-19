@@ -45,6 +45,8 @@ interface QuoteSection {
 interface QuoteItem {
   id: string
   productId: string
+  productName: string
+  category: string
   description: string
   quantity: number
   price: number
@@ -174,7 +176,7 @@ const NewQuote = () => {
       id: "main",
       name: "Progetto Principale",
       items: [
-        { id: "1", productId: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
+        { id: "1", productId: "", productName: "", category: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
       ],
       total: 0
     }
@@ -258,7 +260,7 @@ const NewQuote = () => {
       id: Date.now().toString(),
       name: `Sezione ${sections.length + 1}`,
       items: [
-        { id: Date.now().toString() + "-item", productId: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
+        { id: Date.now().toString() + "-item", productId: "", productName: "", category: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
       ],
       total: 0
     }
@@ -281,6 +283,8 @@ const NewQuote = () => {
     const newItem: QuoteItem = {
       id: Date.now().toString(),
       productId: "",
+      productName: "",
+      category: "",
       description: "",
       quantity: 1,
       price: 0,
@@ -315,7 +319,9 @@ const NewQuote = () => {
                 return {
                   ...item,
                   productId: productId,
-                  description: selectedProduct.name,
+                  productName: selectedProduct.name,
+                  category: selectedProduct.category,
+                  description: selectedProduct.description,
                   price: selectedProduct.price,
                   unit: selectedProduct.unit,
                   total: item.quantity * selectedProduct.price

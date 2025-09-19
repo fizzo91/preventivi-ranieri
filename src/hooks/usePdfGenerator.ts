@@ -71,7 +71,9 @@ export const usePdfGenerator = () => {
                 <thead>
                   <tr style="background: #f8f9fa;">
                     <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-size: 12px; font-weight: bold;">Prodotto</th>
+                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 100px;">Categoria</th>
                     <th style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 60px;">Qtà</th>
+                    <th style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 50px;">U.M.</th>
                     <th style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 80px;">Prezzo</th>
                     <th style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 80px;">Totale</th>
                   </tr>
@@ -79,8 +81,10 @@ export const usePdfGenerator = () => {
                 <tbody>
                   ${section.items.map((item: any) => `
                     <tr>
-                      <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${item.productName || 'Prodotto'}</td>
+                      <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${item.productName || item.description || 'Prodotto'}</td>
+                      <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${item.category || '-'}</td>
                       <td style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px;">${item.quantity}</td>
+                      <td style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px;">${item.unit || '-'}</td>
                       <td style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px;">€ ${item.price.toFixed(2)}</td>
                       <td style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px;">€ ${(item.quantity * item.price).toFixed(2)}</td>
                     </tr>
