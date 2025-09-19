@@ -3,23 +3,31 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Eye, Edit, Trash2, Plus, Search } from "lucide-react"
+import { Eye, Edit, Trash2, Plus, Search, FileDown } from "lucide-react"
 import { Link } from "react-router-dom"
+import { usePdfGenerator } from "@/hooks/usePdfGenerator"
 
 interface Quote {
   number: string
   client: {
     name: string
     company: string
+    email?: string
+    phone?: string
+    address?: string
   }
   totalAmount: number
   status: string
   createdAt: string
+  sections?: any[]
+  discount?: number
+  taxRate?: number
 }
 
 const Quotes = () => {
   const [quotes, setQuotes] = useState<Quote[]>([])
   const [searchTerm, setSearchTerm] = useState("")
+  const { generatePdf } = usePdfGenerator()
 
   useEffect(() => {
     // Carica preventivi dal localStorage
@@ -50,6 +58,21 @@ const Quotes = () => {
     const updatedQuotes = quotes.filter(q => q.number !== quoteNumber)
     setQuotes(updatedQuotes)
     localStorage.setItem('quotes', JSON.stringify(updatedQuotes))
+  }
+
+  const handleGeneratePdf = async (quote: Quote) => {
+    try {
+      await generatePdf({
+        quoteNumber: quote.number,
+        client: quote.client,
+        sections: quote.sections || [],
+        discount: quote.discount || 0,
+        taxRate: quote.taxRate || 22,
+        totalAmount: quote.totalAmount
+      })
+    } catch (error) {
+      console.error('Errore durante la generazione del PDF:', error)
+    }
   }
 
   return (
@@ -171,6 +194,13 @@ const Quotes = () => {
                       </Button>
                       <Button variant="outline" size="sm">
                         <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleGeneratePdf(quote)}
+                      >
+                        <FileDown className="h-4 w-4" />
                       </Button>
                       <Button 
                         variant="outline" 
