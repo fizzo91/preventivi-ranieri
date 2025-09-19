@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Plus, Edit, Trash2, Save, X } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Plus, Edit, Trash2, Save, X, Filter } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface Product {
@@ -21,6 +22,7 @@ const Products = () => {
   const [products, setProducts] = useState<Product[]>([])
   const [isEditing, setIsEditing] = useState<string | null>(null)
   const [isAdding, setIsAdding] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState<string>("Tutte")
   const [editForm, setEditForm] = useState({
     name: "",
     description: "",
@@ -129,6 +131,9 @@ const Products = () => {
   }
 
   const categories = [...new Set(products.map(p => p.category))]
+  const filteredProducts = selectedCategory === "Tutte" 
+    ? products 
+    : products.filter(p => p.category === selectedCategory)
 
   return (
     <div className="space-y-8">
@@ -145,6 +150,37 @@ const Products = () => {
         </Button>
       </div>
 
+      {/* Category Filter */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Filtra per Categoria
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            <Badge 
+              variant={selectedCategory === "Tutte" ? "default" : "outline"}
+              className="cursor-pointer"
+              onClick={() => setSelectedCategory("Tutte")}
+            >
+              Tutte ({products.length})
+            </Badge>
+            {categories.map(category => (
+              <Badge 
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                className="cursor-pointer"
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category} ({products.filter(p => p.category === category).length})
+              </Badge>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
@@ -152,7 +188,7 @@ const Products = () => {
             <CardTitle className="text-sm font-medium">Totale Prodotti</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{products.length}</div>
+            <div className="text-2xl font-bold">{filteredProducts.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -254,13 +290,15 @@ const Products = () => {
 
       {/* Products List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <Card key={product.id} className="hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div>
                   <CardTitle className="text-lg">{product.name}</CardTitle>
-                  <p className="text-sm text-muted-foreground">{product.category}</p>
+                  <Badge variant="secondary" className="mt-1">
+                    {product.category}
+                  </Badge>
                 </div>
                 <div className="flex gap-1">
                   <Button 
@@ -293,6 +331,19 @@ const Products = () => {
           </Card>
         ))}
       </div>
+
+      {filteredProducts.length === 0 && products.length > 0 && (
+        <Card>
+          <CardContent className="text-center py-8">
+            <p className="text-muted-foreground mb-4">
+              Nessun prodotto trovato nella categoria "{selectedCategory}"
+            </p>
+            <Button variant="outline" onClick={() => setSelectedCategory("Tutte")}>
+              Mostra Tutti i Prodotti
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {products.length === 0 && !isAdding && (
         <Card>
