@@ -54,6 +54,14 @@ interface QuoteItem {
   total: number
 }
 
+interface Risk {
+  id: string
+  description: string
+  percentage: number
+  appliedToItemId: string
+  amount: number
+}
+
 interface SortableItemProps {
   item: QuoteItem
   products: Product[]
@@ -184,6 +192,7 @@ const NewQuote = () => {
 
   const [discount, setDiscount] = useState(0)
   const [taxRate, setTaxRate] = useState(22) // IVA 22%
+  const [risks, setRisks] = useState<Risk[]>([])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -386,9 +395,39 @@ const NewQuote = () => {
   const allItems = sections.flatMap(section => section.items)
   const subtotal = sections.reduce((sum, section) => sum + section.total, 0)
   const discountAmount = subtotal * (discount / 100)
-  const taxableAmount = subtotal - discountAmount
+  
+  // Calcola i rischi aggiornati
+  const updatedRisks = risks.map(risk => {
+    const targetItem = allItems.find(item => item.id === risk.appliedToItemId)
+    const amount = targetItem ? targetItem.total * (risk.percentage / 100) : 0
+    return { ...risk, amount }
+  })
+  
+  const riskAmount = updatedRisks.reduce((sum, risk) => sum + risk.amount, 0)
+  const taxableAmount = subtotal - discountAmount + riskAmount
   const taxAmount = taxableAmount * (taxRate / 100)
   const totalAmount = taxableAmount + taxAmount
+
+  const addRisk = () => {
+    const newRisk: Risk = {
+      id: Date.now().toString(),
+      description: "Rischio aggiuntivo",
+      percentage: 0,
+      appliedToItemId: "",
+      amount: 0
+    }
+    setRisks([...risks, newRisk])
+  }
+
+  const updateRisk = (riskId: string, field: keyof Risk, value: any) => {
+    setRisks(risks.map(risk => 
+      risk.id === riskId ? { ...risk, [field]: value } : risk
+    ))
+  }
+
+  const removeRisk = (riskId: string) => {
+    setRisks(risks.filter(risk => risk.id !== riskId))
+  }
 
   const saveQuote = () => {
     const quote = {
@@ -397,8 +436,10 @@ const NewQuote = () => {
       sections,
       discount,
       taxRate,
+      risks: updatedRisks,
       subtotal,
       discountAmount,
+      riskAmount,
       taxAmount,
       totalAmount,
       status: "Bozza",
@@ -603,6 +644,84 @@ const NewQuote = () => {
         ))}
       </div>
 
+      {/* Gestione Rischi */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle>Gestione Rischi</CardTitle>
+            <Button onClick={addRisk} variant="outline" size="sm" className="gap-2">
+              <Plus className="h-4 w-4" />
+              Aggiungi Rischio
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {risks.length === 0 ? (
+            <p className="text-muted-foreground text-center py-4">
+              Nessun rischio aggiunto. I rischi permettono di applicare percentuali aggiuntive su voci specifiche del preventivo.
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {risks.map((risk) => {
+                const currentRisk = updatedRisks.find(r => r.id === risk.id) || risk
+                return (
+                  <div key={risk.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end p-4 border rounded-lg">
+                    <div className="md:col-span-3 space-y-2">
+                      <Label>Descrizione Rischio</Label>
+                      <Input
+                        value={risk.description}
+                        onChange={(e) => updateRisk(risk.id, 'description', e.target.value)}
+                        placeholder="Es. Rischio rotture"
+                      />
+                    </div>
+                    <div className="md:col-span-3 space-y-2">
+                      <Label>Voce di Riferimento</Label>
+                      <Combobox
+                        options={allItems.map(item => ({
+                          value: item.id,
+                          label: `${item.productName} (€${item.total.toFixed(2)})`,
+                        }))}
+                        value={risk.appliedToItemId}
+                        placeholder="Seleziona voce..."
+                        searchPlaceholder="Cerca voce..."
+                        onSelect={(value) => updateRisk(risk.id, 'appliedToItemId', value)}
+                      />
+                    </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <Label>Percentuale %</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={risk.percentage}
+                        onChange={(e) => updateRisk(risk.id, 'percentage', parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <Label>Importo Rischio</Label>
+                      <div className="h-10 px-3 py-2 bg-muted rounded-md flex items-center font-medium">
+                        € {currentRisk.amount.toFixed(2)}
+                      </div>
+                    </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <Label className="invisible">Azioni</Label>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeRisk(risk.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Totali */}
       <Card>
         <CardHeader>
@@ -654,6 +773,12 @@ const NewQuote = () => {
               <div className="flex justify-between text-success">
                 <span>Sconto ({discount}%):</span>
                 <span>- € {discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+            {riskAmount > 0 && (
+              <div className="flex justify-between text-destructive">
+                <span>Rischi Aggiuntivi:</span>
+                <span>+ € {riskAmount.toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between">
