@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Eye, Edit, Trash2, Plus, Search, FileDown } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { usePdfGenerator } from "@/hooks/usePdfGenerator"
 
 interface Quote {
@@ -28,6 +29,7 @@ const Quotes = () => {
   const [quotes, setQuotes] = useState<Quote[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const { generatePdf } = usePdfGenerator()
+  const navigate = useNavigate()
 
   useEffect(() => {
     // Carica preventivi dal localStorage
@@ -189,10 +191,57 @@ const Quotes = () => {
                       </p>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="sm">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl">
+                          <DialogHeader>
+                            <DialogTitle>Dettagli Preventivo {quote.number}</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <h4 className="font-semibold">Cliente</h4>
+                                <p>{quote.client.name}</p>
+                                {quote.client.company && <p>{quote.client.company}</p>}
+                                {quote.client.email && <p>{quote.client.email}</p>}
+                                {quote.client.phone && <p>{quote.client.phone}</p>}
+                              </div>
+                              <div>
+                                <h4 className="font-semibold">Dettagli</h4>
+                                <p>Numero: {quote.number}</p>
+                                <p>Data: {new Date(quote.createdAt).toLocaleDateString('it-IT')}</p>
+                                <p>Stato: <Badge className={getStatusColor(quote.status)}>{quote.status}</Badge></p>
+                                <p className="text-lg font-bold text-success">Totale: € {quote.totalAmount?.toFixed(2) || '0.00'}</p>
+                              </div>
+                            </div>
+                            {quote.sections && quote.sections.length > 0 && (
+                              <div>
+                                <h4 className="font-semibold mb-2">Prodotti</h4>
+                                <div className="space-y-2">
+                                  {quote.sections.map((section: any, index: number) => (
+                                    <div key={index} className="border rounded p-2">
+                                      <p className="font-medium">{section.productName}</p>
+                                      <p className="text-sm text-muted-foreground">
+                                        Categoria: {section.productCategory} | Unità: {section.productUnit}
+                                      </p>
+                                      <p>Quantità: {section.quantity} | Prezzo: € {section.price}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => navigate('/new-quote', { state: { editQuote: quote } })}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button 
