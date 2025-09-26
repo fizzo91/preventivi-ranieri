@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useLocation } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -163,6 +164,9 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
 
 const NewQuote = () => {
   const { toast } = useToast()
+  const location = useLocation()
+  const editQuote = location.state?.editQuote
+  
   const [products, setProducts] = useState<Product[]>([])
   const [clientData, setClientData] = useState({
     name: "",
@@ -253,6 +257,34 @@ const NewQuote = () => {
       setProducts(savedProducts)
     }
   }, [])
+
+  // Pre-popola i dati quando si modifica un preventivo esistente
+  useEffect(() => {
+    if (editQuote) {
+      setClientData(editQuote.client || {
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        company: ""
+      })
+      
+      setQuoteData({
+        number: editQuote.number || `PREV-${Date.now()}`,
+        date: editQuote.date || new Date().toISOString().split('T')[0],
+        validUntil: editQuote.validUntil || "",
+        notes: editQuote.notes || ""
+      })
+
+      if (editQuote.sections && editQuote.sections.length > 0) {
+        setSections(editQuote.sections)
+      }
+      
+      setDiscount(editQuote.discount || 0)
+      setTaxRate(editQuote.taxRate || 22)
+      setRisks(editQuote.risks || [])
+    }
+  }, [editQuote])
 
   // Ricalcola totali delle sezioni quando cambia il contenuto degli items
   useEffect(() => {
@@ -442,17 +474,28 @@ const NewQuote = () => {
       riskAmount,
       taxAmount,
       totalAmount,
-      status: "Bozza",
-      createdAt: new Date().toISOString()
+      status: editQuote ? editQuote.status : "Bozza",
+      createdAt: editQuote ? editQuote.createdAt : new Date().toISOString()
     }
 
     const existingQuotes = JSON.parse(localStorage.getItem('quotes') || '[]')
-    existingQuotes.push(quote)
+    
+    if (editQuote) {
+      // Modifica preventivo esistente
+      const index = existingQuotes.findIndex((q: any) => q.number === editQuote.number)
+      if (index !== -1) {
+        existingQuotes[index] = quote
+      }
+    } else {
+      // Nuovo preventivo
+      existingQuotes.push(quote)
+    }
+    
     localStorage.setItem('quotes', JSON.stringify(existingQuotes))
 
     toast({
-      title: "Preventivo Salvato",
-      description: "Il preventivo è stato salvato con successo",
+      title: editQuote ? "Preventivo Modificato" : "Preventivo Salvato",
+      description: editQuote ? "Le modifiche sono state salvate con successo" : "Il preventivo è stato salvato con successo",
     })
   }
 
@@ -460,7 +503,7 @@ const NewQuote = () => {
     <div className="max-w-6xl mx-auto space-y-8">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Nuovo Preventivo</h1>
+          <h1 className="text-3xl font-bold text-foreground">{editQuote ? 'Modifica Preventivo' : 'Nuovo Preventivo'}</h1>
           <p className="text-muted-foreground mt-1">
             Lavorazione Pietra Lavica Smaltata
           </p>

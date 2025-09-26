@@ -23,6 +23,7 @@ interface Quote {
   sections?: any[]
   discount?: number
   taxRate?: number
+  risks?: any[]
 }
 
 const Quotes = () => {
@@ -70,7 +71,8 @@ const Quotes = () => {
         sections: quote.sections || [],
         discount: quote.discount || 0,
         taxRate: quote.taxRate || 22,
-        totalAmount: quote.totalAmount
+        totalAmount: quote.totalAmount,
+        risks: quote.risks || []
       })
     } catch (error) {
       console.error('Errore durante la generazione del PDF:', error)

@@ -14,6 +14,7 @@ interface QuoteData {
   discount: number
   taxRate: number
   totalAmount: number
+  risks?: any[]
 }
 
 export const usePdfGenerator = () => {
@@ -36,7 +37,8 @@ export const usePdfGenerator = () => {
       }, 0)
       
       const discountAmount = subtotal * (quoteData.discount / 100)
-      const taxableAmount = subtotal - discountAmount
+      const riskAmount = (quoteData.risks || []).reduce((sum: number, risk: any) => sum + (risk.amount || 0), 0)
+      const taxableAmount = subtotal - discountAmount + riskAmount
       const taxAmount = taxableAmount * (quoteData.taxRate / 100)
       const total = taxableAmount + taxAmount
 
@@ -96,6 +98,33 @@ export const usePdfGenerator = () => {
             </div>
           `).join('')}
 
+          <!-- Risks Section -->
+          ${(quoteData.risks && quoteData.risks.length > 0) ? `
+            <div style="margin-bottom: 25px;">
+              <h3 style="color: #1a1a1a; font-size: 16px; margin-bottom: 15px; background: #fef2f2; padding: 10px; border-left: 4px solid #dc3545;">
+                Gestione Rischi
+              </h3>
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+                <thead>
+                  <tr style="background: #fef2f2;">
+                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-size: 12px; font-weight: bold;">Descrizione</th>
+                    <th style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 120px;">Percentuale</th>
+                    <th style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 100px;">Importo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${quoteData.risks.map((risk: any) => `
+                    <tr>
+                      <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${risk.description}</td>
+                      <td style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px;">${risk.percentage}%</td>
+                      <td style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px; color: #dc3545;">€ ${risk.amount.toFixed(2)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          ` : ''}
+
           <!-- Totals -->
           <div style="margin-top: 40px; border-top: 2px solid #e5e5e5; padding-top: 20px;">
             <table style="width: 100%; max-width: 300px; margin-left: auto;">
@@ -108,11 +137,17 @@ export const usePdfGenerator = () => {
                   <td style="padding: 5px 10px; font-size: 14px; text-align: right; color: #dc3545;">Sconto (${quoteData.discount}%):</td>
                   <td style="padding: 5px 10px; font-size: 14px; text-align: right; color: #dc3545;">-€ ${discountAmount.toFixed(2)}</td>
                 </tr>
+              ` : ''}
+              ${riskAmount > 0 ? `
                 <tr>
-                  <td style="padding: 5px 10px; font-size: 14px; text-align: right;">Imponibile:</td>
-                  <td style="padding: 5px 10px; font-size: 14px; text-align: right; font-weight: bold;">€ ${taxableAmount.toFixed(2)}</td>
+                  <td style="padding: 5px 10px; font-size: 14px; text-align: right; color: #dc3545;">Rischi Aggiuntivi:</td>
+                  <td style="padding: 5px 10px; font-size: 14px; text-align: right; color: #dc3545;">+€ ${riskAmount.toFixed(2)}</td>
                 </tr>
               ` : ''}
+              <tr>
+                <td style="padding: 5px 10px; font-size: 14px; text-align: right;">Imponibile:</td>
+                <td style="padding: 5px 10px; font-size: 14px; text-align: right; font-weight: bold;">€ ${taxableAmount.toFixed(2)}</td>
+              </tr>
               <tr>
                 <td style="padding: 5px 10px; font-size: 14px; text-align: right;">IVA (${quoteData.taxRate}%):</td>
                 <td style="padding: 5px 10px; font-size: 14px; text-align: right; font-weight: bold;">€ ${taxAmount.toFixed(2)}</td>
