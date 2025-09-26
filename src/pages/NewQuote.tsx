@@ -194,8 +194,6 @@ const NewQuote = () => {
     }
   ])
 
-  const [discount, setDiscount] = useState(0)
-  const [taxRate, setTaxRate] = useState(22) // IVA 22%
   const [risks, setRisks] = useState<Risk[]>([])
 
   const sensors = useSensors(
@@ -280,8 +278,6 @@ const NewQuote = () => {
         setSections(editQuote.sections)
       }
       
-      setDiscount(editQuote.discount || 0)
-      setTaxRate(editQuote.taxRate || 22)
       setRisks(editQuote.risks || [])
     }
   }, [editQuote])
@@ -426,7 +422,6 @@ const NewQuote = () => {
 
   const allItems = sections.flatMap(section => section.items)
   const subtotal = sections.reduce((sum, section) => sum + section.total, 0)
-  const discountAmount = subtotal * (discount / 100)
   
   // Calcola i rischi aggiornati
   const updatedRisks = risks.map(risk => {
@@ -436,9 +431,7 @@ const NewQuote = () => {
   })
   
   const riskAmount = updatedRisks.reduce((sum, risk) => sum + risk.amount, 0)
-  const taxableAmount = subtotal - discountAmount + riskAmount
-  const taxAmount = taxableAmount * (taxRate / 100)
-  const totalAmount = taxableAmount + taxAmount
+  const totalAmount = subtotal + riskAmount
 
   const addRisk = () => {
     const newRisk: Risk = {
@@ -466,13 +459,9 @@ const NewQuote = () => {
       ...quoteData,
       client: clientData,
       sections,
-      discount,
-      taxRate,
       risks: updatedRisks,
       subtotal,
-      discountAmount,
       riskAmount,
-      taxAmount,
       totalAmount,
       status: editQuote ? editQuote.status : "Bozza",
       createdAt: editQuote ? editQuote.createdAt : new Date().toISOString()
@@ -771,30 +760,6 @@ const NewQuote = () => {
           <CardTitle>Riepilogo Finale</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="discount">Sconto %</Label>
-              <Input
-                id="discount"
-                type="number"
-                min="0"
-                max="100"
-                value={discount}
-                onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="tax-rate">IVA %</Label>
-              <Input
-                id="tax-rate"
-                type="number"
-                min="0"
-                max="100"
-                value={taxRate}
-                onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
-              />
-            </div>
-          </div>
 
           {/* Totali per sezione */}
           <div className="border-t pt-4 space-y-2">
@@ -812,26 +777,12 @@ const NewQuote = () => {
               <span>Subtotale:</span>
               <span>€ {subtotal.toFixed(2)}</span>
             </div>
-            {discount > 0 && (
-              <div className="flex justify-between text-success">
-                <span>Sconto ({discount}%):</span>
-                <span>- € {discountAmount.toFixed(2)}</span>
-              </div>
-            )}
             {riskAmount > 0 && (
               <div className="flex justify-between text-destructive">
                 <span>Rischi Aggiuntivi:</span>
                 <span>+ € {riskAmount.toFixed(2)}</span>
               </div>
             )}
-            <div className="flex justify-between">
-              <span>Imponibile:</span>
-              <span>€ {taxableAmount.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>IVA ({taxRate}%):</span>
-              <span>€ {taxAmount.toFixed(2)}</span>
-            </div>
             <div className="flex justify-between text-xl font-bold border-t pt-2">
               <span>TOTALE GENERALE:</span>
               <span className="text-primary">€ {totalAmount.toFixed(2)}</span>

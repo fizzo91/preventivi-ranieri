@@ -11,8 +11,6 @@ interface QuoteData {
     address?: string
   }
   sections: any[]
-  discount: number
-  taxRate: number
   totalAmount: number
   risks?: any[]
 }
@@ -36,11 +34,8 @@ export const usePdfGenerator = () => {
         }, 0)
       }, 0)
       
-      const discountAmount = subtotal * (quoteData.discount / 100)
       const riskAmount = (quoteData.risks || []).reduce((sum: number, risk: any) => sum + (risk.amount || 0), 0)
-      const taxableAmount = subtotal - discountAmount + riskAmount
-      const taxAmount = taxableAmount * (quoteData.taxRate / 100)
-      const total = taxableAmount + taxAmount
+      const total = subtotal + riskAmount
 
       // Generate HTML content for the PDF
       tempDiv.innerHTML = `
@@ -132,26 +127,12 @@ export const usePdfGenerator = () => {
                 <td style="padding: 5px 10px; font-size: 14px; text-align: right;">Subtotale:</td>
                 <td style="padding: 5px 10px; font-size: 14px; text-align: right; font-weight: bold;">€ ${subtotal.toFixed(2)}</td>
               </tr>
-              ${quoteData.discount > 0 ? `
-                <tr>
-                  <td style="padding: 5px 10px; font-size: 14px; text-align: right; color: #dc3545;">Sconto (${quoteData.discount}%):</td>
-                  <td style="padding: 5px 10px; font-size: 14px; text-align: right; color: #dc3545;">-€ ${discountAmount.toFixed(2)}</td>
-                </tr>
-              ` : ''}
               ${riskAmount > 0 ? `
                 <tr>
                   <td style="padding: 5px 10px; font-size: 14px; text-align: right; color: #dc3545;">Rischi Aggiuntivi:</td>
                   <td style="padding: 5px 10px; font-size: 14px; text-align: right; color: #dc3545;">+€ ${riskAmount.toFixed(2)}</td>
                 </tr>
               ` : ''}
-              <tr>
-                <td style="padding: 5px 10px; font-size: 14px; text-align: right;">Imponibile:</td>
-                <td style="padding: 5px 10px; font-size: 14px; text-align: right; font-weight: bold;">€ ${taxableAmount.toFixed(2)}</td>
-              </tr>
-              <tr>
-                <td style="padding: 5px 10px; font-size: 14px; text-align: right;">IVA (${quoteData.taxRate}%):</td>
-                <td style="padding: 5px 10px; font-size: 14px; text-align: right; font-weight: bold;">€ ${taxAmount.toFixed(2)}</td>
-              </tr>
               <tr style="border-top: 2px solid #007bff;">
                 <td style="padding: 10px; font-size: 18px; text-align: right; font-weight: bold; color: #007bff;">TOTALE:</td>
                 <td style="padding: 10px; font-size: 18px; text-align: right; font-weight: bold; color: #007bff;">€ ${total.toFixed(2)}</td>

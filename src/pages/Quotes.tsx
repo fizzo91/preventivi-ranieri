@@ -69,8 +69,6 @@ const Quotes = () => {
         quoteNumber: quote.number,
         client: quote.client,
         sections: quote.sections || [],
-        discount: quote.discount || 0,
-        taxRate: quote.taxRate || 22,
         totalAmount: quote.totalAmount,
         risks: quote.risks || []
       })
