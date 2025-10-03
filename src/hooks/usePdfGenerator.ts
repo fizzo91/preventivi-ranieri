@@ -103,18 +103,31 @@ export const usePdfGenerator = () => {
                 <thead>
                   <tr style="background: #fef2f2;">
                     <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-size: 12px; font-weight: bold;">Descrizione</th>
-                    <th style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 120px;">Percentuale</th>
+                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-size: 12px; font-weight: bold;">Applicato a</th>
+                    <th style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 100px;">Percentuale</th>
                     <th style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 100px;">Importo</th>
                   </tr>
                 </thead>
                 <tbody>
-                  ${quoteData.risks.map((risk: any) => `
+                  ${quoteData.risks.map((risk: any) => {
+                    // Trova il prodotto a cui è applicato il rischio
+                    let appliedToProduct = 'N/A';
+                    quoteData.sections.forEach((section: any) => {
+                      const item = section.items.find((item: any) => item.id === risk.appliedToItemId);
+                      if (item) {
+                        appliedToProduct = item.productName || item.description || 'Prodotto';
+                      }
+                    });
+                    
+                    return `
                     <tr>
                       <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${risk.description}</td>
+                      <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${appliedToProduct}</td>
                       <td style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px;">${risk.percentage}%</td>
                       <td style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px; color: #dc3545;">€ ${risk.amount.toFixed(2)}</td>
                     </tr>
-                  `).join('')}
+                    `;
+                  }).join('')}
                 </tbody>
               </table>
             </div>

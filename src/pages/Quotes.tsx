@@ -197,9 +197,20 @@ const Quotes = () => {
                             <Eye className="h-4 w-4" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-2xl">
+                        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                           <DialogHeader>
-                            <DialogTitle>Dettagli Preventivo {quote.number}</DialogTitle>
+                            <div className="flex items-center justify-between">
+                              <DialogTitle>Dettagli Preventivo {quote.number}</DialogTitle>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleGeneratePdf(quote)}
+                                className="gap-2"
+                              >
+                                <FileDown className="h-4 w-4" />
+                                Esporta PDF
+                              </Button>
+                            </div>
                           </DialogHeader>
                           <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">

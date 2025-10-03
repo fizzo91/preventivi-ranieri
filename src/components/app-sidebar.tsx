@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, FileText, Plus, Settings, Calculator, Users } from "lucide-react"
+import { Home, FileText, Plus, Settings, Calculator } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
 import {
@@ -20,7 +20,6 @@ const items = [
   { title: "Nuovo Preventivo", url: "/new-quote", icon: Plus },
   { title: "Preventivi", url: "/quotes", icon: FileText },
   { title: "Prodotti", url: "/products", icon: Calculator },
-  { title: "Clienti", url: "/clients", icon: Users },
   { title: "Impostazioni", url: "/settings", icon: Settings },
 ]
 

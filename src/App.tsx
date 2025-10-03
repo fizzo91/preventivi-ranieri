@@ -8,7 +8,6 @@ import Dashboard from "./pages/Dashboard";
 import NewQuote from "./pages/NewQuote";
 import Quotes from "./pages/Quotes";
 import Products from "./pages/Products";
-import Clients from "./pages/Clients";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -26,7 +25,6 @@ const App = () => (
             <Route path="/new-quote" element={<NewQuote />} />
             <Route path="/quotes" element={<Quotes />} />
             <Route path="/products" element={<Products />} />
-            <Route path="/clients" element={<Clients />} />
             <Route path="/settings" element={<Settings />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
