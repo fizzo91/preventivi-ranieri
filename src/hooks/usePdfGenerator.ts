@@ -12,7 +12,6 @@ interface QuoteData {
   }
   sections: any[]
   totalAmount: number
-  risks?: any[]
 }
 
 export const usePdfGenerator = () => {
@@ -27,15 +26,8 @@ export const usePdfGenerator = () => {
       tempDiv.style.padding = '20mm'
       tempDiv.style.fontFamily = 'Arial, sans-serif'
       
-      // Calculate totals
-      const subtotal = quoteData.sections.reduce((sum, section) => {
-        return sum + section.items.reduce((itemSum: number, item: any) => {
-          return itemSum + (item.quantity * item.price)
-        }, 0)
-      }, 0)
-      
-      const riskAmount = (quoteData.risks || []).reduce((sum: number, risk: any) => sum + (risk.amount || 0), 0)
-      const total = subtotal + riskAmount
+      // Calculate total
+      const total = quoteData.totalAmount
 
       // Generate HTML content for the PDF
       tempDiv.innerHTML = `
@@ -57,10 +49,18 @@ export const usePdfGenerator = () => {
           </div>
 
           <!-- Quote Sections -->
-          ${quoteData.sections.map((section, sectionIndex) => `
+          ${quoteData.sections.map((section, sectionIndex) => {
+            const sectionItemsTotal = section.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0);
+            const sectionRisksTotal = (section.risks || []).reduce((sum: number, risk: any) => {
+              const targetItem = section.items.find((item: any) => item.id === risk.appliedToItemId);
+              return sum + (targetItem ? targetItem.total * (risk.percentage / 100) : 0);
+            }, 0);
+            const sectionTotal = sectionItemsTotal + sectionRisksTotal;
+            
+            return `
             <div style="margin-bottom: 25px;">
               <h3 style="color: #1a1a1a; font-size: 16px; margin-bottom: 15px; background: #f8f9fa; padding: 10px; border-left: 4px solid #007bff;">
-                ${section.title}
+                ${section.name}
               </h3>
               
               <!-- Items Table -->
@@ -89,63 +89,52 @@ export const usePdfGenerator = () => {
                 </tbody>
               </table>
               
+              ${(section.risks && section.risks.length > 0) ? `
+                <div style="margin-top: 15px;">
+                  <h4 style="color: #1a1a1a; font-size: 14px; margin-bottom: 10px; background: #fef2f2; padding: 8px; border-left: 3px solid #dc3545;">
+                    Rischi Sezione
+                  </h4>
+                  <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+                    <thead>
+                      <tr style="background: #fef2f2;">
+                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-size: 11px; font-weight: bold;">Descrizione</th>
+                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-size: 11px; font-weight: bold;">Applicato a</th>
+                        <th style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 11px; font-weight: bold; width: 80px;">%</th>
+                        <th style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 11px; font-weight: bold; width: 90px;">Importo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${section.risks.map((risk: any) => {
+                        const appliedToItem = section.items.find((item: any) => item.id === risk.appliedToItemId);
+                        const appliedToProduct = appliedToItem ? (appliedToItem.productName || appliedToItem.description || 'Prodotto') : 'N/A';
+                        const riskAmount = appliedToItem ? appliedToItem.total * (risk.percentage / 100) : 0;
+                        
+                        return `
+                        <tr>
+                          <td style="padding: 8px; border: 1px solid #ddd; font-size: 11px;">${risk.description}</td>
+                          <td style="padding: 8px; border: 1px solid #ddd; font-size: 11px;">${appliedToProduct}</td>
+                          <td style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 11px;">${risk.percentage}%</td>
+                          <td style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 11px; color: #dc3545;">€ ${riskAmount.toFixed(2)}</td>
+                        </tr>
+                        `;
+                      }).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              ` : ''}
+              
+              <div style="text-align: right; margin-top: 10px; padding: 8px; background: #f8f9fa; border-radius: 4px;">
+                <strong style="font-size: 14px;">Totale Sezione: € ${sectionTotal.toFixed(2)}</strong>
+              </div>
+              
               ${section.description ? `<p style="font-size: 12px; color: #666; font-style: italic; margin-top: 10px;">${section.description}</p>` : ''}
             </div>
-          `).join('')}
-
-          <!-- Risks Section -->
-          ${(quoteData.risks && quoteData.risks.length > 0) ? `
-            <div style="margin-bottom: 25px;">
-              <h3 style="color: #1a1a1a; font-size: 16px; margin-bottom: 15px; background: #fef2f2; padding: 10px; border-left: 4px solid #dc3545;">
-                Gestione Rischi
-              </h3>
-              <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
-                <thead>
-                  <tr style="background: #fef2f2;">
-                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-size: 12px; font-weight: bold;">Descrizione</th>
-                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-size: 12px; font-weight: bold;">Applicato a</th>
-                    <th style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 100px;">Percentuale</th>
-                    <th style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 100px;">Importo</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${quoteData.risks.map((risk: any) => {
-                    // Trova il prodotto a cui è applicato il rischio
-                    let appliedToProduct = 'N/A';
-                    quoteData.sections.forEach((section: any) => {
-                      const item = section.items.find((item: any) => item.id === risk.appliedToItemId);
-                      if (item) {
-                        appliedToProduct = item.productName || item.description || 'Prodotto';
-                      }
-                    });
-                    
-                    return `
-                    <tr>
-                      <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${risk.description}</td>
-                      <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${appliedToProduct}</td>
-                      <td style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px;">${risk.percentage}%</td>
-                      <td style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px; color: #dc3545;">€ ${risk.amount.toFixed(2)}</td>
-                    </tr>
-                    `;
-                  }).join('')}
-                </tbody>
-              </table>
-            </div>
-          ` : ''}
+            `;
+          }).join('')}
 
           <!-- Totals -->
           <div style="margin-top: 40px; border-top: 2px solid #e5e5e5; padding-top: 20px;">
             <table style="width: 100%; max-width: 300px; margin-left: auto;">
-              <tr>
-                <td style="padding: 5px 10px; font-size: 14px; text-align: right;">Subtotale:</td>
-                <td style="padding: 5px 10px; font-size: 14px; text-align: right; font-weight: bold;">€ ${subtotal.toFixed(2)}</td>
-              </tr>
-              ${riskAmount > 0 ? `
-                <tr>
-                  <td style="padding: 5px 10px; font-size: 14px; text-align: right; color: #dc3545;">Rischi Aggiuntivi:</td>
-                  <td style="padding: 5px 10px; font-size: 14px; text-align: right; color: #dc3545;">+€ ${riskAmount.toFixed(2)}</td>
-                </tr>
-              ` : ''}
               <tr style="border-top: 2px solid #007bff;">
                 <td style="padding: 10px; font-size: 18px; text-align: right; font-weight: bold; color: #007bff;">TOTALE:</td>
                 <td style="padding: 10px; font-size: 18px; text-align: right; font-weight: bold; color: #007bff;">€ ${total.toFixed(2)}</td>

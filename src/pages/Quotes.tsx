@@ -69,8 +69,7 @@ const Quotes = () => {
         quoteNumber: quote.number,
         client: quote.client,
         sections: quote.sections || [],
-        totalAmount: quote.totalAmount,
-        risks: quote.risks || []
+        totalAmount: quote.totalAmount
       })
     } catch (error) {
       console.error('Errore durante la generazione del PDF:', error)

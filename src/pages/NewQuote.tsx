@@ -40,6 +40,7 @@ interface QuoteSection {
   id: string
   name: string
   items: QuoteItem[]
+  risks: Risk[]
   total: number
 }
 
@@ -190,11 +191,10 @@ const NewQuote = () => {
       items: [
         { id: "1", productId: "", productName: "", category: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
       ],
+      risks: [],
       total: 0
     }
   ])
-
-  const [risks, setRisks] = useState<Risk[]>([])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -275,22 +275,31 @@ const NewQuote = () => {
       })
 
       if (editQuote.sections && editQuote.sections.length > 0) {
-        setSections(editQuote.sections)
+        setSections(editQuote.sections.map((section: any) => ({
+          ...section,
+          risks: section.risks || []
+        })))
       }
-      
-      setRisks(editQuote.risks || [])
     }
   }, [editQuote])
 
-  // Ricalcola totali delle sezioni quando cambia il contenuto degli items
+  // Ricalcola totali delle sezioni quando cambia il contenuto degli items o risks
   useEffect(() => {
     setSections(prevSections => 
       prevSections.map(section => {
-        const newTotal = section.items.reduce((sum, item) => sum + item.total, 0)
+        const itemsTotal = section.items.reduce((sum, item) => sum + item.total, 0)
+        
+        // Calcola rischi per questa sezione
+        const risksTotal = section.risks.reduce((sum, risk) => {
+          const targetItem = section.items.find(item => item.id === risk.appliedToItemId)
+          return sum + (targetItem ? targetItem.total * (risk.percentage / 100) : 0)
+        }, 0)
+        
+        const newTotal = itemsTotal + risksTotal
         return newTotal !== section.total ? { ...section, total: newTotal } : section
       })
     )
-  }, [sections.flatMap(s => s.items.map(i => `${i.id}-${i.total}`))])
+  }, [sections.flatMap(s => [...s.items.map(i => `${i.id}-${i.total}`), ...s.risks.map(r => `${r.id}-${r.percentage}-${r.appliedToItemId}`)])])
 
   const addSection = () => {
     const newSection: QuoteSection = {
@@ -299,6 +308,7 @@ const NewQuote = () => {
       items: [
         { id: Date.now().toString() + "-item", productId: "", productName: "", category: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
       ],
+      risks: [],
       total: 0
     }
     setSections([...sections, newSection])
@@ -420,20 +430,9 @@ const NewQuote = () => {
     }
   }
 
-  const allItems = sections.flatMap(section => section.items)
-  const subtotal = sections.reduce((sum, section) => sum + section.total, 0)
-  
-  // Calcola i rischi aggiornati
-  const updatedRisks = risks.map(risk => {
-    const targetItem = allItems.find(item => item.id === risk.appliedToItemId)
-    const amount = targetItem ? targetItem.total * (risk.percentage / 100) : 0
-    return { ...risk, amount }
-  })
-  
-  const riskAmount = updatedRisks.reduce((sum, risk) => sum + risk.amount, 0)
-  const totalAmount = subtotal + riskAmount
+  const totalAmount = sections.reduce((sum, section) => sum + section.total, 0)
 
-  const addRisk = () => {
+  const addRisk = (sectionId: string) => {
     const newRisk: Risk = {
       id: Date.now().toString(),
       description: "Rischio aggiuntivo",
@@ -441,17 +440,37 @@ const NewQuote = () => {
       appliedToItemId: "",
       amount: 0
     }
-    setRisks([...risks, newRisk])
-  }
-
-  const updateRisk = (riskId: string, field: keyof Risk, value: any) => {
-    setRisks(risks.map(risk => 
-      risk.id === riskId ? { ...risk, [field]: value } : risk
+    setSections(sections.map(section => 
+      section.id === sectionId 
+        ? { ...section, risks: [...section.risks, newRisk] }
+        : section
     ))
   }
 
-  const removeRisk = (riskId: string) => {
-    setRisks(risks.filter(risk => risk.id !== riskId))
+  const updateRisk = (sectionId: string, riskId: string, field: keyof Risk, value: any) => {
+    setSections(sections.map(section => {
+      if (section.id === sectionId) {
+        return {
+          ...section,
+          risks: section.risks.map(risk => 
+            risk.id === riskId ? { ...risk, [field]: value } : risk
+          )
+        }
+      }
+      return section
+    }))
+  }
+
+  const removeRisk = (sectionId: string, riskId: string) => {
+    setSections(sections.map(section => {
+      if (section.id === sectionId) {
+        return {
+          ...section,
+          risks: section.risks.filter(risk => risk.id !== riskId)
+        }
+      }
+      return section
+    }))
   }
 
   const saveQuote = () => {
@@ -459,9 +478,6 @@ const NewQuote = () => {
       ...quoteData,
       client: clientData,
       sections,
-      risks: updatedRisks,
-      subtotal,
-      riskAmount,
       totalAmount,
       status: editQuote ? editQuote.status : "Bozza",
       createdAt: editQuote ? editQuote.createdAt : new Date().toISOString()
@@ -648,111 +664,116 @@ const NewQuote = () => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext
-                  items={section.items.map(item => item.id)}
-                  strategy={verticalListSortingStrategy}
+            <CardContent className="space-y-6">
+              {/* Items */}
+              <div className="space-y-4">
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
                 >
-                  {section.items.map((item) => (
-                    <SortableItem
-                      key={item.id}
-                      item={item}
-                      products={products}
-                      onSelectProduct={(itemId, productId) => selectProduct(section.id, itemId, productId)}
-                      onUpdateItem={(itemId, field, value) => updateItem(section.id, itemId, field, value)}
-                      onRemoveItem={(itemId) => removeItem(section.id, itemId)}
-                      canRemove={section.items.length > 1}
-                    />
-                  ))}
-                </SortableContext>
-              </DndContext>
+                  <SortableContext
+                    items={section.items.map(item => item.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {section.items.map((item) => (
+                      <SortableItem
+                        key={item.id}
+                        item={item}
+                        products={products}
+                        onSelectProduct={(itemId, productId) => selectProduct(section.id, itemId, productId)}
+                        onUpdateItem={(itemId, field, value) => updateItem(section.id, itemId, field, value)}
+                        onRemoveItem={(itemId) => removeItem(section.id, itemId)}
+                        canRemove={section.items.length > 1}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
+              </div>
+
+              {/* Risks for this section */}
+              <div className="border-t pt-4 space-y-4">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-semibold text-sm text-muted-foreground">Gestione Rischi Sezione</h4>
+                  <Button onClick={() => addRisk(section.id)} variant="outline" size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Aggiungi Rischio
+                  </Button>
+                </div>
+                
+                {section.risks.length === 0 ? (
+                  <p className="text-muted-foreground text-sm text-center py-2">
+                    Nessun rischio aggiunto per questa sezione
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {section.risks.map((risk) => {
+                      const targetItem = section.items.find(item => item.id === risk.appliedToItemId)
+                      const amount = targetItem ? targetItem.total * (risk.percentage / 100) : 0
+                      
+                      return (
+                        <div key={risk.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-3 border rounded-lg bg-muted/30">
+                          <div className="md:col-span-3 space-y-2">
+                            <Label className="text-xs">Descrizione Rischio</Label>
+                            <Input
+                              value={risk.description}
+                              onChange={(e) => updateRisk(section.id, risk.id, 'description', e.target.value)}
+                              placeholder="Es. Rischio rotture"
+                              className="h-9"
+                            />
+                          </div>
+                          <div className="md:col-span-3 space-y-2">
+                            <Label className="text-xs">Voce di Riferimento</Label>
+                            <Combobox
+                              options={section.items.map(item => ({
+                                value: item.id,
+                                label: `${item.productName || 'Prodotto'} (€${item.total.toFixed(2)})`,
+                              }))}
+                              value={risk.appliedToItemId}
+                              placeholder="Seleziona voce..."
+                              searchPlaceholder="Cerca voce..."
+                              onSelect={(value) => updateRisk(section.id, risk.id, 'appliedToItemId', value)}
+                            />
+                          </div>
+                          <div className="md:col-span-2 space-y-2">
+                            <Label className="text-xs">Percentuale %</Label>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.1"
+                              value={risk.percentage}
+                              onChange={(e) => updateRisk(section.id, risk.id, 'percentage', parseFloat(e.target.value) || 0)}
+                              className="h-9"
+                            />
+                          </div>
+                          <div className="md:col-span-3 space-y-2">
+                            <Label className="text-xs">Importo Rischio</Label>
+                            <div className="h-9 px-3 py-2 bg-background rounded-md flex items-center font-medium text-sm">
+                              € {amount.toFixed(2)}
+                            </div>
+                          </div>
+                          <div className="md:col-span-1 space-y-2">
+                            <Label className="invisible text-xs">Azioni</Label>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => removeRisk(section.id, risk.id)}
+                              className="h-9 w-full"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
-
-      {/* Gestione Rischi */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Gestione Rischi</CardTitle>
-            <Button onClick={addRisk} variant="outline" size="sm" className="gap-2">
-              <Plus className="h-4 w-4" />
-              Aggiungi Rischio
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {risks.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">
-              Nessun rischio aggiunto. I rischi permettono di applicare percentuali aggiuntive su voci specifiche del preventivo.
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {risks.map((risk) => {
-                const currentRisk = updatedRisks.find(r => r.id === risk.id) || risk
-                return (
-                  <div key={risk.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end p-4 border rounded-lg">
-                    <div className="md:col-span-3 space-y-2">
-                      <Label>Descrizione Rischio</Label>
-                      <Input
-                        value={risk.description}
-                        onChange={(e) => updateRisk(risk.id, 'description', e.target.value)}
-                        placeholder="Es. Rischio rotture"
-                      />
-                    </div>
-                    <div className="md:col-span-3 space-y-2">
-                      <Label>Voce di Riferimento</Label>
-                      <Combobox
-                        options={allItems.map(item => ({
-                          value: item.id,
-                          label: `${item.productName} (€${item.total.toFixed(2)})`,
-                        }))}
-                        value={risk.appliedToItemId}
-                        placeholder="Seleziona voce..."
-                        searchPlaceholder="Cerca voce..."
-                        onSelect={(value) => updateRisk(risk.id, 'appliedToItemId', value)}
-                      />
-                    </div>
-                    <div className="md:col-span-2 space-y-2">
-                      <Label>Percentuale %</Label>
-                      <Input
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="0.1"
-                        value={risk.percentage}
-                        onChange={(e) => updateRisk(risk.id, 'percentage', parseFloat(e.target.value) || 0)}
-                      />
-                    </div>
-                    <div className="md:col-span-2 space-y-2">
-                      <Label>Importo Rischio</Label>
-                      <div className="h-10 px-3 py-2 bg-muted rounded-md flex items-center font-medium">
-                        € {currentRisk.amount.toFixed(2)}
-                      </div>
-                    </div>
-                    <div className="md:col-span-2 space-y-2">
-                      <Label className="invisible">Azioni</Label>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => removeRisk(risk.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
 
       {/* Totali */}
       <Card>
@@ -773,17 +794,7 @@ const NewQuote = () => {
           </div>
 
           <div className="border-t pt-4 space-y-2">
-            <div className="flex justify-between">
-              <span>Subtotale:</span>
-              <span>€ {subtotal.toFixed(2)}</span>
-            </div>
-            {riskAmount > 0 && (
-              <div className="flex justify-between text-destructive">
-                <span>Rischi Aggiuntivi:</span>
-                <span>+ € {riskAmount.toFixed(2)}</span>
-              </div>
-            )}
-            <div className="flex justify-between text-xl font-bold border-t pt-2">
+            <div className="flex justify-between text-xl font-bold">
               <span>TOTALE GENERALE:</span>
               <span className="text-primary">€ {totalAmount.toFixed(2)}</span>
             </div>
