@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
-import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus } from "lucide-react"
+import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import {
   DndContext,
@@ -324,6 +324,32 @@ const NewQuote = () => {
     if (sections.length > 1) {
       setSections(sections.filter(section => section.id !== sectionId))
     }
+  }
+
+  const duplicateSection = (sectionId: string) => {
+    const sectionToDuplicate = sections.find(section => section.id === sectionId)
+    if (!sectionToDuplicate) return
+
+    const timestamp = Date.now()
+    const duplicatedSection: QuoteSection = {
+      id: timestamp.toString(),
+      name: `${sectionToDuplicate.name} (Copia)`,
+      items: sectionToDuplicate.items.map((item, index) => ({
+        ...item,
+        id: `${timestamp}-item-${index}`
+      })),
+      risks: sectionToDuplicate.risks.map((risk, index) => ({
+        ...risk,
+        id: `${timestamp}-risk-${index}`
+      })),
+      total: sectionToDuplicate.total
+    }
+
+    setSections([...sections, duplicatedSection])
+    toast({
+      title: "Sezione duplicata",
+      description: `La sezione "${sectionToDuplicate.name}" è stata duplicata con successo.`
+    })
   }
 
   const addItem = (sectionId: string) => {
@@ -650,6 +676,15 @@ const NewQuote = () => {
                   >
                     <Plus className="h-4 w-4" />
                     Aggiungi Voce
+                  </Button>
+                  <Button
+                    onClick={() => duplicateSection(section.id)}
+                    size="sm"
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <Copy className="h-4 w-4" />
+                    Duplica
                   </Button>
                   {sections.length > 1 && (
                     <Button
