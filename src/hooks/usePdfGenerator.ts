@@ -52,8 +52,12 @@ export const usePdfGenerator = () => {
           ${quoteData.sections.map((section, sectionIndex) => {
             const sectionItemsTotal = section.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0);
             const sectionRisksTotal = (section.risks || []).reduce((sum: number, risk: any) => {
-              const targetItem = section.items.find((item: any) => item.id === risk.appliedToItemId);
-              return sum + (targetItem ? targetItem.total * (risk.percentage / 100) : 0);
+              if (risk.appliedToItemId === 'SECTION_TOTAL') {
+                return sum + (sectionItemsTotal * (risk.percentage / 100));
+              } else {
+                const targetItem = section.items.find((item: any) => item.id === risk.appliedToItemId);
+                return sum + (targetItem ? targetItem.total * (risk.percentage / 100) : 0);
+              }
             }, 0);
             const sectionTotal = sectionItemsTotal + sectionRisksTotal;
             
@@ -105,9 +109,17 @@ export const usePdfGenerator = () => {
                     </thead>
                     <tbody>
                       ${section.risks.map((risk: any) => {
-                        const appliedToItem = section.items.find((item: any) => item.id === risk.appliedToItemId);
-                        const appliedToProduct = appliedToItem ? (appliedToItem.productName || appliedToItem.description || 'Prodotto') : 'N/A';
-                        const riskAmount = appliedToItem ? appliedToItem.total * (risk.percentage / 100) : 0;
+                        let appliedToProduct = 'N/A';
+                        let riskAmount = 0;
+                        
+                        if (risk.appliedToItemId === 'SECTION_TOTAL') {
+                          appliedToProduct = '🔷 Totale Sezione';
+                          riskAmount = sectionItemsTotal * (risk.percentage / 100);
+                        } else {
+                          const appliedToItem = section.items.find((item: any) => item.id === risk.appliedToItemId);
+                          appliedToProduct = appliedToItem ? (appliedToItem.productName || appliedToItem.description || 'Prodotto') : 'N/A';
+                          riskAmount = appliedToItem ? appliedToItem.total * (risk.percentage / 100) : 0;
+                        }
                         
                         return `
                         <tr>

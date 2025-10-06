@@ -291,8 +291,13 @@ const NewQuote = () => {
         
         // Calcola rischi per questa sezione
         const risksTotal = section.risks.reduce((sum, risk) => {
-          const targetItem = section.items.find(item => item.id === risk.appliedToItemId)
-          return sum + (targetItem ? targetItem.total * (risk.percentage / 100) : 0)
+          if (risk.appliedToItemId === 'SECTION_TOTAL') {
+            // Applica il rischio al totale degli item (prima dei rischi)
+            return sum + (itemsTotal * (risk.percentage / 100))
+          } else {
+            const targetItem = section.items.find(item => item.id === risk.appliedToItemId)
+            return sum + (targetItem ? targetItem.total * (risk.percentage / 100) : 0)
+          }
         }, 0)
         
         const newTotal = itemsTotal + risksTotal
@@ -743,8 +748,15 @@ const NewQuote = () => {
                 ) : (
                   <div className="space-y-3">
                     {section.risks.map((risk) => {
-                      const targetItem = section.items.find(item => item.id === risk.appliedToItemId)
-                      const amount = targetItem ? targetItem.total * (risk.percentage / 100) : 0
+                      const itemsTotal = section.items.reduce((sum, item) => sum + item.total, 0)
+                      let amount = 0
+                      
+                      if (risk.appliedToItemId === 'SECTION_TOTAL') {
+                        amount = itemsTotal * (risk.percentage / 100)
+                      } else {
+                        const targetItem = section.items.find(item => item.id === risk.appliedToItemId)
+                        amount = targetItem ? targetItem.total * (risk.percentage / 100) : 0
+                      }
                       
                       return (
                         <div key={risk.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end p-3 border rounded-lg bg-muted/30">
@@ -760,10 +772,16 @@ const NewQuote = () => {
                           <div className="md:col-span-3 space-y-2">
                             <Label className="text-xs">Voce di Riferimento</Label>
                             <Combobox
-                              options={section.items.map(item => ({
-                                value: item.id,
-                                label: `${item.productName || 'Prodotto'} (€${item.total.toFixed(2)})`,
-                              }))}
+                              options={[
+                                {
+                                  value: 'SECTION_TOTAL',
+                                  label: `🔷 Totale Sezione (€${itemsTotal.toFixed(2)})`,
+                                },
+                                ...section.items.map(item => ({
+                                  value: item.id,
+                                  label: `${item.productName || 'Prodotto'} (€${item.total.toFixed(2)})`,
+                                }))
+                              ]}
                               value={risk.appliedToItemId}
                               placeholder="Seleziona voce..."
                               searchPlaceholder="Cerca voce..."
