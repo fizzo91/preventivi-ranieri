@@ -63,9 +63,10 @@ export const usePdfGenerator = () => {
             
             return `
             <div style="margin-bottom: 25px;">
-              <h3 style="color: #1a1a1a; font-size: 16px; margin-bottom: 15px; background: #f8f9fa; padding: 10px; border-left: 4px solid #007bff;">
+              <h3 style="color: #1a1a1a; font-size: 16px; margin-bottom: ${section.description ? '8px' : '15px'}; background: #f8f9fa; padding: 10px; border-left: 4px solid #007bff;">
                 ${section.name}
               </h3>
+              ${section.description ? `<p style="font-size: 12px; color: #666; font-style: italic; margin-bottom: 15px; padding-left: 10px;">${section.description}</p>` : ''}
               
               <!-- Items Table -->
               <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
@@ -138,8 +139,6 @@ export const usePdfGenerator = () => {
               <div style="text-align: right; margin-top: 10px; padding: 8px; background: #f8f9fa; border-radius: 4px;">
                 <strong style="font-size: 14px;">Totale Sezione: € ${sectionTotal.toFixed(2)}</strong>
               </div>
-              
-              ${section.description ? `<p style="font-size: 12px; color: #666; font-style: italic; margin-top: 10px;">${section.description}</p>` : ''}
             </div>
             `;
           }).join('')}

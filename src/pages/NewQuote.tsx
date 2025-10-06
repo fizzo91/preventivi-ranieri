@@ -39,6 +39,7 @@ interface Product {
 interface QuoteSection {
   id: string
   name: string
+  description: string
   items: QuoteItem[]
   risks: Risk[]
   total: number
@@ -188,6 +189,7 @@ const NewQuote = () => {
     {
       id: "main",
       name: "Progetto Principale",
+      description: "",
       items: [
         { id: "1", productId: "", productName: "", category: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
       ],
@@ -310,6 +312,7 @@ const NewQuote = () => {
     const newSection: QuoteSection = {
       id: Date.now().toString(),
       name: `Sezione ${sections.length + 1}`,
+      description: "",
       items: [
         { id: Date.now().toString() + "-item", productId: "", productName: "", category: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
       ],
@@ -322,6 +325,12 @@ const NewQuote = () => {
   const updateSectionName = (sectionId: string, newName: string) => {
     setSections(sections.map(section => 
       section.id === sectionId ? { ...section, name: newName } : section
+    ))
+  }
+
+  const updateSectionDescription = (sectionId: string, newDescription: string) => {
+    setSections(sections.map(section => 
+      section.id === sectionId ? { ...section, description: newDescription } : section
     ))
   }
 
@@ -339,6 +348,7 @@ const NewQuote = () => {
     const duplicatedSection: QuoteSection = {
       id: timestamp.toString(),
       name: `${sectionToDuplicate.name} (Copia)`,
+      description: sectionToDuplicate.description,
       items: sectionToDuplicate.items.map((item, index) => ({
         ...item,
         id: `${timestamp}-item-${index}`
@@ -661,11 +671,18 @@ const NewQuote = () => {
         {sections.map((section) => (
           <Card key={section.id} className="border-l-4 border-l-primary">
             <CardHeader className="flex flex-row items-center justify-between">
-              <div className="flex-1">
+              <div className="flex-1 space-y-2">
                 <Input
                   value={section.name}
                   onChange={(e) => updateSectionName(section.id, e.target.value)}
                   className="text-lg font-semibold border-none p-0 h-auto bg-transparent"
+                />
+                <Textarea
+                  value={section.description}
+                  onChange={(e) => updateSectionDescription(section.id, e.target.value)}
+                  placeholder="Descrizione sezione (opzionale)..."
+                  className="text-sm border-none p-0 h-auto bg-transparent resize-none min-h-[40px]"
+                  rows={2}
                 />
               </div>
               <div className="flex items-center gap-4">
