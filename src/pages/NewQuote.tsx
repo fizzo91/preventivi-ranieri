@@ -122,13 +122,13 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
       <div className="md:col-span-2 space-y-2">
         <Label>Quantità</Label>
         <div className="flex items-center gap-2">
-          <Input
-            type="number"
-            min="1"
-            step="0.01"
-            value={item.quantity}
-            onChange={(e) => onUpdateItem(item.id, 'quantity', parseFloat(e.target.value) || 1)}
-          />
+        <Input
+          type="number"
+          min="0"
+          step="0.01"
+          value={item.quantity}
+          onChange={(e) => onUpdateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
+        />
           {item.unit && <span className="text-sm text-muted-foreground">{item.unit}</span>}
         </div>
       </div>
