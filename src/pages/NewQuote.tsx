@@ -42,6 +42,7 @@ interface QuoteSection {
   description: string
   items: QuoteItem[]
   risks: Risk[]
+  finitura: number
   total: number
 }
 
@@ -194,6 +195,7 @@ const NewQuote = () => {
         { id: "1", productId: "", productName: "", category: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
       ],
       risks: [],
+      finitura: 0,
       total: 0
     }
   ])
@@ -302,11 +304,11 @@ const NewQuote = () => {
           }
         }, 0)
         
-        const newTotal = itemsTotal + risksTotal
+        const newTotal = itemsTotal + risksTotal + section.finitura
         return newTotal !== section.total ? { ...section, total: newTotal } : section
       })
     )
-  }, [sections.flatMap(s => [...s.items.map(i => `${i.id}-${i.total}`), ...s.risks.map(r => `${r.id}-${r.percentage}-${r.appliedToItemId}`)])])
+  }, [sections.flatMap(s => [...s.items.map(i => `${i.id}-${i.total}`), ...s.risks.map(r => `${r.id}-${r.percentage}-${r.appliedToItemId}`), `finitura-${s.finitura}`])])
 
   const addSection = () => {
     const newSection: QuoteSection = {
@@ -317,6 +319,7 @@ const NewQuote = () => {
         { id: Date.now().toString() + "-item", productId: "", productName: "", category: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
       ],
       risks: [],
+      finitura: 0,
       total: 0
     }
     setSections([...sections, newSection])
@@ -357,6 +360,7 @@ const NewQuote = () => {
         ...risk,
         id: `${timestamp}-risk-${index}`
       })),
+      finitura: sectionToDuplicate.finitura,
       total: sectionToDuplicate.total
     }
 
@@ -839,6 +843,31 @@ const NewQuote = () => {
                     })}
                   </div>
                 )}
+              </div>
+
+              {/* Finitura */}
+              <div className="space-y-2 pt-4 border-t">
+                <div className="flex items-center justify-between bg-muted/50 p-4 rounded-lg">
+                  <div>
+                    <h4 className="font-semibold text-sm">Finitura</h4>
+                    <p className="text-xs text-muted-foreground italic">vedere preventivo allegato</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">€</span>
+                    <Input
+                      type="number"
+                      value={section.finitura}
+                      onChange={(e) => {
+                        const newFinitura = parseFloat(e.target.value) || 0
+                        setSections(sections.map(s => 
+                          s.id === section.id ? { ...s, finitura: newFinitura } : s
+                        ))
+                      }}
+                      className="w-32 text-right"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>

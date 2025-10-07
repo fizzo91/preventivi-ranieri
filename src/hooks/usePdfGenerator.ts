@@ -59,7 +59,8 @@ export const usePdfGenerator = () => {
                 return sum + (targetItem ? targetItem.total * (risk.percentage / 100) : 0);
               }
             }, 0);
-            const sectionTotal = sectionItemsTotal + sectionRisksTotal;
+            const finitura = section.finitura || 0;
+            const sectionTotal = sectionItemsTotal + sectionRisksTotal + finitura;
             
             return `
             <div style="margin-bottom: 25px;">
@@ -133,6 +134,18 @@ export const usePdfGenerator = () => {
                       }).join('')}
                     </tbody>
                   </table>
+                </div>
+              ` : ''}
+              
+              ${finitura > 0 ? `
+                <div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <strong style="font-size: 13px;">Finitura</strong>
+                      <p style="font-size: 11px; color: #666; font-style: italic; margin: 2px 0 0 0;">vedere preventivo allegato</p>
+                    </div>
+                    <strong style="font-size: 13px;">€ ${finitura.toFixed(2)}</strong>
+                  </div>
                 </div>
               ` : ''}
               
