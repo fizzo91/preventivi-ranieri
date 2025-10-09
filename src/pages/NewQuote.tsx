@@ -371,6 +371,32 @@ const NewQuote = () => {
     })
   }
 
+  const duplicateQuote = () => {
+    const timestamp = Date.now()
+    const duplicatedSections = sections.map((section, sectionIndex) => ({
+      ...section,
+      id: `${timestamp}-section-${sectionIndex}`,
+      items: section.items.map((item, itemIndex) => ({
+        ...item,
+        id: `${timestamp}-section-${sectionIndex}-item-${itemIndex}`
+      })),
+      risks: section.risks.map((risk, riskIndex) => ({
+        ...risk,
+        id: `${timestamp}-section-${sectionIndex}-risk-${riskIndex}`
+      }))
+    }))
+    
+    setSections(duplicatedSections)
+    setQuoteData({
+      ...quoteData,
+      number: `PREV-${timestamp}`
+    })
+    toast({
+      title: "Preventivo duplicato",
+      description: "Il preventivo è stato duplicato con successo. Assegna un nuovo numero preventivo.",
+    })
+  }
+
   const addItem = (sectionId: string) => {
     const newItem: QuoteItem = {
       id: Date.now().toString(),
@@ -562,6 +588,10 @@ const NewQuote = () => {
           <Button variant="outline" className="gap-2">
             <Eye className="h-4 w-4" />
             Anteprima
+          </Button>
+          <Button onClick={duplicateQuote} variant="outline" className="gap-2">
+            <Copy className="h-4 w-4" />
+            Duplica Preventivo
           </Button>
           <Button onClick={saveQuote} className="gap-2">
             <Save className="h-4 w-4" />
