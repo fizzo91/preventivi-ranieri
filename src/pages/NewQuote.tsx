@@ -9,6 +9,15 @@ import { Combobox } from "@/components/ui/combobox"
 import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
   DndContext,
   closestCenter,
   KeyboardSensor,
@@ -73,9 +82,19 @@ interface SortableItemProps {
   onUpdateItem: (id: string, field: keyof QuoteItem, value: any) => void
   onRemoveItem: (id: string) => void
   canRemove: boolean
+  onAddProduct: (product: Product) => void
 }
 
-function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveItem, canRemove }: SortableItemProps) {
+function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveItem, canRemove, onAddProduct }: SortableItemProps) {
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false)
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    description: "",
+    price: 0,
+    category: "",
+    unit: "mq"
+  })
+
   const {
     attributes,
     listeners,
@@ -96,6 +115,24 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
     unit: product.unit
   }))
 
+  const handleAddProduct = () => {
+    if (newProduct.name && newProduct.price > 0) {
+      const product: Product = {
+        id: Date.now().toString(),
+        ...newProduct
+      }
+      onAddProduct(product)
+      setNewProduct({
+        name: "",
+        description: "",
+        price: 0,
+        category: "",
+        unit: "mq"
+      })
+      setIsAddProductOpen(false)
+    }
+  }
+
   return (
     <div
       ref={setNodeRef}
@@ -113,13 +150,91 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
       </div>
       <div className="md:col-span-4 space-y-2">
         <Label>Prodotto</Label>
-        <Combobox
-          options={productOptions}
-          value={item.productId}
-          placeholder="Cerca prodotto..."
-          searchPlaceholder="Digita per cercare..."
-          onSelect={(value) => onSelectProduct(item.id, value)}
-        />
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Combobox
+              options={productOptions}
+              value={item.productId}
+              placeholder="Cerca prodotto..."
+              searchPlaceholder="Digita per cercare..."
+              onSelect={(value) => onSelectProduct(item.id, value)}
+            />
+          </div>
+          <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="icon" className="shrink-0">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Aggiungi Prodotto Custom</DialogTitle>
+                <DialogDescription>
+                  Crea un nuovo prodotto da utilizzare nel preventivo
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Nome Prodotto</Label>
+                  <Input
+                    id="name"
+                    value={newProduct.name}
+                    onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                    placeholder="es. Pietra Lavica Premium"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="description">Descrizione</Label>
+                  <Textarea
+                    id="description"
+                    value={newProduct.description}
+                    onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                    placeholder="Descrizione del prodotto..."
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="category">Categoria</Label>
+                    <Input
+                      id="category"
+                      value={newProduct.category}
+                      onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                      placeholder="es. Pietra"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="unit">Unità</Label>
+                    <Input
+                      id="unit"
+                      value={newProduct.unit}
+                      onChange={(e) => setNewProduct({ ...newProduct, unit: e.target.value })}
+                      placeholder="es. mq, ml, pz"
+                    />
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="price">Prezzo (€)</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsAddProductOpen(false)}>
+                  Annulla
+                </Button>
+                <Button onClick={handleAddProduct}>
+                  Aggiungi Prodotto
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
       <div className="md:col-span-2 space-y-2">
         <Label>Quantità</Label>
@@ -544,6 +659,16 @@ const NewQuote = () => {
     }))
   }
 
+  const addProduct = (product: Product) => {
+    const updatedProducts = [...products, product]
+    setProducts(updatedProducts)
+    localStorage.setItem('products', JSON.stringify(updatedProducts))
+    toast({
+      title: "Prodotto Aggiunto",
+      description: `${product.name} è stato aggiunto alla lista prodotti`,
+    })
+  }
+
   const saveQuote = () => {
     const quote = {
       ...quoteData,
@@ -776,6 +901,7 @@ const NewQuote = () => {
                         onUpdateItem={(itemId, field, value) => updateItem(section.id, itemId, field, value)}
                         onRemoveItem={(itemId) => removeItem(section.id, itemId)}
                         canRemove={section.items.length > 1}
+                        onAddProduct={addProduct}
                       />
                     ))}
                   </SortableContext>
