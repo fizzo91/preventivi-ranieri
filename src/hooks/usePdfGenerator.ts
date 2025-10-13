@@ -84,8 +84,9 @@ export const usePdfGenerator = () => {
         if (section.description) {
           pdf.setFontSize(9)
           pdf.setFont('helvetica', 'italic')
-          pdf.text(section.description, margin + 2, y)
-          y += 7
+          const descLines = pdf.splitTextToSize(section.description, contentWidth - 4)
+          pdf.text(descLines, margin + 2, y)
+          y += (descLines.length * 4) + 3
         }
 
         checkPageBreak(30)
