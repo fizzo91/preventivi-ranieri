@@ -2,8 +2,63 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, FileText, Calculator, TrendingUp, Clock } from "lucide-react"
 import { Link } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts"
 
 const Dashboard = () => {
+  const [quotes, setQuotes] = useState<any[]>([])
+  const [categoryData, setCategoryData] = useState<any[]>([])
+
+  useEffect(() => {
+    // Carica preventivi dal localStorage
+    const savedQuotes = JSON.parse(localStorage.getItem('quotes') || '[]')
+    setQuotes(savedQuotes)
+
+    // Analizza e calcola i totali per categoria
+    const totals = {
+      pietra: 0,
+      lavorazione: 0,
+      rischio: 0,
+      finitura: 0
+    }
+
+    savedQuotes.forEach((quote: any) => {
+      if (quote.sections) {
+        quote.sections.forEach((section: any) => {
+          // Somma gli item per categoria
+          if (section.items) {
+            section.items.forEach((item: any) => {
+              const category = item.category?.toLowerCase() || ''
+              if (category.includes('pietra')) {
+                totals.pietra += item.total || 0
+              } else if (category.includes('taglio') || category.includes('smaltatura')) {
+                totals.lavorazione += item.total || 0
+              }
+            })
+          }
+
+          // Somma i rischi applicati
+          if (section.risks) {
+            section.risks.forEach((risk: any) => {
+              totals.rischio += risk.amount || 0
+            })
+          }
+
+          // Somma le finiture
+          totals.finitura += section.finitura || 0
+        })
+      }
+    })
+
+    setCategoryData([
+      { name: 'PIETRA', value: totals.pietra, fill: 'hsl(var(--chart-1))' },
+      { name: 'LAVORAZIONE', value: totals.lavorazione, fill: 'hsl(var(--chart-2))' },
+      { name: 'RISCHIO APPLICATO', value: totals.rischio, fill: 'hsl(var(--chart-3))' },
+      { name: 'FINITURA', value: totals.finitura, fill: 'hsl(var(--chart-4))' }
+    ])
+  }, [])
+
   // Dati mock per la demo
   const stats = [
     {
@@ -79,6 +134,54 @@ const Dashboard = () => {
           </Card>
         ))}
       </div>
+
+      {/* Category Breakdown Chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Analisi per Categoria</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Distribuzione dei valori totali da tutti i preventivi
+          </p>
+        </CardHeader>
+        <CardContent>
+          {categoryData.length > 0 && categoryData.some(d => d.value > 0) ? (
+            <ChartContainer
+              config={{
+                value: {
+                  label: "Valore",
+                  color: "hsl(var(--chart-1))",
+                },
+              }}
+              className="h-[300px]"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={categoryData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis 
+                    dataKey="name" 
+                    className="text-xs"
+                    tick={{ fill: 'hsl(var(--foreground))' }}
+                  />
+                  <YAxis 
+                    className="text-xs"
+                    tick={{ fill: 'hsl(var(--foreground))' }}
+                    tickFormatter={(value) => `€${value}`}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar 
+                    dataKey="value" 
+                    radius={[8, 8, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          ) : (
+            <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+              Nessun dato disponibile. Crea dei preventivi per visualizzare l'analisi.
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Recent Quotes */}
       <Card>
