@@ -1,5 +1,4 @@
 import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
 
 interface QuoteData {
   quoteNumber: string
@@ -17,197 +16,217 @@ interface QuoteData {
 export const usePdfGenerator = () => {
   const generatePdf = async (quoteData: QuoteData) => {
     try {
-      // Create a temporary div to render the quote content
-      const tempDiv = document.createElement('div')
-      tempDiv.style.position = 'absolute'
-      tempDiv.style.left = '-9999px'
-      tempDiv.style.width = '210mm' // A4 width
-      tempDiv.style.backgroundColor = 'white'
-      tempDiv.style.padding = '20mm'
-      tempDiv.style.fontFamily = 'Arial, sans-serif'
-      
-      // Calculate total
-      const total = quoteData.totalAmount
-
-      // Generate HTML content for the PDF
-      tempDiv.innerHTML = `
-        <div style="max-width: 170mm; margin: 0 auto; color: #333;">
-          <!-- Header -->
-          <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e5e5e5;">
-            <h1 style="color: #1a1a1a; font-size: 28px; margin: 0;">PREVENTIVO</h1>
-            <p style="font-size: 16px; color: #666; margin: 5px 0 0 0;">N. ${quoteData.quoteNumber}</p>
-          </div>
-
-          <!-- Client Info -->
-          <div style="margin-bottom: 30px;">
-            <h3 style="color: #1a1a1a; font-size: 16px; margin-bottom: 10px; border-bottom: 1px solid #e5e5e5; padding-bottom: 5px;">CLIENTE</h3>
-            <p style="margin: 5px 0; font-size: 14px;"><strong>${quoteData.client.name}</strong></p>
-            ${quoteData.client.company ? `<p style="margin: 5px 0; font-size: 14px;">${quoteData.client.company}</p>` : ''}
-            ${quoteData.client.email ? `<p style="margin: 5px 0; font-size: 14px;">Email: ${quoteData.client.email}</p>` : ''}
-            ${quoteData.client.phone ? `<p style="margin: 5px 0; font-size: 14px;">Tel: ${quoteData.client.phone}</p>` : ''}
-            ${quoteData.client.address ? `<p style="margin: 5px 0; font-size: 14px;">Indirizzo: ${quoteData.client.address}</p>` : ''}
-          </div>
-
-          <!-- Quote Sections -->
-          ${quoteData.sections.map((section, sectionIndex) => {
-            const sectionItemsTotal = section.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0);
-            const sectionRisksTotal = (section.risks || []).reduce((sum: number, risk: any) => {
-              if (risk.appliedToItemId === 'SECTION_TOTAL') {
-                return sum + (sectionItemsTotal * (risk.percentage / 100));
-              } else {
-                const targetItem = section.items.find((item: any) => item.id === risk.appliedToItemId);
-                return sum + (targetItem ? targetItem.total * (risk.percentage / 100) : 0);
-              }
-            }, 0);
-            const finitura = section.finitura || 0;
-            const sectionTotal = sectionItemsTotal + sectionRisksTotal + finitura;
-            
-            return `
-            <div style="margin-bottom: 25px;">
-              <h3 style="color: #1a1a1a; font-size: 16px; margin-bottom: ${section.description ? '8px' : '15px'}; background: #f8f9fa; padding: 10px; border-left: 4px solid #007bff;">
-                ${section.name}
-              </h3>
-              ${section.description ? `<p style="font-size: 12px; color: #666; font-style: italic; margin-bottom: 15px; padding-left: 10px;">${section.description}</p>` : ''}
-              
-              <!-- Items Table -->
-              <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
-                <thead>
-                  <tr style="background: #f8f9fa;">
-                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-size: 12px; font-weight: bold;">Prodotto</th>
-                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 100px;">Categoria</th>
-                    <th style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 60px;">Qtà</th>
-                    <th style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 50px;">U.M.</th>
-                    <th style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 80px;">Prezzo</th>
-                    <th style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px; font-weight: bold; width: 80px;">Totale</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${section.items.map((item: any) => `
-                    <tr>
-                      <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${item.productName || item.description || 'Prodotto'}</td>
-                      <td style="padding: 8px; border: 1px solid #ddd; font-size: 12px;">${item.category || '-'}</td>
-                      <td style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px;">${item.quantity}</td>
-                      <td style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 12px;">${item.unit || '-'}</td>
-                      <td style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px;">€ ${item.price.toFixed(2)}</td>
-                      <td style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 12px;">€ ${(item.quantity * item.price).toFixed(2)}</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-              
-              ${(section.risks && section.risks.length > 0) ? `
-                <div style="margin-top: 15px;">
-                  <h4 style="color: #1a1a1a; font-size: 14px; margin-bottom: 10px; background: #fef2f2; padding: 8px; border-left: 3px solid #dc3545;">
-                    Rischi Sezione
-                  </h4>
-                  <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
-                    <thead>
-                      <tr style="background: #fef2f2;">
-                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-size: 11px; font-weight: bold;">Descrizione</th>
-                        <th style="padding: 8px; text-align: left; border: 1px solid #ddd; font-size: 11px; font-weight: bold;">Applicato a</th>
-                        <th style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 11px; font-weight: bold; width: 80px;">%</th>
-                        <th style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 11px; font-weight: bold; width: 90px;">Importo</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${section.risks.map((risk: any) => {
-                        let appliedToProduct = 'N/A';
-                        let riskAmount = 0;
-                        
-                        if (risk.appliedToItemId === 'SECTION_TOTAL') {
-                          appliedToProduct = '🔷 Totale Sezione';
-                          riskAmount = sectionItemsTotal * (risk.percentage / 100);
-                        } else {
-                          const appliedToItem = section.items.find((item: any) => item.id === risk.appliedToItemId);
-                          appliedToProduct = appliedToItem ? (appliedToItem.productName || appliedToItem.description || 'Prodotto') : 'N/A';
-                          riskAmount = appliedToItem ? appliedToItem.total * (risk.percentage / 100) : 0;
-                        }
-                        
-                        return `
-                        <tr>
-                          <td style="padding: 8px; border: 1px solid #ddd; font-size: 11px;">${risk.description}</td>
-                          <td style="padding: 8px; border: 1px solid #ddd; font-size: 11px;">${appliedToProduct}</td>
-                          <td style="padding: 8px; text-align: center; border: 1px solid #ddd; font-size: 11px;">${risk.percentage}%</td>
-                          <td style="padding: 8px; text-align: right; border: 1px solid #ddd; font-size: 11px; color: #dc3545;">€ ${riskAmount.toFixed(2)}</td>
-                        </tr>
-                        `;
-                      }).join('')}
-                    </tbody>
-                  </table>
-                </div>
-              ` : ''}
-              
-              ${finitura > 0 ? `
-                <div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
-                  <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                      <strong style="font-size: 13px;">Finitura</strong>
-                      <p style="font-size: 11px; color: #666; font-style: italic; margin: 2px 0 0 0;">vedere preventivo allegato</p>
-                    </div>
-                    <strong style="font-size: 13px;">€ ${finitura.toFixed(2)}</strong>
-                  </div>
-                </div>
-              ` : ''}
-              
-              <div style="text-align: right; margin-top: 10px; padding: 8px; background: #f8f9fa; border-radius: 4px;">
-                <strong style="font-size: 14px;">Totale Sezione: € ${sectionTotal.toFixed(2)}</strong>
-              </div>
-            </div>
-            `;
-          }).join('')}
-
-          <!-- Totals -->
-          <div style="margin-top: 40px; border-top: 2px solid #e5e5e5; padding-top: 20px;">
-            <table style="width: 100%; max-width: 300px; margin-left: auto;">
-              <tr style="border-top: 2px solid #007bff;">
-                <td style="padding: 10px; font-size: 18px; text-align: right; font-weight: bold; color: #007bff;">TOTALE:</td>
-                <td style="padding: 10px; font-size: 18px; text-align: right; font-weight: bold; color: #007bff;">€ ${total.toFixed(2)}</td>
-              </tr>
-            </table>
-          </div>
-
-          <!-- Footer -->
-          <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e5e5; text-align: center; color: #666; font-size: 12px;">
-            <p>Preventivo generato il ${new Date().toLocaleDateString('it-IT')}</p>
-            <p>Questo preventivo è valido per 30 giorni dalla data di emissione.</p>
-          </div>
-        </div>
-      `
-
-      document.body.appendChild(tempDiv)
-
-      // Convert to canvas and then to PDF
-      const canvas = await html2canvas(tempDiv, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff'
-      })
-
-      document.body.removeChild(tempDiv)
-
-      // Create PDF
-      const imgWidth = 210 // A4 width in mm
-      const pageHeight = 297 // A4 height in mm  
-      const imgHeight = (canvas.height * imgWidth) / canvas.width
-      let heightLeft = imgHeight
-
       const pdf = new jsPDF('p', 'mm', 'a4')
-      let position = 0
+      const pageWidth = 210
+      const pageHeight = 297
+      const margin = 20
+      const contentWidth = pageWidth - (margin * 2)
+      let y = margin
 
-      // Add first page
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight)
-      heightLeft -= pageHeight
-
-      // Add additional pages if needed
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight
-        pdf.addPage()
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight)
-        heightLeft -= pageHeight
+      const checkPageBreak = (requiredSpace: number) => {
+        if (y + requiredSpace > pageHeight - margin) {
+          pdf.addPage()
+          y = margin
+          return true
+        }
+        return false
       }
 
-      // Download the PDF
+      // Header
+      pdf.setFontSize(20)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('PREVENTIVO', pageWidth / 2, y, { align: 'center' })
+      y += 10
+      pdf.setFontSize(12)
+      pdf.setFont('helvetica', 'normal')
+      pdf.text(`N. ${quoteData.quoteNumber}`, pageWidth / 2, y, { align: 'center' })
+      y += 15
+
+      // Client Info
+      pdf.setFontSize(11)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('CLIENTE', margin, y)
+      y += 7
+      pdf.setFont('helvetica', 'normal')
+      pdf.setFontSize(10)
+      pdf.text(quoteData.client.name, margin, y)
+      y += 5
+      if (quoteData.client.company) {
+        pdf.text(quoteData.client.company, margin, y)
+        y += 5
+      }
+      if (quoteData.client.email) {
+        pdf.text(`Email: ${quoteData.client.email}`, margin, y)
+        y += 5
+      }
+      if (quoteData.client.phone) {
+        pdf.text(`Tel: ${quoteData.client.phone}`, margin, y)
+        y += 5
+      }
+      if (quoteData.client.address) {
+        pdf.text(`Indirizzo: ${quoteData.client.address}`, margin, y)
+        y += 5
+      }
+      y += 10
+
+      // Sections
+      for (const section of quoteData.sections) {
+        checkPageBreak(20)
+        
+        // Section Title
+        pdf.setFillColor(248, 249, 250)
+        pdf.rect(margin, y - 5, contentWidth, 10, 'F')
+        pdf.setFontSize(11)
+        pdf.setFont('helvetica', 'bold')
+        pdf.text(section.name, margin + 2, y)
+        y += 10
+
+        if (section.description) {
+          pdf.setFontSize(9)
+          pdf.setFont('helvetica', 'italic')
+          pdf.text(section.description, margin + 2, y)
+          y += 7
+        }
+
+        checkPageBreak(30)
+
+        // Items Table Header
+        const colWidths = [60, 35, 20, 20, 25, 25]
+        const colX = [margin, margin + 60, margin + 95, margin + 115, margin + 135, margin + 160]
+        
+        pdf.setFillColor(248, 249, 250)
+        pdf.rect(margin, y, contentWidth, 8, 'F')
+        pdf.setFontSize(9)
+        pdf.setFont('helvetica', 'bold')
+        pdf.text('Prodotto', colX[0] + 2, y + 5)
+        pdf.text('Categoria', colX[1] + 2, y + 5)
+        pdf.text('Qtà', colX[2] + 2, y + 5)
+        pdf.text('U.M.', colX[3] + 2, y + 5)
+        pdf.text('Prezzo', colX[4] + 2, y + 5)
+        pdf.text('Totale', colX[5] + 2, y + 5)
+        y += 8
+
+        // Items
+        pdf.setFont('helvetica', 'normal')
+        const sectionItemsTotal = section.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0)
+        
+        for (const item of section.items) {
+          checkPageBreak(10)
+          
+          pdf.setFontSize(8)
+          const productName = pdf.splitTextToSize(item.productName || item.description || 'Prodotto', colWidths[0] - 4)
+          pdf.text(productName, colX[0] + 2, y + 4)
+          pdf.text(item.category || '-', colX[1] + 2, y + 4)
+          pdf.text(item.quantity.toString(), colX[2] + 2, y + 4)
+          pdf.text(item.unit || '-', colX[3] + 2, y + 4)
+          pdf.text(`€ ${item.price.toFixed(2)}`, colX[4] + 2, y + 4)
+          pdf.text(`€ ${(item.quantity * item.price).toFixed(2)}`, colX[5] + 2, y + 4)
+          
+          const lines = Math.max(productName.length, 1)
+          y += 4 + (lines * 3)
+        }
+
+        y += 5
+
+        // Risks
+        if (section.risks && section.risks.length > 0) {
+          checkPageBreak(20)
+          
+          pdf.setFontSize(10)
+          pdf.setFont('helvetica', 'bold')
+          pdf.text('Rischi Sezione', margin, y)
+          y += 7
+
+          pdf.setFillColor(254, 242, 242)
+          pdf.rect(margin, y, contentWidth, 7, 'F')
+          pdf.setFontSize(8)
+          pdf.text('Descrizione', margin + 2, y + 4)
+          pdf.text('Applicato a', margin + 60, y + 4)
+          pdf.text('%', margin + 120, y + 4)
+          pdf.text('Importo', margin + 145, y + 4)
+          y += 7
+
+          pdf.setFont('helvetica', 'normal')
+          for (const risk of section.risks) {
+            checkPageBreak(8)
+            
+            let appliedToProduct = 'N/A'
+            let riskAmount = 0
+            
+            if (risk.appliedToItemId === 'SECTION_TOTAL') {
+              appliedToProduct = 'Totale Sezione'
+              riskAmount = sectionItemsTotal * (risk.percentage / 100)
+            } else {
+              const appliedToItem = section.items.find((item: any) => item.id === risk.appliedToItemId)
+              appliedToProduct = appliedToItem ? (appliedToItem.productName || appliedToItem.description || 'Prodotto') : 'N/A'
+              riskAmount = appliedToItem ? (appliedToItem.quantity * appliedToItem.price) * (risk.percentage / 100) : 0
+            }
+            
+            pdf.text(pdf.splitTextToSize(risk.description, 55)[0], margin + 2, y + 4)
+            pdf.text(pdf.splitTextToSize(appliedToProduct, 55)[0], margin + 60, y + 4)
+            pdf.text(`${risk.percentage}%`, margin + 120, y + 4)
+            pdf.text(`€ ${riskAmount.toFixed(2)}`, margin + 145, y + 4)
+            y += 6
+          }
+          
+          y += 5
+        }
+
+        // Finitura
+        const finitura = section.finitura || 0
+        if (finitura > 0) {
+          checkPageBreak(10)
+          
+          pdf.setFontSize(9)
+          pdf.setFont('helvetica', 'bold')
+          pdf.text('Finitura', margin + 2, y + 4)
+          pdf.text(`€ ${finitura.toFixed(2)}`, margin + contentWidth - 30, y + 4)
+          pdf.setFont('helvetica', 'italic')
+          pdf.setFontSize(8)
+          pdf.text('vedere preventivo allegato', margin + 2, y + 8)
+          y += 12
+        }
+
+        // Section Total
+        const sectionRisksTotal = (section.risks || []).reduce((sum: number, risk: any) => {
+          if (risk.appliedToItemId === 'SECTION_TOTAL') {
+            return sum + (sectionItemsTotal * (risk.percentage / 100))
+          } else {
+            const targetItem = section.items.find((item: any) => item.id === risk.appliedToItemId)
+            return sum + (targetItem ? (targetItem.quantity * targetItem.price) * (risk.percentage / 100) : 0)
+          }
+        }, 0)
+        
+        const sectionTotal = sectionItemsTotal + sectionRisksTotal + finitura
+        
+        pdf.setFillColor(248, 249, 250)
+        pdf.rect(margin, y, contentWidth, 8, 'F')
+        pdf.setFontSize(10)
+        pdf.setFont('helvetica', 'bold')
+        pdf.text(`Totale Sezione: € ${sectionTotal.toFixed(2)}`, margin + contentWidth - 2, y + 5, { align: 'right' })
+        y += 15
+      }
+
+      // Grand Total
+      checkPageBreak(20)
+      y += 10
+      pdf.setDrawColor(0, 123, 255)
+      pdf.setLineWidth(0.5)
+      pdf.line(margin, y, margin + contentWidth, y)
+      y += 10
+      pdf.setFontSize(14)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text(`TOTALE: € ${quoteData.totalAmount.toFixed(2)}`, margin + contentWidth, y, { align: 'right' })
+      
+      // Footer
+      y += 15
+      checkPageBreak(15)
+      pdf.setFontSize(9)
+      pdf.setFont('helvetica', 'normal')
+      pdf.text(`Preventivo generato il ${new Date().toLocaleDateString('it-IT')}`, pageWidth / 2, y, { align: 'center' })
+      y += 5
+      pdf.text('Questo preventivo è valido per 30 giorni dalla data di emissione.', pageWidth / 2, y, { align: 'center' })
+
       pdf.save(`preventivo-${quoteData.quoteNumber}.pdf`)
       
     } catch (error) {
