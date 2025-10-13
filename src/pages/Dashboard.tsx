@@ -18,7 +18,6 @@ const Dashboard = () => {
     // Analizza e calcola i totali per categoria
     const totals = {
       pietra: 0,
-      lavorazione: 0,
       rischio: 0,
       finitura: 0
     }
@@ -26,15 +25,10 @@ const Dashboard = () => {
     savedQuotes.forEach((quote: any) => {
       if (quote.sections) {
         quote.sections.forEach((section: any) => {
-          // Somma gli item per categoria
+          // Somma TUTTI gli item come PIETRA
           if (section.items) {
             section.items.forEach((item: any) => {
-              const category = item.category?.toLowerCase() || ''
-              if (category.includes('pietra')) {
-                totals.pietra += item.total || 0
-              } else if (category.includes('taglio') || category.includes('smaltatura')) {
-                totals.lavorazione += item.total || 0
-              }
+              totals.pietra += item.total || 0
             })
           }
 
@@ -53,7 +47,6 @@ const Dashboard = () => {
 
     setCategoryData([
       { name: 'PIETRA', value: totals.pietra, fill: 'hsl(var(--chart-1))' },
-      { name: 'LAVORAZIONE', value: totals.lavorazione, fill: 'hsl(var(--chart-2))' },
       { name: 'RISCHIO APPLICATO', value: totals.rischio, fill: 'hsl(var(--chart-3))' },
       { name: 'FINITURA', value: totals.finitura, fill: 'hsl(var(--chart-4))' }
     ])
