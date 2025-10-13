@@ -218,7 +218,6 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
                     id="price"
                     type="number"
                     step="0.01"
-                    min="0"
                     value={newProduct.price}
                     onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) || 0 })}
                   />
@@ -241,7 +240,6 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
         <div className="flex items-center gap-2">
         <Input
           type="number"
-          min="0"
           step="0.01"
           value={item.quantity}
           onChange={(e) => onUpdateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
@@ -254,7 +252,6 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
         <Input
           type="number"
           step="0.01"
-          min="0"
           value={item.price}
           onChange={(e) => onUpdateItem(item.id, 'price', parseFloat(e.target.value) || 0)}
         />
