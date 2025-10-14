@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Eye, Edit, Trash2, Plus, Search, FileDown } from "lucide-react"
+import { Eye, Edit, Trash2, Plus, Search, FileDown, Copy } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { usePdfGenerator } from "@/hooks/usePdfGenerator"
 
@@ -59,6 +59,25 @@ const Quotes = () => {
 
   const deleteQuote = (quoteNumber: string) => {
     const updatedQuotes = quotes.filter(q => q.number !== quoteNumber)
+    setQuotes(updatedQuotes)
+    localStorage.setItem('quotes', JSON.stringify(updatedQuotes))
+  }
+
+  const duplicateQuote = (quote: Quote) => {
+    // Genera un nuovo numero preventivo
+    const newNumber = `PREV-${Date.now()}`
+    
+    // Crea una copia profonda del preventivo
+    const duplicatedQuote: Quote = {
+      ...quote,
+      number: newNumber,
+      createdAt: new Date().toISOString(),
+      status: 'In attesa',
+      sections: quote.sections ? JSON.parse(JSON.stringify(quote.sections)) : []
+    }
+
+    // Aggiunge il nuovo preventivo e salva
+    const updatedQuotes = [...quotes, duplicatedQuote]
     setQuotes(updatedQuotes)
     localStorage.setItem('quotes', JSON.stringify(updatedQuotes))
   }
@@ -260,6 +279,13 @@ const Quotes = () => {
                         onClick={() => handleGeneratePdf(quote)}
                       >
                         <FileDown className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => duplicateQuote(quote)}
+                      >
+                        <Copy className="h-4 w-4" />
                       </Button>
                       <Button 
                         variant="outline" 
