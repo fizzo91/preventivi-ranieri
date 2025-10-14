@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Eye, Edit, Trash2, Plus, Search, FileDown, Copy } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
@@ -46,6 +47,10 @@ const Quotes = () => {
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
+      case 'bozza':
+        return 'bg-muted text-muted-foreground'
+      case 'inviato':
+        return 'bg-success text-success-foreground'
       case 'approvato':
         return 'bg-success text-success-foreground'
       case 'in attesa':
@@ -55,6 +60,14 @@ const Quotes = () => {
       default:
         return 'bg-muted text-muted-foreground'
     }
+  }
+
+  const updateQuoteStatus = (quoteNumber: string, newStatus: string) => {
+    const updatedQuotes = quotes.map(q => 
+      q.number === quoteNumber ? { ...q, status: newStatus } : q
+    )
+    setQuotes(updatedQuotes)
+    localStorage.setItem('quotes', JSON.stringify(updatedQuotes))
   }
 
   const deleteQuote = (quoteNumber: string) => {
@@ -135,21 +148,21 @@ const Quotes = () => {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">In Attesa</CardTitle>
+            <CardTitle className="text-sm font-medium">Bozze</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {quotes.filter(q => q.status === 'In attesa').length}
+              {quotes.filter(q => q.status === 'Bozza').length}
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Approvati</CardTitle>
+            <CardTitle className="text-sm font-medium">Inviati</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-success">
-              {quotes.filter(q => q.status === 'Approvato').length}
+              {quotes.filter(q => q.status === 'Inviato').length}
             </div>
           </CardContent>
         </Card>
@@ -188,12 +201,21 @@ const Quotes = () => {
             <div className="space-y-4">
               {filteredQuotes.map((quote) => (
                 <div key={quote.number} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="space-y-1">
+                  <div className="space-y-1 flex-1">
                     <div className="flex items-center gap-2">
                       <p className="font-medium">{quote.number}</p>
-                      <Badge className={getStatusColor(quote.status)}>
-                        {quote.status}
-                      </Badge>
+                      <Select
+                        value={quote.status}
+                        onValueChange={(value) => updateQuoteStatus(quote.number, value)}
+                      >
+                        <SelectTrigger className="w-[120px] h-6">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Bozza">Bozza</SelectItem>
+                          <SelectItem value="Inviato">Inviato</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {quote.client.name} {quote.client.company && `• ${quote.client.company}`}

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import {
@@ -295,7 +296,8 @@ const NewQuote = () => {
     number: `PREV-${Date.now()}`,
     date: new Date().toISOString().split('T')[0],
     validUntil: "",
-    notes: ""
+    notes: "",
+    status: "Bozza"
   })
 
   const [sections, setSections] = useState<QuoteSection[]>([
@@ -387,7 +389,8 @@ const NewQuote = () => {
         number: editQuote.number || `PREV-${Date.now()}`,
         date: editQuote.date || new Date().toISOString().split('T')[0],
         validUntil: editQuote.validUntil || "",
-        notes: editQuote.notes || ""
+        notes: editQuote.notes || "",
+        status: editQuote.status || "Bozza"
       })
 
       if (editQuote.sections && editQuote.sections.length > 0) {
@@ -672,7 +675,6 @@ const NewQuote = () => {
       client: clientData,
       sections,
       totalAmount,
-      status: editQuote ? editQuote.status : "Bozza",
       createdAt: editQuote ? editQuote.createdAt : new Date().toISOString()
     }
 
@@ -727,7 +729,7 @@ const NewQuote = () => {
         <CardHeader>
           <CardTitle>Informazioni Preventivo</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="space-y-2">
             <Label htmlFor="quote-number">Numero Preventivo</Label>
             <Input
@@ -753,6 +755,21 @@ const NewQuote = () => {
               value={quoteData.validUntil}
               onChange={(e) => setQuoteData({...quoteData, validUntil: e.target.value})}
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="quote-status">Stato</Label>
+            <Select
+              value={quoteData.status}
+              onValueChange={(value) => setQuoteData({...quoteData, status: value})}
+            >
+              <SelectTrigger id="quote-status">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Bozza">Bozza</SelectItem>
+                <SelectItem value="Inviato">Inviato</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
