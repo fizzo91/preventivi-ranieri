@@ -70,7 +70,25 @@ const Products = () => {
       setProducts(defaultProducts)
       localStorage.setItem('products', JSON.stringify(defaultProducts))
     } else {
-      setProducts(savedProducts)
+      // Migra vecchi prodotti che hanno solo "price" al nuovo formato con priceEM e priceDT
+      const migratedProducts = savedProducts.map((p: any) => {
+        if (p.price !== undefined && (p.priceEM === undefined || p.priceDT === undefined)) {
+          return {
+            ...p,
+            priceEM: p.price,
+            priceDT: p.price,
+            price: undefined
+          }
+        }
+        // Assicura che priceEM e priceDT esistano
+        return {
+          ...p,
+          priceEM: p.priceEM || 0,
+          priceDT: p.priceDT || 0
+        }
+      })
+      setProducts(migratedProducts)
+      localStorage.setItem('products', JSON.stringify(migratedProducts))
     }
   }, [])
 
@@ -343,11 +361,11 @@ const Products = () => {
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">Fornitore EM:</span>
-                  <span className="font-semibold text-success">€ {product.priceEM.toFixed(2)} / {product.unit}</span>
+                  <span className="font-semibold text-success">€ {(product.priceEM || 0).toFixed(2)} / {product.unit}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">Fornitore DT:</span>
-                  <span className="font-semibold text-success">€ {product.priceDT.toFixed(2)} / {product.unit}</span>
+                  <span className="font-semibold text-success">€ {(product.priceDT || 0).toFixed(2)} / {product.unit}</span>
                 </div>
               </div>
             </CardContent>
