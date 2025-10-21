@@ -26,7 +26,8 @@ interface Product {
   id: string
   name: string
   description: string
-  price: number
+  priceEM: number
+  priceDT: number
   category: string
   unit: string
 }
@@ -107,7 +108,7 @@ const Settings = () => {
 
         // Verifica le colonne necessarie
         const firstRow = jsonData[0] as any
-        const requiredColumns = ['nome', 'descrizione', 'categoria', 'prezzo', 'unità']
+        const requiredColumns = ['nome', 'descrizione', 'categoria', 'unità']
         const availableColumns = Object.keys(firstRow).map(k => k.toLowerCase())
         
         const missingColumns = requiredColumns.filter(col => 
@@ -117,7 +118,7 @@ const Settings = () => {
         if (missingColumns.length > 0) {
           toast({
             title: "Errore Formato",
-            description: `Colonne mancanti: ${missingColumns.join(', ')}. Il file deve contenere: Nome, Descrizione, Categoria, Prezzo, Unità`,
+            description: `Colonne mancanti: ${missingColumns.join(', ')}. Il file deve contenere: Nome, Descrizione, Categoria, Prezzo EM, Prezzo DT, Unità`,
             variant: "destructive"
           })
           return
@@ -129,7 +130,8 @@ const Settings = () => {
           const nameKey = keys.find(k => k.toLowerCase().includes('nome'))
           const descKey = keys.find(k => k.toLowerCase().includes('descrizione'))
           const categoryKey = keys.find(k => k.toLowerCase().includes('categoria'))
-          const priceKey = keys.find(k => k.toLowerCase().includes('prezzo'))
+          const priceEMKey = keys.find(k => k.toLowerCase().includes('prezzo') && k.toLowerCase().includes('em'))
+          const priceDTKey = keys.find(k => k.toLowerCase().includes('prezzo') && k.toLowerCase().includes('dt'))
           const unitKey = keys.find(k => k.toLowerCase().includes('unità') || k.toLowerCase().includes('unita'))
 
           return {
@@ -137,7 +139,8 @@ const Settings = () => {
             name: row[nameKey!] || '',
             description: row[descKey!] || '',
             category: row[categoryKey!] || '',
-            price: parseFloat(row[priceKey!]) || 0,
+            priceEM: parseFloat(row[priceEMKey!]) || 0,
+            priceDT: parseFloat(row[priceDTKey!]) || 0,
             unit: row[unitKey!] || 'pz'
           }
         }).filter(product => product.name.trim() !== '') // Filtra righe vuote
@@ -179,15 +182,25 @@ const Settings = () => {
         'Nome': 'Consulenza IT',
         'Descrizione': 'Consulenza tecnica informatica',
         'Categoria': 'Servizi',
-        'Prezzo': 80,
+        'Prezzo EM': 80,
+        'Prezzo DT': 75,
         'Unità': 'ora'
       },
       {
         'Nome': 'Sviluppo Web',
         'Descrizione': 'Sviluppo sito web responsive',
         'Categoria': 'Sviluppo',
-        'Prezzo': 2500,
+        'Prezzo EM': 2500,
+        'Prezzo DT': 2400,
         'Unità': 'progetto'
+      },
+      {
+        'Nome': 'Formazione Team',
+        'Descrizione': 'Corso di formazione aziendale',
+        'Categoria': 'Formazione',
+        'Prezzo EM': 300,
+        'Prezzo DT': 290,
+        'Unità': 'giorno'
       }
     ]
 
@@ -198,7 +211,7 @@ const Settings = () => {
 
     toast({
       title: "Template Scaricato",
-      description: "Template Excel scaricato con successo",
+      description: "Template Excel con listini EM e DT scaricato con successo",
     })
   }
 
@@ -421,50 +434,48 @@ const Settings = () => {
 
       <Separator />
 
-      {/* Excel Import */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Importa Listino da Excel</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Importa i tuoi prodotti da un file Excel. Il file deve contenere le colonne: Nome, Descrizione, Categoria, Prezzo, Unità.
-          </p>
-          
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="overwrite"
-              checked={overwriteProducts}
-              onCheckedChange={setOverwriteProducts}
-            />
-            <Label htmlFor="overwrite" className="text-sm">
-              Sostituisci prodotti esistenti (altrimenti vengono aggiunti)
-            </Label>
-          </div>
+            <Separator />
 
-          <div className="flex gap-4">
-            <Button onClick={exportExcelTemplate} variant="outline" className="gap-2">
-              <FileSpreadsheet className="h-4 w-4" />
-              Scarica Template
-            </Button>
+            {/* Excel Import */}
             <div>
-              <input
-                type="file"
-                accept=".xlsx,.xls"
-                onChange={importExcelProducts}
-                className="hidden"
-                id="excel-import"
-              />
-              <Button className="gap-2" onClick={() => document.getElementById('excel-import')?.click()}>
-                <Upload className="h-4 w-4" />
-                Importa Excel
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+              <h3 className="text-lg font-semibold mb-2">Importa Listino da Excel</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Importa i tuoi prodotti da un file Excel. Il file deve contenere le colonne: Nome, Descrizione, Categoria, Prezzo EM, Prezzo DT, Unità.
+              </p>
+              
+              <div className="flex items-center space-x-2 mb-4">
+                <Switch
+                  id="overwrite"
+                  checked={overwriteProducts}
+                  onCheckedChange={setOverwriteProducts}
+                />
+                <Label htmlFor="overwrite" className="text-sm">
+                  Sostituisci prodotti esistenti (altrimenti vengono aggiunti)
+                </Label>
+              </div>
 
-      <Separator />
+              <div className="flex gap-4">
+                <Button onClick={exportExcelTemplate} variant="outline" className="gap-2">
+                  <FileSpreadsheet className="h-4 w-4" />
+                  Scarica Template
+                </Button>
+                <div>
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls"
+                    onChange={importExcelProducts}
+                    className="hidden"
+                    id="excel-import"
+                  />
+                  <Button className="gap-2" onClick={() => document.getElementById('excel-import')?.click()}>
+                    <Upload className="h-4 w-4" />
+                    Importa Excel
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
 
             <div>
               <h3 className="text-lg font-semibold mb-2 text-destructive">Zona Pericolosa</h3>
