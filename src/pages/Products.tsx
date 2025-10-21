@@ -12,7 +12,8 @@ interface Product {
   id: string
   name: string
   description: string
-  price: number
+  priceEM: number
+  priceDT: number
   category: string
   unit: string
 }
@@ -26,7 +27,8 @@ const Products = () => {
   const [editForm, setEditForm] = useState({
     name: "",
     description: "",
-    price: 0,
+    priceEM: 0,
+    priceDT: 0,
     category: "",
     unit: ""
   })
@@ -41,7 +43,8 @@ const Products = () => {
           id: "1",
           name: "Consulenza Strategica",
           description: "Consulenza strategica aziendale per ottimizzazione processi",
-          price: 500,
+          priceEM: 500,
+          priceDT: 480,
           category: "Servizi",
           unit: "ora"
         },
@@ -49,7 +52,8 @@ const Products = () => {
           id: "2", 
           name: "Sviluppo Software",
           description: "Sviluppo applicazioni web personalizzate",
-          price: 80,
+          priceEM: 80,
+          priceDT: 75,
           category: "Sviluppo",
           unit: "ora"
         },
@@ -57,7 +61,8 @@ const Products = () => {
           id: "3",
           name: "Formazione Team",
           description: "Corso di formazione per team aziendali",
-          price: 300,
+          priceEM: 300,
+          priceDT: 290,
           category: "Formazione",
           unit: "giorno"
         }
@@ -82,7 +87,7 @@ const Products = () => {
     const updatedProducts = [...products, newProduct]
     saveProducts(updatedProducts)
     setIsAdding(false)
-    setEditForm({ name: "", description: "", price: 0, category: "", unit: "" })
+    setEditForm({ name: "", description: "", priceEM: 0, priceDT: 0, category: "", unit: "" })
     toast({
       title: "Prodotto Aggiunto",
       description: "Il nuovo prodotto è stato salvato con successo",
@@ -97,7 +102,7 @@ const Products = () => {
     )
     saveProducts(updatedProducts)
     setIsEditing(null)
-    setEditForm({ name: "", description: "", price: 0, category: "", unit: "" })
+    setEditForm({ name: "", description: "", priceEM: 0, priceDT: 0, category: "", unit: "" })
     toast({
       title: "Prodotto Aggiornato",
       description: "Le modifiche sono state salvate con successo",
@@ -118,7 +123,8 @@ const Products = () => {
     setEditForm({
       name: product.name,
       description: product.description,
-      price: product.price,
+      priceEM: product.priceEM,
+      priceDT: product.priceDT,
       category: product.category,
       unit: product.unit
     })
@@ -127,7 +133,7 @@ const Products = () => {
   const cancelEdit = () => {
     setIsEditing(null)
     setIsAdding(false)
-    setEditForm({ name: "", description: "", price: 0, category: "", unit: "" })
+    setEditForm({ name: "", description: "", priceEM: 0, priceDT: 0, category: "", unit: "" })
   }
 
   const categories = [...new Set(products.map(p => p.category))]
@@ -201,11 +207,11 @@ const Products = () => {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Prezzo Medio</CardTitle>
+            <CardTitle className="text-sm font-medium">Prezzo Medio EM</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-success">
-              € {products.length > 0 ? (products.reduce((sum, p) => sum + p.price, 0) / products.length).toFixed(2) : '0.00'}
+              € {products.length > 0 ? (products.reduce((sum, p) => sum + p.priceEM, 0) / products.length).toFixed(2) : '0.00'}
             </div>
           </CardContent>
         </Card>
@@ -248,16 +254,28 @@ const Products = () => {
                 rows={3}
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="product-price">Prezzo (€)</Label>
+                <Label htmlFor="product-price-em">Prezzo EM (€)</Label>
                 <Input
-                  id="product-price"
+                  id="product-price-em"
                   type="number"
                   step="0.01"
                   min="0"
-                  value={editForm.price}
-                  onChange={(e) => setEditForm({...editForm, price: parseFloat(e.target.value) || 0})}
+                  value={editForm.priceEM}
+                  onChange={(e) => setEditForm({...editForm, priceEM: parseFloat(e.target.value) || 0})}
+                  placeholder="0.00"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="product-price-dt">Prezzo DT (€)</Label>
+                <Input
+                  id="product-price-dt"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={editForm.priceDT}
+                  onChange={(e) => setEditForm({...editForm, priceDT: parseFloat(e.target.value) || 0})}
                   placeholder="0.00"
                 />
               </div>
@@ -322,9 +340,14 @@ const Products = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 {product.description}
               </p>
-              <div className="flex justify-between items-center">
-                <div className="text-2xl font-bold text-success">
-                  € {product.price.toFixed(2)} / {product.unit}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Fornitore EM:</span>
+                  <span className="font-semibold text-success">€ {product.priceEM.toFixed(2)} / {product.unit}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Fornitore DT:</span>
+                  <span className="font-semibold text-success">€ {product.priceDT.toFixed(2)} / {product.unit}</span>
                 </div>
               </div>
             </CardContent>

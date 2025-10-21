@@ -41,7 +41,8 @@ interface Product {
   id: string
   name: string
   description: string
-  price: number
+  priceEM: number
+  priceDT: number
   category: string
   unit: string
 }
@@ -91,7 +92,8 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
   const [newProduct, setNewProduct] = useState({
     name: "",
     description: "",
-    price: 0,
+    priceEM: 0,
+    priceDT: 0,
     category: "",
     unit: "mq"
   })
@@ -112,12 +114,11 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
   const productOptions = products.map(product => ({
     value: product.id,
     label: product.name,
-    price: product.price,
     unit: product.unit
   }))
 
   const handleAddProduct = () => {
-    if (newProduct.name && newProduct.price > 0) {
+    if (newProduct.name && (newProduct.priceEM > 0 || newProduct.priceDT > 0)) {
       const product: Product = {
         id: Date.now().toString(),
         ...newProduct
@@ -126,7 +127,8 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
       setNewProduct({
         name: "",
         description: "",
-        price: 0,
+        priceEM: 0,
+        priceDT: 0,
         category: "",
         unit: "mq"
       })
@@ -213,15 +215,27 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
                     />
                   </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="price">Prezzo (€)</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    value={newProduct.price}
-                    onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) || 0 })}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="priceEM">Prezzo EM (€)</Label>
+                    <Input
+                      id="priceEM"
+                      type="number"
+                      step="0.01"
+                      value={newProduct.priceEM}
+                      onChange={(e) => setNewProduct({ ...newProduct, priceEM: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="priceDT">Prezzo DT (€)</Label>
+                    <Input
+                      id="priceDT"
+                      type="number"
+                      step="0.01"
+                      value={newProduct.priceDT}
+                      onChange={(e) => setNewProduct({ ...newProduct, priceDT: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
                 </div>
               </div>
               <DialogFooter>
@@ -297,7 +311,8 @@ const NewQuote = () => {
     date: new Date().toISOString().split('T')[0],
     validUntil: "",
     notes: "",
-    status: "Bozza"
+    status: "Bozza",
+    supplier: "EM" as "EM" | "DT"
   })
 
   const [sections, setSections] = useState<QuoteSection[]>([
@@ -330,7 +345,8 @@ const NewQuote = () => {
           id: "1",
           name: "Pietra Lavica Grezza",
           description: "Pietra lavica naturale non lavorata",
-          price: 45.00,
+          priceEM: 45.00,
+          priceDT: 42.00,
           category: "Pietra",
           unit: "mq"
         },
@@ -338,7 +354,8 @@ const NewQuote = () => {
           id: "2", 
           name: "Taglio Pietra",
           description: "Servizio di taglio e sagomatura pietra lavica",
-          price: 25.00,
+          priceEM: 25.00,
+          priceDT: 23.00,
           category: "Taglio",
           unit: "ml"
         },
@@ -346,7 +363,8 @@ const NewQuote = () => {
           id: "3",
           name: "Smaltatura Base",
           description: "Smaltatura colore base per pietra lavica",
-          price: 35.00,
+          priceEM: 35.00,
+          priceDT: 33.00,
           category: "Smaltatura", 
           unit: "mq"
         },
@@ -354,7 +372,8 @@ const NewQuote = () => {
           id: "4",
           name: "Smaltatura Decorativa",
           description: "Smaltatura con decorazioni personalizzate",
-          price: 65.00,
+          priceEM: 65.00,
+          priceDT: 62.00,
           category: "Smaltatura",
           unit: "mq"
         },
@@ -362,7 +381,8 @@ const NewQuote = () => {
           id: "5",
           name: "Finitura Lucida",
           description: "Trattamento di finitura lucida",
-          price: 15.00,
+          priceEM: 15.00,
+          priceDT: 14.00,
           category: "Finitura",
           unit: "mq"
         }
@@ -390,7 +410,8 @@ const NewQuote = () => {
         date: editQuote.date || new Date().toISOString().split('T')[0],
         validUntil: editQuote.validUntil || "",
         notes: editQuote.notes || "",
-        status: editQuote.status || "Bozza"
+        status: editQuote.status || "Bozza",
+        supplier: editQuote.supplier || "EM"
       })
 
       if (editQuote.sections && editQuote.sections.length > 0) {
@@ -543,6 +564,7 @@ const NewQuote = () => {
   const selectProduct = (sectionId: string, itemId: string, productId: string) => {
     const selectedProduct = products.find(p => p.id === productId)
     if (selectedProduct) {
+      const price = quoteData.supplier === "EM" ? selectedProduct.priceEM : selectedProduct.priceDT
       setSections(sections.map(section => {
         if (section.id === sectionId) {
           return {
@@ -555,9 +577,9 @@ const NewQuote = () => {
                   productName: selectedProduct.name,
                   category: selectedProduct.category,
                   description: selectedProduct.description,
-                  price: selectedProduct.price,
+                  price: price,
                   unit: selectedProduct.unit,
-                  total: item.quantity * selectedProduct.price
+                  total: item.quantity * price
                 }
               }
               return item
@@ -729,7 +751,7 @@ const NewQuote = () => {
         <CardHeader>
           <CardTitle>Informazioni Preventivo</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <CardContent className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div className="space-y-2">
             <Label htmlFor="quote-number">Numero Preventivo</Label>
             <Input
@@ -768,6 +790,21 @@ const NewQuote = () => {
               <SelectContent>
                 <SelectItem value="Bozza">Bozza</SelectItem>
                 <SelectItem value="Inviato">Inviato</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="quote-supplier">Fornitore / Listino</Label>
+            <Select
+              value={quoteData.supplier}
+              onValueChange={(value: "EM" | "DT") => setQuoteData({...quoteData, supplier: value})}
+            >
+              <SelectTrigger id="quote-supplier">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="EM">EM</SelectItem>
+                <SelectItem value="DT">DT</SelectItem>
               </SelectContent>
             </Select>
           </div>
