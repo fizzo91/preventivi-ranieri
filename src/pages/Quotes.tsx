@@ -77,6 +77,8 @@ const Quotes = () => {
   }
 
   const duplicateQuote = (quote: Quote) => {
+    console.log('Duplicating quote:', quote)
+    
     // Genera un nuovo numero preventivo
     const newNumber = `PREV-${Date.now()}`
     
@@ -85,14 +87,21 @@ const Quotes = () => {
       ...quote,
       number: newNumber,
       createdAt: new Date().toISOString(),
-      status: 'In attesa',
-      sections: quote.sections ? JSON.parse(JSON.stringify(quote.sections)) : []
+      status: 'Bozza',
+      sections: quote.sections ? JSON.parse(JSON.stringify(quote.sections)) : [],
+      risks: quote.risks ? JSON.parse(JSON.stringify(quote.risks)) : []
     }
+
+    console.log('New duplicated quote:', duplicatedQuote)
 
     // Aggiunge il nuovo preventivo e salva
     const updatedQuotes = [...quotes, duplicatedQuote]
+    console.log('Updated quotes array:', updatedQuotes)
+    
     setQuotes(updatedQuotes)
     localStorage.setItem('quotes', JSON.stringify(updatedQuotes))
+    
+    console.log('Quote duplicated successfully')
   }
 
   const handleGeneratePdf = async (quote: Quote) => {
