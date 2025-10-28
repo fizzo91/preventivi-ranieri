@@ -45,6 +45,24 @@ const Quotes = () => {
     quote.number.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  // Raggruppa preventivi per mese
+  const groupedQuotes = filteredQuotes.reduce((groups: { [key: string]: Quote[] }, quote) => {
+    const date = new Date(quote.createdAt)
+    const monthYear = date.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })
+    if (!groups[monthYear]) {
+      groups[monthYear] = []
+    }
+    groups[monthYear].push(quote)
+    return groups
+  }, {})
+
+  // Ordina i mesi dal più recente al più vecchio
+  const sortedMonths = Object.keys(groupedQuotes).sort((a, b) => {
+    const dateA = new Date(groupedQuotes[a][0].createdAt)
+    const dateB = new Date(groupedQuotes[b][0].createdAt)
+    return dateB.getTime() - dateA.getTime()
+  })
+
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'bozza':
@@ -207,125 +225,134 @@ const Quotes = () => {
               )}
             </div>
           ) : (
-            <div className="space-y-4">
-              {filteredQuotes.map((quote) => (
-                <div key={quote.number} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="space-y-1 flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium">{quote.number}</p>
-                      <Select
-                        value={quote.status}
-                        onValueChange={(value) => updateQuoteStatus(quote.number, value)}
-                      >
-                        <SelectTrigger className="w-[120px] h-6">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Bozza">Bozza</SelectItem>
-                          <SelectItem value="Inviato">Inviato</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {quote.client.name} {quote.client.company && `• ${quote.client.company}`}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(quote.createdAt).toLocaleDateString('it-IT')}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <p className="font-semibold text-success">
-                        € {quote.totalAmount?.toFixed(2) || '0.00'}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                          <DialogHeader>
-                            <div className="flex items-center justify-between">
-                              <DialogTitle>Dettagli Preventivo {quote.number}</DialogTitle>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => handleGeneratePdf(quote)}
-                                className="gap-2"
-                              >
-                                <FileDown className="h-4 w-4" />
-                                Esporta PDF
-                              </Button>
-                            </div>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <h4 className="font-semibold">Cliente</h4>
-                                <p>{quote.client.name}</p>
-                                {quote.client.company && <p>{quote.client.company}</p>}
-                                {quote.client.email && <p>{quote.client.email}</p>}
-                                {quote.client.phone && <p>{quote.client.phone}</p>}
-                              </div>
-                              <div>
-                                <h4 className="font-semibold">Dettagli</h4>
-                                <p>Numero: {quote.number}</p>
-                                <p>Data: {new Date(quote.createdAt).toLocaleDateString('it-IT')}</p>
-                                <p>Stato: <Badge className={getStatusColor(quote.status)}>{quote.status}</Badge></p>
-                                <p className="text-lg font-bold text-success">Totale: € {quote.totalAmount?.toFixed(2) || '0.00'}</p>
-                              </div>
-                            </div>
-                            {quote.sections && quote.sections.length > 0 && (
-                              <div>
-                                <h4 className="font-semibold mb-2">Prodotti</h4>
-                                <div className="space-y-2">
-                                  {quote.sections.map((section: any, index: number) => (
-                                    <div key={index} className="border rounded p-2">
-                                      <p className="font-medium">{section.productName}</p>
-                                      <p className="text-sm text-muted-foreground">
-                                        Categoria: {section.productCategory} | Unità: {section.productUnit}
-                                      </p>
-                                      <p>Quantità: {section.quantity} | Prezzo: € {section.price}</p>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
+            <div className="space-y-6">
+              {sortedMonths.map((month) => (
+                <div key={month} className="space-y-3">
+                  <h3 className="text-lg font-semibold text-foreground capitalize sticky top-0 bg-background py-2">
+                    {month}
+                  </h3>
+                  <div className="space-y-4">
+                    {groupedQuotes[month].map((quote) => (
+                      <div key={quote.number} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="space-y-1 flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{quote.number}</p>
+                            <Select
+                              value={quote.status}
+                              onValueChange={(value) => updateQuoteStatus(quote.number, value)}
+                            >
+                              <SelectTrigger className="w-[120px] h-6">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Bozza">Bozza</SelectItem>
+                                <SelectItem value="Inviato">Inviato</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
-                        </DialogContent>
-                      </Dialog>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => navigate('/new-quote', { state: { editQuote: quote } })}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleGeneratePdf(quote)}
-                      >
-                        <FileDown className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => duplicateQuote(quote)}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => deleteQuote(quote.number)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                          <p className="text-sm text-muted-foreground">
+                            {quote.client.name} {quote.client.company && `• ${quote.client.company}`}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(quote.createdAt).toLocaleDateString('it-IT')}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="font-semibold text-success">
+                              € {quote.totalAmount?.toFixed(2) || '0.00'}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" size="sm">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                                <DialogHeader>
+                                  <div className="flex items-center justify-between">
+                                    <DialogTitle>Dettagli Preventivo {quote.number}</DialogTitle>
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => handleGeneratePdf(quote)}
+                                      className="gap-2"
+                                    >
+                                      <FileDown className="h-4 w-4" />
+                                      Esporta PDF
+                                    </Button>
+                                  </div>
+                                </DialogHeader>
+                                <div className="space-y-4">
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <h4 className="font-semibold">Cliente</h4>
+                                      <p>{quote.client.name}</p>
+                                      {quote.client.company && <p>{quote.client.company}</p>}
+                                      {quote.client.email && <p>{quote.client.email}</p>}
+                                      {quote.client.phone && <p>{quote.client.phone}</p>}
+                                    </div>
+                                    <div>
+                                      <h4 className="font-semibold">Dettagli</h4>
+                                      <p>Numero: {quote.number}</p>
+                                      <p>Data: {new Date(quote.createdAt).toLocaleDateString('it-IT')}</p>
+                                      <p>Stato: <Badge className={getStatusColor(quote.status)}>{quote.status}</Badge></p>
+                                      <p className="text-lg font-bold text-success">Totale: € {quote.totalAmount?.toFixed(2) || '0.00'}</p>
+                                    </div>
+                                  </div>
+                                  {quote.sections && quote.sections.length > 0 && (
+                                    <div>
+                                      <h4 className="font-semibold mb-2">Prodotti</h4>
+                                      <div className="space-y-2">
+                                        {quote.sections.map((section: any, index: number) => (
+                                          <div key={index} className="border rounded p-2">
+                                            <p className="font-medium">{section.productName}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                              Categoria: {section.productCategory} | Unità: {section.productUnit}
+                                            </p>
+                                            <p>Quantità: {section.quantity} | Prezzo: € {section.price}</p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => navigate('/new-quote', { state: { editQuote: quote } })}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleGeneratePdf(quote)}
+                            >
+                              <FileDown className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => duplicateQuote(quote)}
+                            >
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => deleteQuote(quote.number)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}
