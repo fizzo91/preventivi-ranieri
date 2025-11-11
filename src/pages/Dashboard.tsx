@@ -186,7 +186,8 @@ const Dashboard = () => {
               recentQuotes.map((quote) => (
                 <div key={quote.number} className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="space-y-1">
-                    <p className="font-medium">
+                    <p className="font-medium">{quote.number}</p>
+                    <p className="text-sm text-muted-foreground">
                       {quote.client.name} {quote.client.company && `• ${quote.client.company}`}
                     </p>
                     <p className="text-sm text-muted-foreground">
