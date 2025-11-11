@@ -56,6 +56,13 @@ const Quotes = () => {
     return groups
   }, {})
 
+  // Ordina i preventivi all'interno di ogni gruppo dal più recente al più vecchio
+  Object.keys(groupedQuotes).forEach(month => {
+    groupedQuotes[month].sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    })
+  })
+
   // Ordina i mesi dal più recente al più vecchio
   const sortedMonths = Object.keys(groupedQuotes).sort((a, b) => {
     const dateA = new Date(groupedQuotes[a][0].createdAt)
