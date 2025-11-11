@@ -84,11 +84,10 @@ const Dashboard = () => {
     }
   ]
 
-  const recentQuotes = [
-    { id: 1, client: "Rossi S.r.l.", value: "€ 2.500", status: "In attesa", date: "15/01/2025" },
-    { id: 2, client: "Tech Solutions", value: "€ 4.200", status: "Approvato", date: "14/01/2025" },
-    { id: 3, client: "Verde Costruzioni", value: "€ 1.800", status: "Bozza", date: "13/01/2025" },
-  ]
+  // Ordina i preventivi dal più recente al più vecchio e prende i primi 3
+  const recentQuotes = [...quotes]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 3)
 
   return (
     <div className="space-y-8">
@@ -183,18 +182,30 @@ const Dashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {recentQuotes.map((quote) => (
-              <div key={quote.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="space-y-1">
-                  <p className="font-medium">{quote.client}</p>
-                  <p className="text-sm text-muted-foreground">{quote.date}</p>
+            {recentQuotes.length > 0 ? (
+              recentQuotes.map((quote) => (
+                <div key={quote.number} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <p className="font-medium">
+                      {quote.client.name} {quote.client.company && `• ${quote.client.company}`}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(quote.createdAt).toLocaleDateString('it-IT')}
+                    </p>
+                  </div>
+                  <div className="text-right space-y-1">
+                    <p className="font-semibold text-success">
+                      € {quote.totalAmount?.toFixed(2) || '0.00'}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{quote.status}</p>
+                  </div>
                 </div>
-                <div className="text-right space-y-1">
-                  <p className="font-semibold text-success">{quote.value}</p>
-                  <p className="text-sm text-muted-foreground">{quote.status}</p>
-                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                Nessun preventivo disponibile. Crea il tuo primo preventivo!
               </div>
-            ))}
+            )}
           </div>
           <div className="mt-4 text-center">
             <Link to="/quotes">
