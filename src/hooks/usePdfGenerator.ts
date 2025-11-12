@@ -208,9 +208,46 @@ export const usePdfGenerator = () => {
         y += 15
       }
 
+      // Riepilogo Sezioni
+      checkPageBreak(20 + (quoteData.sections.length * 7))
+      y += 10
+      pdf.setFontSize(12)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('RIEPILOGO', margin, y)
+      y += 10
+
+      pdf.setFillColor(248, 249, 250)
+      pdf.rect(margin, y - 5, contentWidth, 7, 'F')
+      pdf.setFontSize(9)
+      pdf.text('Sezione', margin + 2, y)
+      pdf.text('Totale', margin + contentWidth - 2, y, { align: 'right' })
+      y += 7
+
+      pdf.setFont('helvetica', 'normal')
+      for (const section of quoteData.sections) {
+        const sectionItemsTotal = section.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0)
+        const sectionRisksTotal = (section.risks || []).reduce((sum: number, risk: any) => {
+          if (risk.appliedToItemId === 'SECTION_TOTAL') {
+            return sum + (sectionItemsTotal * (risk.percentage / 100))
+          } else {
+            const targetItem = section.items.find((item: any) => item.id === risk.appliedToItemId)
+            return sum + (targetItem ? (targetItem.quantity * targetItem.price) * (risk.percentage / 100) : 0)
+          }
+        }, 0)
+        const finitura = section.finitura || 0
+        const sectionTotal = sectionItemsTotal + sectionRisksTotal + finitura
+        
+        pdf.setFontSize(9)
+        pdf.text(section.name, margin + 2, y)
+        pdf.text(`€ ${sectionTotal.toFixed(2)}`, margin + contentWidth - 2, y, { align: 'right' })
+        y += 6
+      }
+      
+      y += 5
+
       // Grand Total
       checkPageBreak(20)
-      y += 10
+      y += 5
       pdf.setDrawColor(0, 123, 255)
       pdf.setLineWidth(0.5)
       pdf.line(margin, y, margin + contentWidth, y)
