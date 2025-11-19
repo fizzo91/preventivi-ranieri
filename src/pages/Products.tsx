@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Edit, Trash2, Save, X, Filter, Download } from "lucide-react"
+import { Plus, Edit, Trash2, Save, X, Filter, Download, Upload } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface Product {
@@ -169,6 +169,55 @@ const Products = () => {
     })
   }
 
+  const importProducts = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const importedProducts = JSON.parse(e.target?.result as string)
+        
+        if (!Array.isArray(importedProducts)) {
+          toast({
+            title: "Errore",
+            description: "Il file non contiene un elenco di prodotti valido",
+            variant: "destructive"
+          })
+          return
+        }
+
+        const shouldOverwrite = confirm(
+          `Vuoi sovrascrivere i ${products.length} prodotti esistenti con i ${importedProducts.length} prodotti importati?\n\nClicca OK per sovrascrivere, Annulla per aggiungere ai prodotti esistenti.`
+        )
+
+        let updatedProducts: Product[]
+        if (shouldOverwrite) {
+          updatedProducts = importedProducts
+        } else {
+          updatedProducts = [...products, ...importedProducts]
+        }
+
+        saveProducts(updatedProducts)
+        toast({
+          title: "Prodotti Importati",
+          description: `${importedProducts.length} prodotti importati con successo`,
+        })
+      } catch (error) {
+        toast({
+          title: "Errore",
+          description: "Errore durante l'importazione. Verifica che il file sia corretto.",
+          variant: "destructive"
+        })
+        console.error('Import error:', error)
+      }
+    }
+    reader.readAsText(file)
+    
+    // Reset input per permettere di caricare lo stesso file più volte
+    event.target.value = ''
+  }
+
   const categories = [...new Set(products.map(p => p.category))]
   const filteredProducts = selectedCategory === "Tutte" 
     ? products 
@@ -184,9 +233,24 @@ const Products = () => {
           </p>
         </div>
         <div className="flex gap-2">
+          <label htmlFor="import-products">
+            <Button variant="outline" asChild>
+              <span className="cursor-pointer gap-2">
+                <Upload className="h-4 w-4" />
+                Importa
+              </span>
+            </Button>
+          </label>
+          <input
+            id="import-products"
+            type="file"
+            accept=".json"
+            onChange={importProducts}
+            className="hidden"
+          />
           <Button variant="outline" onClick={exportAllProducts} className="gap-2">
             <Download className="h-4 w-4" />
-            Esporta Prodotti
+            Esporta
           </Button>
           <Button onClick={() => setIsAdding(true)} className="gap-2">
             <Plus className="h-4 w-4" />
