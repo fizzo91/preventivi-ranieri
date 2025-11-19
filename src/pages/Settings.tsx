@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch"
 import { Save, Download, Upload, Trash2, FileSpreadsheet } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import * as XLSX from 'xlsx'
+import { BackupDataSchema, ProductArraySchema } from "@/lib/validation"
 
 interface CompanySettings {
   companyName: string
@@ -154,18 +155,35 @@ const Settings = () => {
           return
         }
 
+        // Validate imported products
+        const validationResult = ProductArraySchema.safeParse(products)
+        
+        if (!validationResult.success) {
+          const errorMessages = validationResult.error.errors.slice(0, 3).map(err => 
+            `${err.path.join('.')}: ${err.message}`
+          ).join(', ')
+          
+          toast({
+            title: "Errore Validazione",
+            description: `Alcuni prodotti non sono validi: ${errorMessages}`,
+            variant: "destructive"
+          })
+          return
+        }
+
+        const validatedProducts = validationResult.data as Product[]
+
         // Salva i prodotti
         const existingProducts = overwriteProducts ? [] : JSON.parse(localStorage.getItem('products') || '[]')
-        const allProducts = [...existingProducts, ...products]
+        const allProducts = [...existingProducts, ...validatedProducts]
         localStorage.setItem('products', JSON.stringify(allProducts))
 
         toast({
           title: "Import Completato",
-          description: `${products.length} prodotti importati con successo`,
+          description: `${validatedProducts.length} prodotti importati con successo`,
         })
 
       } catch (error) {
-        console.error('Errore durante l\'importazione:', error)
         toast({
           title: "Errore Import",
           description: "Errore durante la lettura del file Excel",
@@ -222,14 +240,32 @@ const Settings = () => {
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
-        const data = JSON.parse(e.target?.result as string)
+        const importedData = JSON.parse(e.target?.result as string)
+        
+        // Validate the imported backup data
+        const validationResult = BackupDataSchema.safeParse(importedData)
+        
+        if (!validationResult.success) {
+          const errorMessages = validationResult.error.errors.slice(0, 3).map(err => 
+            `${err.path.join('.')}: ${err.message}`
+          ).join(', ')
+          
+          toast({
+            title: "Errore Validazione",
+            description: `I dati di backup non sono validi: ${errorMessages}`,
+            variant: "destructive"
+          })
+          return
+        }
+
+        const data = validationResult.data
         
         if (data.settings) localStorage.setItem('companySettings', JSON.stringify(data.settings))
         if (data.quotes) localStorage.setItem('quotes', JSON.stringify(data.quotes))
         if (data.products) localStorage.setItem('products', JSON.stringify(data.products))
         if (data.clients) localStorage.setItem('clients', JSON.stringify(data.clients))
         
-        if (data.settings) setSettings(data.settings)
+        if (data.settings) setSettings(data.settings as any)
         
         toast({
           title: "Backup Importato",

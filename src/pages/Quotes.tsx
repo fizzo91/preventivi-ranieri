@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Eye, Edit, Trash2, Plus, Search, FileDown, Copy, Upload, Download } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { usePdfGenerator } from "@/hooks/usePdfGenerator"
+import { useToast } from "@/hooks/use-toast"
+import { QuoteSchema } from "@/lib/validation"
 
 interface Quote {
   number: string
@@ -31,6 +33,7 @@ const Quotes = () => {
   const [quotes, setQuotes] = useState<Quote[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const { generatePdf } = usePdfGenerator()
+  const { toast } = useToast()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -138,7 +141,11 @@ const Quotes = () => {
         totalAmount: quote.totalAmount
       })
     } catch (error) {
-      console.error('Errore durante la generazione del PDF:', error)
+      toast({
+        title: "Errore",
+        description: "Errore durante la generazione del PDF. Riprova più tardi.",
+        variant: "destructive"
+      })
     }
   }
 
@@ -160,7 +167,25 @@ const Quotes = () => {
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
-        const importedQuote = JSON.parse(e.target?.result as string)
+        const importedData = JSON.parse(e.target?.result as string)
+        
+        // Validate the imported quote
+        const validationResult = QuoteSchema.safeParse(importedData)
+        
+        if (!validationResult.success) {
+          const errorMessages = validationResult.error.errors.map(err => 
+            `${err.path.join('.')}: ${err.message}`
+          ).join(', ')
+          
+          toast({
+            title: "Errore Validazione",
+            description: `Il preventivo importato non è valido: ${errorMessages.substring(0, 100)}...`,
+            variant: "destructive"
+          })
+          return
+        }
+
+        const importedQuote = validationResult.data as Quote
         
         // Verifica se il preventivo esiste già
         const existingQuote = quotes.find(q => q.number === importedQuote.number)
@@ -170,21 +195,27 @@ const Quotes = () => {
           }
           // Sovrascrivi il preventivo esistente
           const updatedQuotes = quotes.map(q => 
-            q.number === importedQuote.number ? importedQuote : q
+            q.number === importedQuote.number ? importedQuote as Quote : q
           )
           setQuotes(updatedQuotes)
           localStorage.setItem('quotes', JSON.stringify(updatedQuotes))
         } else {
           // Aggiungi il nuovo preventivo
-          const updatedQuotes = [...quotes, importedQuote]
+          const updatedQuotes = [...quotes, importedQuote as Quote]
           setQuotes(updatedQuotes)
           localStorage.setItem('quotes', JSON.stringify(updatedQuotes))
         }
         
-        alert('Preventivo importato con successo!')
+        toast({
+          title: "Preventivo Importato",
+          description: "Il preventivo è stato importato con successo",
+        })
       } catch (error) {
-        alert('Errore durante l\'importazione del preventivo. Verifica che il file sia corretto.')
-        console.error('Import error:', error)
+        toast({
+          title: "Errore",
+          description: "Errore durante l'importazione del preventivo. Verifica che il file sia corretto.",
+          variant: "destructive"
+        })
       }
     }
     reader.readAsText(file)

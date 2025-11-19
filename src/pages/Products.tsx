@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Edit, Trash2, Save, X, Filter, Download, Upload } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { ProductArraySchema } from "@/lib/validation"
 
 interface Product {
   id: string
@@ -176,16 +177,25 @@ const Products = () => {
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
-        const importedProducts = JSON.parse(e.target?.result as string)
+        const importedData = JSON.parse(e.target?.result as string)
         
-        if (!Array.isArray(importedProducts)) {
+        // Validate the imported data
+        const validationResult = ProductArraySchema.safeParse(importedData)
+        
+        if (!validationResult.success) {
+          const errorMessages = validationResult.error.errors.map(err => 
+            `${err.path.join('.')}: ${err.message}`
+          ).join(', ')
+          
           toast({
-            title: "Errore",
-            description: "Il file non contiene un elenco di prodotti valido",
+            title: "Errore Validazione",
+            description: `I dati importati non sono validi: ${errorMessages.substring(0, 100)}...`,
             variant: "destructive"
           })
           return
         }
+
+        const importedProducts = validationResult.data as Product[]
 
         const shouldOverwrite = confirm(
           `Vuoi sovrascrivere i ${products.length} prodotti esistenti con i ${importedProducts.length} prodotti importati?\n\nClicca OK per sovrascrivere, Annulla per aggiungere ai prodotti esistenti.`
@@ -209,7 +219,6 @@ const Products = () => {
           description: "Errore durante l'importazione. Verifica che il file sia corretto.",
           variant: "destructive"
         })
-        console.error('Import error:', error)
       }
     }
     reader.readAsText(file)
