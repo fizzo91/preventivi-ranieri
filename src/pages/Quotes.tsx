@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Eye, Edit, Trash2, Plus, Search, FileDown, Copy } from "lucide-react"
+import { Eye, Edit, Trash2, Plus, Search, FileDown, Copy, Upload, Download } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { usePdfGenerator } from "@/hooks/usePdfGenerator"
 
@@ -142,6 +142,57 @@ const Quotes = () => {
     }
   }
 
+  const exportQuote = (quote: Quote) => {
+    const dataStr = JSON.stringify(quote, null, 2)
+    const dataBlob = new Blob([dataStr], { type: 'application/json' })
+    const url = URL.createObjectURL(dataBlob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${quote.number}.json`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const importQuote = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const importedQuote = JSON.parse(e.target?.result as string)
+        
+        // Verifica se il preventivo esiste già
+        const existingQuote = quotes.find(q => q.number === importedQuote.number)
+        if (existingQuote) {
+          if (!confirm(`Il preventivo ${importedQuote.number} esiste già. Vuoi sovrascriverlo?`)) {
+            return
+          }
+          // Sovrascrivi il preventivo esistente
+          const updatedQuotes = quotes.map(q => 
+            q.number === importedQuote.number ? importedQuote : q
+          )
+          setQuotes(updatedQuotes)
+          localStorage.setItem('quotes', JSON.stringify(updatedQuotes))
+        } else {
+          // Aggiungi il nuovo preventivo
+          const updatedQuotes = [...quotes, importedQuote]
+          setQuotes(updatedQuotes)
+          localStorage.setItem('quotes', JSON.stringify(updatedQuotes))
+        }
+        
+        alert('Preventivo importato con successo!')
+      } catch (error) {
+        alert('Errore durante l\'importazione del preventivo. Verifica che il file sia corretto.')
+        console.error('Import error:', error)
+      }
+    }
+    reader.readAsText(file)
+    
+    // Reset input per permettere di caricare lo stesso file più volte
+    event.target.value = ''
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
@@ -151,12 +202,29 @@ const Quotes = () => {
             Gestisci tutti i tuoi preventivi
           </p>
         </div>
-        <Link to="/new-quote">
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            Nuovo Preventivo
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <label htmlFor="import-quote">
+            <Button variant="outline" asChild>
+              <span className="cursor-pointer gap-2">
+                <Upload className="h-4 w-4" />
+                Importa
+              </span>
+            </Button>
+          </label>
+          <input
+            id="import-quote"
+            type="file"
+            accept=".json"
+            onChange={importQuote}
+            className="hidden"
+          />
+          <Link to="/new-quote">
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              Nuovo Preventivo
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Search */}
@@ -339,8 +407,17 @@ const Quotes = () => {
                               variant="outline" 
                               size="sm"
                               onClick={() => handleGeneratePdf(quote)}
+                              title="Esporta PDF"
                             >
                               <FileDown className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => exportQuote(quote)}
+                              title="Esporta JSON"
+                            >
+                              <Download className="h-4 w-4" />
                             </Button>
                             <Button 
                               variant="outline" 
