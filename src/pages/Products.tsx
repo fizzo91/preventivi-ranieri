@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Edit, Trash2, Save, X, Filter } from "lucide-react"
+import { Plus, Edit, Trash2, Save, X, Filter, Download } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface Product {
@@ -154,6 +154,21 @@ const Products = () => {
     setEditForm({ name: "", description: "", priceEM: 0, priceDT: 0, category: "", unit: "" })
   }
 
+  const exportAllProducts = () => {
+    const dataStr = JSON.stringify(products, null, 2)
+    const dataBlob = new Blob([dataStr], { type: 'application/json' })
+    const url = URL.createObjectURL(dataBlob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `prodotti-${new Date().toISOString().split('T')[0]}.json`
+    link.click()
+    URL.revokeObjectURL(url)
+    toast({
+      title: "Prodotti Esportati",
+      description: `${products.length} prodotti esportati con successo`,
+    })
+  }
+
   const categories = [...new Set(products.map(p => p.category))]
   const filteredProducts = selectedCategory === "Tutte" 
     ? products 
@@ -168,10 +183,16 @@ const Products = () => {
             Gestisci il catalogo dei tuoi prodotti e servizi
           </p>
         </div>
-        <Button onClick={() => setIsAdding(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Nuovo Prodotto
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={exportAllProducts} className="gap-2">
+            <Download className="h-4 w-4" />
+            Esporta Prodotti
+          </Button>
+          <Button onClick={() => setIsAdding(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Nuovo Prodotto
+          </Button>
+        </div>
       </div>
 
       {/* Category Filter */}
