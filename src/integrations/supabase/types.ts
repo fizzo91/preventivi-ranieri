@@ -14,16 +14,251 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clients: {
+        Row: {
+          address: string | null
+          company: string | null
+          created_at: string | null
+          email: string | null
+          fiscal_code: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          updated_at: string | null
+          user_id: string
+          vat_number: string | null
+        }
+        Insert: {
+          address?: string | null
+          company?: string | null
+          created_at?: string | null
+          email?: string | null
+          fiscal_code?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string | null
+          user_id: string
+          vat_number?: string | null
+        }
+        Update: {
+          address?: string | null
+          company?: string | null
+          created_at?: string | null
+          email?: string | null
+          fiscal_code?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string | null
+          user_id?: string
+          vat_number?: string | null
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          price_dt: number
+          price_em: number
+          unit: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          price_dt?: number
+          price_em?: number
+          unit: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          price_dt?: number
+          price_em?: number
+          unit?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          company_name: string | null
+          created_at: string | null
+          email: string
+          full_name: string | null
+          id: string
+          logo: string | null
+          notes: string | null
+          phone: string | null
+          tax_code: string | null
+          updated_at: string | null
+          vat_number: string | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          email: string
+          full_name?: string | null
+          id: string
+          logo?: string | null
+          notes?: string | null
+          phone?: string | null
+          tax_code?: string | null
+          updated_at?: string | null
+          vat_number?: string | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          logo?: string | null
+          notes?: string | null
+          phone?: string | null
+          tax_code?: string | null
+          updated_at?: string | null
+          vat_number?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
+      quotes: {
+        Row: {
+          client_address: string | null
+          client_company: string | null
+          client_email: string | null
+          client_fiscal_code: string | null
+          client_id: string | null
+          client_name: string
+          client_phone: string | null
+          client_vat_number: string | null
+          created_at: string | null
+          date: string
+          id: string
+          notes: string | null
+          payment_terms: string | null
+          quote_number: string
+          sections: Json
+          status: string
+          total_amount: number
+          updated_at: string | null
+          user_id: string
+          validity_days: number
+        }
+        Insert: {
+          client_address?: string | null
+          client_company?: string | null
+          client_email?: string | null
+          client_fiscal_code?: string | null
+          client_id?: string | null
+          client_name: string
+          client_phone?: string | null
+          client_vat_number?: string | null
+          created_at?: string | null
+          date: string
+          id?: string
+          notes?: string | null
+          payment_terms?: string | null
+          quote_number: string
+          sections?: Json
+          status?: string
+          total_amount?: number
+          updated_at?: string | null
+          user_id: string
+          validity_days?: number
+        }
+        Update: {
+          client_address?: string | null
+          client_company?: string | null
+          client_email?: string | null
+          client_fiscal_code?: string | null
+          client_id?: string | null
+          client_name?: string
+          client_phone?: string | null
+          client_vat_number?: string | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          notes?: string | null
+          payment_terms?: string | null
+          quote_number?: string
+          sections?: Json
+          status?: string
+          total_amount?: number
+          updated_at?: string | null
+          user_id?: string
+          validity_days?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +385,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
