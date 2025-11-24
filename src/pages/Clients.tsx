@@ -1,26 +1,20 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Plus, Edit, Trash2, Save, X, User, Building, Mail, Phone } from "lucide-react"
+import { Plus, Edit, Trash2, Save, X, User, Building, Mail, Phone, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-
-interface Client {
-  id: string
-  name: string
-  company: string
-  email: string
-  phone: string
-  address: string
-  notes: string
-  createdAt: string
-}
+import { useClients, useCreateClient, useUpdateClient, useDeleteClient } from "@/hooks/useClients"
 
 const Clients = () => {
   const { toast } = useToast()
-  const [clients, setClients] = useState<Client[]>([])
+  const { data: clients = [], isLoading } = useClients()
+  const createClient = useCreateClient()
+  const updateClient = useUpdateClient()
+  const deleteClient = useDeleteClient()
+  
   const [isEditing, setIsEditing] = useState<string | null>(null)
   const [isAdding, setIsAdding] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -30,82 +24,61 @@ const Clients = () => {
     email: "",
     phone: "",
     address: "",
-    notes: ""
+    notes: "",
+    vat_number: "",
+    fiscal_code: ""
   })
 
-  useEffect(() => {
-    // Carica clienti dal localStorage
-    const savedClients = JSON.parse(localStorage.getItem('clients') || '[]')
-    setClients(savedClients)
-  }, [])
-
-  const saveClients = (newClients: Client[]) => {
-    setClients(newClients)
-    localStorage.setItem('clients', JSON.stringify(newClients))
-  }
-
-  const addClient = () => {
-    const newClient: Client = {
-      id: Date.now().toString(),
-      ...editForm,
-      createdAt: new Date().toISOString()
-    }
-    const updatedClients = [...clients, newClient]
-    saveClients(updatedClients)
+  const addClientHandler = async () => {
+    await createClient.mutateAsync(editForm)
     setIsAdding(false)
-    setEditForm({ name: "", company: "", email: "", phone: "", address: "", notes: "" })
-    toast({
-      title: "Cliente Aggiunto",
-      description: "Il nuovo cliente è stato salvato con successo",
-    })
+    setEditForm({ name: "", company: "", email: "", phone: "", address: "", notes: "", vat_number: "", fiscal_code: "" })
   }
 
-  const updateClient = () => {
+  const updateClientHandler = async () => {
     if (!isEditing) return
     
-    const updatedClients = clients.map(c => 
-      c.id === isEditing ? { ...c, ...editForm } : c
-    )
-    saveClients(updatedClients)
+    await updateClient.mutateAsync({ id: isEditing, ...editForm })
     setIsEditing(null)
-    setEditForm({ name: "", company: "", email: "", phone: "", address: "", notes: "" })
-    toast({
-      title: "Cliente Aggiornato",
-      description: "Le modifiche sono state salvate con successo",
-    })
+    setEditForm({ name: "", company: "", email: "", phone: "", address: "", notes: "", vat_number: "", fiscal_code: "" })
   }
 
-  const deleteClient = (id: string) => {
-    const updatedClients = clients.filter(c => c.id !== id)
-    saveClients(updatedClients)
-    toast({
-      title: "Cliente Eliminato",
-      description: "Il cliente è stato rimosso dall'archivio",
-    })
+  const deleteClientHandler = async (id: string) => {
+    await deleteClient.mutateAsync(id)
   }
 
-  const startEdit = (client: Client) => {
+  const startEdit = (client: any) => {
     setIsEditing(client.id)
     setEditForm({
       name: client.name,
-      company: client.company,
-      email: client.email,
-      phone: client.phone,
-      address: client.address,
-      notes: client.notes
+      company: client.company || "",
+      email: client.email || "",
+      phone: client.phone || "",
+      address: client.address || "",
+      notes: client.notes || "",
+      vat_number: client.vat_number || "",
+      fiscal_code: client.fiscal_code || ""
     })
   }
 
   const cancelEdit = () => {
     setIsEditing(null)
     setIsAdding(false)
-    setEditForm({ name: "", company: "", email: "", phone: "", address: "", notes: "" })
+    setEditForm({ name: "", company: "", email: "", phone: "", address: "", notes: "", vat_number: "", fiscal_code: "" })
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   const filteredClients = clients.filter(client =>
     client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchTerm.toLowerCase())
+    (client.company && client.company.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (client.email && client.email.toLowerCase().includes(searchTerm.toLowerCase()))
   )
 
   return (
@@ -233,8 +206,9 @@ const Clients = () => {
             </div>
             <div className="flex gap-2">
               <Button 
-                onClick={isAdding ? addClient : updateClient}
+                onClick={isAdding ? addClientHandler : updateClientHandler}
                 className="gap-2"
+                disabled={createClient.isPending || updateClient.isPending}
               >
                 <Save className="h-4 w-4" />
                 Salva
@@ -277,7 +251,8 @@ const Clients = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => deleteClient(client.id)}
+                    onClick={() => deleteClientHandler(client.id)}
+                    disabled={deleteClient.isPending}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -308,7 +283,7 @@ const Clients = () => {
                 </div>
               )}
               <div className="text-xs text-muted-foreground border-t pt-2">
-                Aggiunto: {new Date(client.createdAt).toLocaleDateString('it-IT')}
+                Aggiunto: {new Date(client.created_at).toLocaleDateString('it-IT')}
               </div>
             </CardContent>
           </Card>
