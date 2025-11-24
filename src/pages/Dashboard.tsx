@@ -1,39 +1,34 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, FileText, Calculator, TrendingUp, Clock } from "lucide-react"
+import { Plus, FileText, Calculator, TrendingUp, Clock, Loader2 } from "lucide-react"
 import { Link } from "react-router-dom"
-import { useEffect, useState } from "react"
+import { useMemo } from "react"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts"
+import { useQuotes } from "@/hooks/useQuotes"
 
 const Dashboard = () => {
-  const [quotes, setQuotes] = useState<any[]>([])
-  const [categoryData, setCategoryData] = useState<any[]>([])
+  const { data: quotes = [], isLoading } = useQuotes()
 
-  useEffect(() => {
-    // Carica preventivi dal localStorage
-    const savedQuotes = JSON.parse(localStorage.getItem('quotes') || '[]')
-    setQuotes(savedQuotes)
-
-    // Analizza e calcola i totali per categoria
+  const categoryData = useMemo(() => {
     const totals = {
       pietra: 0,
       rischio: 0,
       finitura: 0
     }
 
-    savedQuotes.forEach((quote: any) => {
-      if (quote.sections) {
+    quotes.forEach((quote: any) => {
+      if (quote.sections && Array.isArray(quote.sections)) {
         quote.sections.forEach((section: any) => {
           // Somma TUTTI gli item come PIETRA
-          if (section.items) {
+          if (section.items && Array.isArray(section.items)) {
             section.items.forEach((item: any) => {
               totals.pietra += item.total || 0
             })
           }
 
           // Somma i rischi applicati
-          if (section.risks) {
+          if (section.risks && Array.isArray(section.risks)) {
             section.risks.forEach((risk: any) => {
               totals.rischio += risk.amount || 0
             })
@@ -45,39 +40,38 @@ const Dashboard = () => {
       }
     })
 
-    setCategoryData([
+    return [
       { name: 'PIETRA', value: totals.pietra, fill: 'hsl(var(--chart-1))' },
       { name: 'RISCHIO APPLICATO', value: totals.rischio, fill: 'hsl(var(--chart-3))' },
       { name: 'FINITURA', value: totals.finitura, fill: 'hsl(var(--chart-4))' }
-    ])
-  }, [])
+    ]
+  }, [quotes])
 
-  // Dati mock per la demo
   const stats = [
     {
-      title: "Preventivi Questo Mese",
-      value: "12",
+      title: "Preventivi Totali",
+      value: quotes.length.toString(),
       icon: FileText,
       trend: "+20%",
       color: "text-primary"
     },
     {
       title: "Valore Totale",
-      value: "€ 24.500",
+      value: `€ ${quotes.reduce((sum, q) => sum + (q.total_amount || 0), 0).toFixed(0)}`,
       icon: Calculator,
       trend: "+15%",
       color: "text-success"
     },
     {
-      title: "Tasso Conversione",
-      value: "68%",
+      title: "Bozze",
+      value: quotes.filter(q => q.status === 'draft').length.toString(),
       icon: TrendingUp,
       trend: "+5%",
       color: "text-warning"
     },
     {
-      title: "In Attesa",
-      value: "5",
+      title: "Inviati",
+      value: quotes.filter(q => q.status === 'sent').length.toString(),
       icon: Clock,
       trend: "-2",
       color: "text-muted-foreground"
@@ -85,9 +79,20 @@ const Dashboard = () => {
   ]
 
   // Ordina i preventivi dal più recente al più vecchio e prende i primi 3
-  const recentQuotes = [...quotes]
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 3)
+  const recentQuotes = useMemo(() => 
+    [...quotes]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 3),
+    [quotes]
+  )
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -184,19 +189,19 @@ const Dashboard = () => {
           <div className="space-y-4">
             {recentQuotes.length > 0 ? (
               recentQuotes.map((quote) => (
-                <div key={quote.number} className="flex items-center justify-between p-4 border rounded-lg">
+                <div key={quote.id} className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="space-y-1">
-                    <p className="font-medium">{quote.number}</p>
+                    <p className="font-medium">{quote.quote_number}</p>
                     <p className="text-sm text-muted-foreground">
-                      {quote.client.name} {quote.client.company && `• ${quote.client.company}`}
+                      {quote.client_name} {quote.client_company && `• ${quote.client_company}`}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(quote.createdAt).toLocaleDateString('it-IT')}
+                      {new Date(quote.date).toLocaleDateString('it-IT')}
                     </p>
                   </div>
                   <div className="text-right space-y-1">
                     <p className="font-semibold text-success">
-                      € {quote.totalAmount?.toFixed(2) || '0.00'}
+                      € {quote.total_amount?.toFixed(2) || '0.00'}
                     </p>
                     <p className="text-sm text-muted-foreground">{quote.status}</p>
                   </div>

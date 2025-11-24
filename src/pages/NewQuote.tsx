@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy } from "lucide-react"
+import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import {
   Dialog,
@@ -36,13 +36,15 @@ import {
   useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { useProducts, useCreateProduct } from "@/hooks/useProducts"
+import { useCreateQuote, useUpdateQuote } from "@/hooks/useQuotes"
 
 interface Product {
   id: string
   name: string
-  description: string
-  priceEM: number
-  priceDT: number
+  description: string | null
+  price_em: number
+  price_dt: number
   category: string
   unit: string
 }
@@ -84,7 +86,7 @@ interface SortableItemProps {
   onUpdateItem: (id: string, field: keyof QuoteItem, value: any) => void
   onRemoveItem: (id: string) => void
   canRemove: boolean
-  onAddProduct: (product: Product) => void
+  onAddProduct: (product: Omit<Product, "id" | "user_id" | "created_at" | "updated_at">) => void
 }
 
 function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveItem, canRemove, onAddProduct }: SortableItemProps) {
@@ -92,8 +94,8 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
   const [newProduct, setNewProduct] = useState({
     name: "",
     description: "",
-    priceEM: 0,
-    priceDT: 0,
+    price_em: 0,
+    price_dt: 0,
     category: "",
     unit: "mq"
   })
@@ -118,17 +120,13 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
   }))
 
   const handleAddProduct = () => {
-    if (newProduct.name && (newProduct.priceEM > 0 || newProduct.priceDT > 0)) {
-      const product: Product = {
-        id: Date.now().toString(),
-        ...newProduct
-      }
-      onAddProduct(product)
+    if (newProduct.name && (newProduct.price_em > 0 || newProduct.price_dt > 0)) {
+      onAddProduct(newProduct)
       setNewProduct({
         name: "",
         description: "",
-        priceEM: 0,
-        priceDT: 0,
+        price_em: 0,
+        price_dt: 0,
         category: "",
         unit: "mq"
       })
@@ -222,8 +220,8 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
                       id="priceEM"
                       type="number"
                       step="0.01"
-                      value={newProduct.priceEM}
-                      onChange={(e) => setNewProduct({ ...newProduct, priceEM: parseFloat(e.target.value) || 0 })}
+                      value={newProduct.price_em}
+                      onChange={(e) => setNewProduct({ ...newProduct, price_em: parseFloat(e.target.value) || 0 })}
                     />
                   </div>
                   <div className="grid gap-2">
@@ -232,8 +230,8 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
                       id="priceDT"
                       type="number"
                       step="0.01"
-                      value={newProduct.priceDT}
-                      onChange={(e) => setNewProduct({ ...newProduct, priceDT: parseFloat(e.target.value) || 0 })}
+                      value={newProduct.price_dt}
+                      onChange={(e) => setNewProduct({ ...newProduct, price_dt: parseFloat(e.target.value) || 0 })}
                     />
                   </div>
                 </div>
@@ -295,9 +293,14 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
 const NewQuote = () => {
   const { toast } = useToast()
   const location = useLocation()
+  const navigate = useNavigate()
   const editQuote = location.state?.editQuote
   
-  const [products, setProducts] = useState<Product[]>([])
+  const { data: products = [], isLoading: productsLoading } = useProducts()
+  const createProduct = useCreateProduct()
+  const createQuote = useCreateQuote()
+  const updateQuote = useUpdateQuote()
+  
   const [clientData, setClientData] = useState({
     name: "",
     email: "",
@@ -311,7 +314,7 @@ const NewQuote = () => {
     date: new Date().toISOString().split('T')[0],
     validUntil: "",
     notes: "",
-    status: "Bozza",
+    status: "draft",
     supplier: "EM" as "EM" | "DT"
   })
 
@@ -336,85 +339,27 @@ const NewQuote = () => {
     })
   )
 
-  useEffect(() => {
-    // Carica prodotti dal localStorage, se non ci sono carica quelli di default per pietra lavica
-    const savedProducts = JSON.parse(localStorage.getItem('products') || '[]')
-    if (savedProducts.length === 0) {
-      const defaultProducts: Product[] = [
-        {
-          id: "1",
-          name: "Pietra Lavica Grezza",
-          description: "Pietra lavica naturale non lavorata",
-          priceEM: 45.00,
-          priceDT: 42.00,
-          category: "Pietra",
-          unit: "mq"
-        },
-        {
-          id: "2", 
-          name: "Taglio Pietra",
-          description: "Servizio di taglio e sagomatura pietra lavica",
-          priceEM: 25.00,
-          priceDT: 23.00,
-          category: "Taglio",
-          unit: "ml"
-        },
-        {
-          id: "3",
-          name: "Smaltatura Base",
-          description: "Smaltatura colore base per pietra lavica",
-          priceEM: 35.00,
-          priceDT: 33.00,
-          category: "Smaltatura", 
-          unit: "mq"
-        },
-        {
-          id: "4",
-          name: "Smaltatura Decorativa",
-          description: "Smaltatura con decorazioni personalizzate",
-          priceEM: 65.00,
-          priceDT: 62.00,
-          category: "Smaltatura",
-          unit: "mq"
-        },
-        {
-          id: "5",
-          name: "Finitura Lucida",
-          description: "Trattamento di finitura lucida",
-          priceEM: 15.00,
-          priceDT: 14.00,
-          category: "Finitura",
-          unit: "mq"
-        }
-      ]
-      setProducts(defaultProducts)
-      localStorage.setItem('products', JSON.stringify(defaultProducts))
-    } else {
-      setProducts(savedProducts)
-    }
-  }, [])
-
   // Pre-popola i dati quando si modifica un preventivo esistente
   useEffect(() => {
     if (editQuote) {
-      setClientData(editQuote.client || {
-        name: "",
-        email: "",
-        phone: "",
-        address: "",
-        company: ""
+      setClientData({
+        name: editQuote.client_name || "",
+        email: editQuote.client_email || "",
+        phone: editQuote.client_phone || "",
+        address: editQuote.client_address || "",
+        company: editQuote.client_company || ""
       })
       
       setQuoteData({
-        number: editQuote.number || `PREV-${Date.now()}`,
+        number: editQuote.quote_number || `PREV-${Date.now()}`,
         date: editQuote.date || new Date().toISOString().split('T')[0],
-        validUntil: editQuote.validUntil || "",
+        validUntil: editQuote.validity_days ? new Date(new Date(editQuote.date).getTime() + editQuote.validity_days * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : "",
         notes: editQuote.notes || "",
-        status: editQuote.status || "Bozza",
-        supplier: editQuote.supplier || "EM"
+        status: editQuote.status || "draft",
+        supplier: "EM" // Default, potrebbe essere salvato nelle sections
       })
 
-      if (editQuote.sections && editQuote.sections.length > 0) {
+      if (editQuote.sections && Array.isArray(editQuote.sections) && editQuote.sections.length > 0) {
         setSections(editQuote.sections.map((section: any) => ({
           ...section,
           risks: section.risks || []
@@ -429,10 +374,8 @@ const NewQuote = () => {
       prevSections.map(section => {
         const itemsTotal = section.items.reduce((sum, item) => sum + item.total, 0)
         
-        // Calcola rischi per questa sezione
         const risksTotal = section.risks.reduce((sum, risk) => {
           if (risk.appliedToItemId === 'SECTION_TOTAL') {
-            // Applica il rischio al totale degli item (prima dei rischi)
             return sum + (itemsTotal * (risk.percentage / 100))
           } else {
             const targetItem = section.items.find(item => item.id === risk.appliedToItemId)
@@ -509,20 +452,6 @@ const NewQuote = () => {
 
   const duplicateQuote = () => {
     const timestamp = Date.now()
-    const duplicatedSections = sections.map((section, sectionIndex) => ({
-      ...section,
-      id: `${timestamp}-section-${sectionIndex}`,
-      items: section.items.map((item, itemIndex) => ({
-        ...item,
-        id: `${timestamp}-section-${sectionIndex}-item-${itemIndex}`
-      })),
-      risks: section.risks.map((risk, riskIndex) => ({
-        ...risk,
-        id: `${timestamp}-section-${sectionIndex}-risk-${riskIndex}`
-      }))
-    }))
-    
-    setSections(duplicatedSections)
     setQuoteData({
       ...quoteData,
       number: `PREV-${timestamp}`
@@ -564,7 +493,7 @@ const NewQuote = () => {
   const selectProduct = (sectionId: string, itemId: string, productId: string) => {
     const selectedProduct = products.find(p => p.id === productId)
     if (selectedProduct) {
-      const price = quoteData.supplier === "EM" ? selectedProduct.priceEM : selectedProduct.priceDT
+      const price = quoteData.supplier === "EM" ? selectedProduct.price_em : selectedProduct.price_dt
       setSections(sections.map(section => {
         if (section.id === sectionId) {
           return {
@@ -576,7 +505,7 @@ const NewQuote = () => {
                   productId: productId,
                   productName: selectedProduct.name,
                   category: selectedProduct.category,
-                  description: selectedProduct.description,
+                  description: selectedProduct.description || "",
                   price: price,
                   unit: selectedProduct.unit,
                   total: item.quantity * price
@@ -616,7 +545,6 @@ const NewQuote = () => {
     const { active, over } = event
 
     if (active.id !== over.id) {
-      // Find which section contains the dragged item
       const activeSection = sections.find(section => 
         section.items.some(item => item.id === active.id)
       )
@@ -681,44 +609,68 @@ const NewQuote = () => {
     }))
   }
 
-  const addProduct = (product: Product) => {
-    const updatedProducts = [...products, product]
-    setProducts(updatedProducts)
-    localStorage.setItem('products', JSON.stringify(updatedProducts))
+  const addProductHandler = async (product: Omit<Product, "id" | "user_id" | "created_at" | "updated_at">) => {
+    await createProduct.mutateAsync(product)
     toast({
       title: "Prodotto Aggiunto",
       description: `${product.name} è stato aggiunto alla lista prodotti`,
     })
   }
 
-  const saveQuote = () => {
-    const quote = {
-      ...quoteData,
-      client: clientData,
-      sections,
-      totalAmount,
-      createdAt: editQuote ? editQuote.createdAt : new Date().toISOString()
+  const saveQuote = async () => {
+    const validUntilDate = quoteData.validUntil ? new Date(quoteData.validUntil) : null
+    const dateObj = new Date(quoteData.date)
+    const validityDays = validUntilDate ? Math.ceil((validUntilDate.getTime() - dateObj.getTime()) / (1000 * 60 * 60 * 24)) : 30
+
+    const quotePayload = {
+      quote_number: quoteData.number,
+      date: quoteData.date,
+      validity_days: validityDays,
+      client_id: null,
+      client_name: clientData.name,
+      client_email: clientData.email || null,
+      client_phone: clientData.phone || null,
+      client_company: clientData.company || null,
+      client_address: clientData.address || null,
+      client_vat_number: null,
+      client_fiscal_code: null,
+      sections: sections,
+      total_amount: totalAmount,
+      status: quoteData.status,
+      notes: quoteData.notes || null,
+      payment_terms: null
     }
 
-    const existingQuotes = JSON.parse(localStorage.getItem('quotes') || '[]')
-    
-    if (editQuote) {
-      // Modifica preventivo esistente
-      const index = existingQuotes.findIndex((q: any) => q.number === editQuote.number)
-      if (index !== -1) {
-        existingQuotes[index] = quote
+    try {
+      if (editQuote) {
+        await updateQuote.mutateAsync({ id: editQuote.id, ...quotePayload })
+        toast({
+          title: "Preventivo Modificato",
+          description: "Le modifiche sono state salvate con successo",
+        })
+      } else {
+        await createQuote.mutateAsync(quotePayload)
+        toast({
+          title: "Preventivo Salvato",
+          description: "Il preventivo è stato salvato con successo",
+        })
       }
-    } else {
-      // Nuovo preventivo
-      existingQuotes.push(quote)
+      navigate('/quotes')
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante il salvataggio",
+        variant: "destructive"
+      })
     }
-    
-    localStorage.setItem('quotes', JSON.stringify(existingQuotes))
+  }
 
-    toast({
-      title: editQuote ? "Preventivo Modificato" : "Preventivo Salvato",
-      description: editQuote ? "Le modifiche sono state salvate con successo" : "Il preventivo è stato salvato con successo",
-    })
+  if (productsLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return (
@@ -739,7 +691,7 @@ const NewQuote = () => {
             <Copy className="h-4 w-4" />
             Duplica Preventivo
           </Button>
-          <Button onClick={saveQuote} className="gap-2">
+          <Button onClick={saveQuote} className="gap-2" disabled={createQuote.isPending || updateQuote.isPending}>
             <Save className="h-4 w-4" />
             Salva
           </Button>
@@ -788,8 +740,8 @@ const NewQuote = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Bozza">Bozza</SelectItem>
-                <SelectItem value="Inviato">Inviato</SelectItem>
+                <SelectItem value="draft">Bozza</SelectItem>
+                <SelectItem value="sent">Inviato</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -952,7 +904,7 @@ const NewQuote = () => {
                         onUpdateItem={(itemId, field, value) => updateItem(section.id, itemId, field, value)}
                         onRemoveItem={(itemId) => removeItem(section.id, itemId)}
                         canRemove={section.items.length > 1}
-                        onAddProduct={addProduct}
+                        onAddProduct={addProductHandler}
                       />
                     ))}
                   </SortableContext>
@@ -1087,8 +1039,6 @@ const NewQuote = () => {
           <CardTitle>Riepilogo Finale</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-
-          {/* Totali per sezione */}
           <div className="border-t pt-4 space-y-2">
             <h3 className="font-semibold">Totali per Sezione:</h3>
             {sections.map((section) => (

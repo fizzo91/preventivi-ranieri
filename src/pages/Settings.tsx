@@ -5,313 +5,72 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
-import { Switch } from "@/components/ui/switch"
-import { Save, Download, Upload, Trash2, FileSpreadsheet } from "lucide-react"
+import { Save, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import * as XLSX from 'xlsx'
-import { BackupDataSchema, ProductArraySchema } from "@/lib/validation"
-
-interface CompanySettings {
-  companyName: string
-  address: string
-  phone: string
-  email: string
-  website: string
-  vatNumber: string
-  taxCode: string
-  notes: string
-  logo: string
-}
-
-interface Product {
-  id: string
-  name: string
-  description: string
-  priceEM: number
-  priceDT: number
-  category: string
-  unit: string
-}
+import { useAuth } from "@/contexts/AuthContext"
+import { useQuotes } from "@/hooks/useQuotes"
+import { useProducts } from "@/hooks/useProducts"
+import { useClients } from "@/hooks/useClients"
 
 const Settings = () => {
   const { toast } = useToast()
-  const [overwriteProducts, setOverwriteProducts] = useState(false)
-  const [settings, setSettings] = useState<CompanySettings>({
-    companyName: "",
+  const { profile, updateProfile } = useAuth()
+  const { data: quotes = [] } = useQuotes()
+  const { data: products = [] } = useProducts()
+  const { data: clients = [] } = useClients()
+  
+  const [settings, setSettings] = useState({
+    company_name: "",
     address: "",
     phone: "",
-    email: "",
     website: "",
-    vatNumber: "",
-    taxCode: "",
-    notes: "",
-    logo: ""
+    vat_number: "",
+    tax_code: "",
+    notes: ""
   })
 
   useEffect(() => {
-    // Carica impostazioni dal localStorage
-    const savedSettings = JSON.parse(localStorage.getItem('companySettings') || '{}')
-    setSettings(prev => ({...prev, ...savedSettings}))
-  }, [])
-
-  const saveSettings = () => {
-    localStorage.setItem('companySettings', JSON.stringify(settings))
-    toast({
-      title: "Impostazioni Salvate",
-      description: "Le impostazioni dell'azienda sono state aggiornate",
-    })
-  }
-
-  const exportData = () => {
-    const data = {
-      settings,
-      quotes: JSON.parse(localStorage.getItem('quotes') || '[]'),
-      products: JSON.parse(localStorage.getItem('products') || '[]'),
-      clients: JSON.parse(localStorage.getItem('clients') || '[]'),
-      exportDate: new Date().toISOString()
-    }
-
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `preventivi-backup-${new Date().toISOString().split('T')[0]}.json`
-    a.click()
-    URL.revokeObjectURL(url)
-
-    toast({
-      title: "Backup Esportato",
-      description: "Il backup dei dati è stato scaricato con successo",
-    })
-  }
-
-  const importExcelProducts = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer)
-        const workbook = XLSX.read(data, { type: 'array' })
-        const sheetName = workbook.SheetNames[0]
-        const worksheet = workbook.Sheets[sheetName]
-        const jsonData = XLSX.utils.sheet_to_json(worksheet)
-
-        if (jsonData.length === 0) {
-          toast({
-            title: "Errore",
-            description: "Il file Excel è vuoto",
-            variant: "destructive"
-          })
-          return
-        }
-
-        // Verifica le colonne necessarie
-        const firstRow = jsonData[0] as any
-        const requiredColumns = ['nome', 'descrizione', 'categoria', 'unità']
-        const availableColumns = Object.keys(firstRow).map(k => k.toLowerCase())
-        
-        const missingColumns = requiredColumns.filter(col => 
-          !availableColumns.some(avail => avail.includes(col))
-        )
-
-        if (missingColumns.length > 0) {
-          toast({
-            title: "Errore Formato",
-            description: `Colonne mancanti: ${missingColumns.join(', ')}. Il file deve contenere: Nome, Descrizione, Categoria, Prezzo EM, Prezzo DT, Unità`,
-            variant: "destructive"
-          })
-          return
-        }
-
-        // Mappa i prodotti
-        const products: Product[] = jsonData.map((row: any, index) => {
-          const keys = Object.keys(row)
-          const nameKey = keys.find(k => k.toLowerCase().includes('nome'))
-          const descKey = keys.find(k => k.toLowerCase().includes('descrizione'))
-          const categoryKey = keys.find(k => k.toLowerCase().includes('categoria'))
-          const priceEMKey = keys.find(k => k.toLowerCase().includes('prezzo') && k.toLowerCase().includes('em'))
-          const priceDTKey = keys.find(k => k.toLowerCase().includes('prezzo') && k.toLowerCase().includes('dt'))
-          const unitKey = keys.find(k => k.toLowerCase().includes('unità') || k.toLowerCase().includes('unita'))
-
-          return {
-            id: `excel-${Date.now()}-${index}`,
-            name: row[nameKey!] || '',
-            description: row[descKey!] || '',
-            category: row[categoryKey!] || '',
-            priceEM: parseFloat(row[priceEMKey!]) || 0,
-            priceDT: parseFloat(row[priceDTKey!]) || 0,
-            unit: row[unitKey!] || 'pz'
-          }
-        }).filter(product => product.name.trim() !== '') // Filtra righe vuote
-
-        if (products.length === 0) {
-          toast({
-            title: "Errore",
-            description: "Nessun prodotto valido trovato nel file",
-            variant: "destructive"
-          })
-          return
-        }
-
-        // Validate imported products
-        const validationResult = ProductArraySchema.safeParse(products)
-        
-        if (!validationResult.success) {
-          const errorMessages = validationResult.error.errors.slice(0, 3).map(err => 
-            `${err.path.join('.')}: ${err.message}`
-          ).join(', ')
-          
-          toast({
-            title: "Errore Validazione",
-            description: `Alcuni prodotti non sono validi: ${errorMessages}`,
-            variant: "destructive"
-          })
-          return
-        }
-
-        const validatedProducts = validationResult.data as Product[]
-
-        // Salva i prodotti
-        const existingProducts = overwriteProducts ? [] : JSON.parse(localStorage.getItem('products') || '[]')
-        const allProducts = [...existingProducts, ...validatedProducts]
-        localStorage.setItem('products', JSON.stringify(allProducts))
-
-        toast({
-          title: "Import Completato",
-          description: `${validatedProducts.length} prodotti importati con successo`,
-        })
-
-      } catch (error) {
-        toast({
-          title: "Errore Import",
-          description: "Errore durante la lettura del file Excel",
-          variant: "destructive"
-        })
-      }
-    }
-    reader.readAsArrayBuffer(file)
-  }
-
-  const exportExcelTemplate = () => {
-    const template = [
-      {
-        'Nome': 'Consulenza IT',
-        'Descrizione': 'Consulenza tecnica informatica',
-        'Categoria': 'Servizi',
-        'Prezzo EM': 80,
-        'Prezzo DT': 75,
-        'Unità': 'ora'
-      },
-      {
-        'Nome': 'Sviluppo Web',
-        'Descrizione': 'Sviluppo sito web responsive',
-        'Categoria': 'Sviluppo',
-        'Prezzo EM': 2500,
-        'Prezzo DT': 2400,
-        'Unità': 'progetto'
-      },
-      {
-        'Nome': 'Formazione Team',
-        'Descrizione': 'Corso di formazione aziendale',
-        'Categoria': 'Formazione',
-        'Prezzo EM': 300,
-        'Prezzo DT': 290,
-        'Unità': 'giorno'
-      }
-    ]
-
-    const ws = XLSX.utils.json_to_sheet(template)
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, 'Listino Prodotti')
-    XLSX.writeFile(wb, 'template-listino-prodotti.xlsx')
-
-    toast({
-      title: "Template Scaricato",
-      description: "Template Excel con listini EM e DT scaricato con successo",
-    })
-  }
-
-  const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      try {
-        const importedData = JSON.parse(e.target?.result as string)
-        
-        // Validate the imported backup data
-        const validationResult = BackupDataSchema.safeParse(importedData)
-        
-        if (!validationResult.success) {
-          const errorMessages = validationResult.error.errors.slice(0, 3).map(err => 
-            `${err.path.join('.')}: ${err.message}`
-          ).join(', ')
-          
-          toast({
-            title: "Errore Validazione",
-            description: `I dati di backup non sono validi: ${errorMessages}`,
-            variant: "destructive"
-          })
-          return
-        }
-
-        const data = validationResult.data
-        
-        if (data.settings) localStorage.setItem('companySettings', JSON.stringify(data.settings))
-        if (data.quotes) localStorage.setItem('quotes', JSON.stringify(data.quotes))
-        if (data.products) localStorage.setItem('products', JSON.stringify(data.products))
-        if (data.clients) localStorage.setItem('clients', JSON.stringify(data.clients))
-        
-        if (data.settings) setSettings(data.settings as any)
-        
-        toast({
-          title: "Backup Importato",
-          description: "I dati sono stati ripristinati con successo. Ricarica la pagina per vedere le modifiche.",
-        })
-      } catch (error) {
-        toast({
-          title: "Errore Importazione",
-          description: "Il file selezionato non è valido",
-          variant: "destructive"
-        })
-      }
-    }
-    reader.readAsText(file)
-  }
-
-  const clearAllData = () => {
-    if (window.confirm("Sei sicuro di voler cancellare tutti i dati? Questa operazione non può essere annullata.")) {
-      localStorage.removeItem('quotes')
-      localStorage.removeItem('products') 
-      localStorage.removeItem('clients')
-      localStorage.removeItem('companySettings')
-      
+    if (profile) {
       setSettings({
-        companyName: "",
-        address: "",
-        phone: "",
-        email: "",
-        website: "",
-        vatNumber: "",
-        taxCode: "",
-        notes: "",
-        logo: ""
-      })
-      
-      toast({
-        title: "Dati Cancellati",
-        description: "Tutti i dati sono stati rimossi dal sistema",
+        company_name: profile.company_name || "",
+        address: profile.address || "",
+        phone: profile.phone || "",
+        website: profile.website || "",
+        vat_number: profile.vat_number || "",
+        tax_code: profile.tax_code || "",
+        notes: profile.notes || ""
       })
     }
+  }, [profile])
+
+  const saveSettings = async () => {
+    try {
+      await updateProfile(settings)
+      toast({
+        title: "Impostazioni Salvate",
+        description: "Le impostazioni dell'azienda sono state aggiornate",
+      })
+    } catch (error) {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante il salvataggio",
+        variant: "destructive"
+      })
+    }
+  }
+
+  if (!profile) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   const dataStats = {
-    quotes: JSON.parse(localStorage.getItem('quotes') || '[]').length,
-    products: JSON.parse(localStorage.getItem('products') || '[]').length,
-    clients: JSON.parse(localStorage.getItem('clients') || '[]').length
+    quotes: quotes.length,
+    products: products.length,
+    clients: clients.length
   }
 
   return (
@@ -319,7 +78,7 @@ const Settings = () => {
       <div>
         <h1 className="text-3xl font-bold text-foreground">Impostazioni</h1>
         <p className="text-muted-foreground mt-1">
-          Configura l'azienda e gestisci i dati dell'applicazione
+          Configura l'azienda e visualizza le statistiche dei dati
         </p>
       </div>
 
@@ -334,8 +93,8 @@ const Settings = () => {
               <Label htmlFor="company-name">Ragione Sociale</Label>
               <Input
                 id="company-name"
-                value={settings.companyName}
-                onChange={(e) => setSettings({...settings, companyName: e.target.value})}
+                value={settings.company_name}
+                onChange={(e) => setSettings({...settings, company_name: e.target.value})}
                 placeholder="La Mia Azienda S.r.l."
               />
             </div>
@@ -343,8 +102,8 @@ const Settings = () => {
               <Label htmlFor="vat-number">Partita IVA</Label>
               <Input
                 id="vat-number"
-                value={settings.vatNumber}
-                onChange={(e) => setSettings({...settings, vatNumber: e.target.value})}
+                value={settings.vat_number}
+                onChange={(e) => setSettings({...settings, vat_number: e.target.value})}
                 placeholder="IT12345678901"
               />
             </div>
@@ -352,8 +111,8 @@ const Settings = () => {
               <Label htmlFor="tax-code">Codice Fiscale</Label>
               <Input
                 id="tax-code"
-                value={settings.taxCode}
-                onChange={(e) => setSettings({...settings, taxCode: e.target.value})}
+                value={settings.tax_code}
+                onChange={(e) => setSettings({...settings, tax_code: e.target.value})}
                 placeholder="12345678901"
               />
             </div>
@@ -371,10 +130,11 @@ const Settings = () => {
               <Input
                 id="company-email"
                 type="email"
-                value={settings.email}
-                onChange={(e) => setSettings({...settings, email: e.target.value})}
-                placeholder="info@miaazienda.it"
+                value={profile.email}
+                disabled
+                className="bg-muted cursor-not-allowed"
               />
+              <p className="text-xs text-muted-foreground">L'email è collegata al tuo account e non può essere modificata qui</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="company-phone">Telefono</Label>
@@ -418,13 +178,12 @@ const Settings = () => {
 
       <Separator />
 
-      {/* Data Management */}
+      {/* Data Statistics */}
       <Card>
         <CardHeader>
-          <CardTitle>Gestione Dati</CardTitle>
+          <CardTitle>Statistiche Dati</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 border rounded-lg">
               <div className="text-2xl font-bold text-primary">{dataStats.quotes}</div>
@@ -439,90 +198,11 @@ const Settings = () => {
               <div className="text-sm text-muted-foreground">Clienti</div>
             </div>
           </div>
-
-          {/* Export/Import */}
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Backup e Ripristino</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Esporta tutti i tuoi dati per creare un backup o importa dati da un file precedente.
-              </p>
-              <div className="flex gap-4">
-                <Button onClick={exportData} variant="outline" className="gap-2">
-                  <Download className="h-4 w-4" />
-                  Esporta Backup
-                </Button>
-                <div>
-                  <input
-                    type="file"
-                    accept=".json"
-                    onChange={importData}
-                    className="hidden"
-                    id="import-file"
-                  />
-                  <Button variant="outline" className="gap-2" onClick={() => document.getElementById('import-file')?.click()}>
-                    <Upload className="h-4 w-4" />
-                    Importa Backup
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-      <Separator />
-
-            <Separator />
-
-            {/* Excel Import */}
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Importa Listino da Excel</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Importa i tuoi prodotti da un file Excel. Il file deve contenere le colonne: Nome, Descrizione, Categoria, Prezzo EM, Prezzo DT, Unità.
-              </p>
-              
-              <div className="flex items-center space-x-2 mb-4">
-                <Switch
-                  id="overwrite"
-                  checked={overwriteProducts}
-                  onCheckedChange={setOverwriteProducts}
-                />
-                <Label htmlFor="overwrite" className="text-sm">
-                  Sostituisci prodotti esistenti (altrimenti vengono aggiunti)
-                </Label>
-              </div>
-
-              <div className="flex gap-4">
-                <Button onClick={exportExcelTemplate} variant="outline" className="gap-2">
-                  <FileSpreadsheet className="h-4 w-4" />
-                  Scarica Template
-                </Button>
-                <div>
-                  <input
-                    type="file"
-                    accept=".xlsx,.xls"
-                    onChange={importExcelProducts}
-                    className="hidden"
-                    id="excel-import"
-                  />
-                  <Button className="gap-2" onClick={() => document.getElementById('excel-import')?.click()}>
-                    <Upload className="h-4 w-4" />
-                    Importa Excel
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            <div>
-              <h3 className="text-lg font-semibold mb-2 text-destructive">Zona Pericolosa</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Cancella definitivamente tutti i dati dall'applicazione. Questa operazione non può essere annullata.
-              </p>
-              <Button onClick={clearAllData} variant="destructive" className="gap-2">
-                <Trash2 className="h-4 w-4" />
-                Cancella Tutti i Dati
-              </Button>
-            </div>
+          
+          <div className="text-center text-muted-foreground">
+            <p className="text-sm">
+              I tuoi dati sono sincronizzati in tempo reale e accessibili da qualsiasi dispositivo.
+            </p>
           </div>
         </CardContent>
       </Card>

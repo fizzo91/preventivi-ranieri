@@ -1,149 +1,58 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Edit, Trash2, Save, X, Filter, Download, Upload } from "lucide-react"
+import { Plus, Edit, Trash2, Save, X, Filter, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { ProductArraySchema } from "@/lib/validation"
-
-interface Product {
-  id: string
-  name: string
-  description: string
-  priceEM: number
-  priceDT: number
-  category: string
-  unit: string
-}
+import { useProducts, useCreateProduct, useUpdateProduct, useDeleteProduct } from "@/hooks/useProducts"
 
 const Products = () => {
   const { toast } = useToast()
-  const [products, setProducts] = useState<Product[]>([])
+  const { data: products = [], isLoading } = useProducts()
+  const createProduct = useCreateProduct()
+  const updateProduct = useUpdateProduct()
+  const deleteProduct = useDeleteProduct()
+  
   const [isEditing, setIsEditing] = useState<string | null>(null)
   const [isAdding, setIsAdding] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<string>("Tutte")
   const [editForm, setEditForm] = useState({
     name: "",
     description: "",
-    priceEM: 0,
-    priceDT: 0,
+    price_em: 0,
+    price_dt: 0,
     category: "",
     unit: ""
   })
 
-  useEffect(() => {
-    // Carica prodotti dal localStorage
-    const savedProducts = JSON.parse(localStorage.getItem('products') || '[]')
-    if (savedProducts.length === 0) {
-      // Prodotti di esempio per iniziare
-      const defaultProducts: Product[] = [
-        {
-          id: "1",
-          name: "Consulenza Strategica",
-          description: "Consulenza strategica aziendale per ottimizzazione processi",
-          priceEM: 500,
-          priceDT: 480,
-          category: "Servizi",
-          unit: "ora"
-        },
-        {
-          id: "2", 
-          name: "Sviluppo Software",
-          description: "Sviluppo applicazioni web personalizzate",
-          priceEM: 80,
-          priceDT: 75,
-          category: "Sviluppo",
-          unit: "ora"
-        },
-        {
-          id: "3",
-          name: "Formazione Team",
-          description: "Corso di formazione per team aziendali",
-          priceEM: 300,
-          priceDT: 290,
-          category: "Formazione",
-          unit: "giorno"
-        }
-      ]
-      setProducts(defaultProducts)
-      localStorage.setItem('products', JSON.stringify(defaultProducts))
-    } else {
-      // Migra vecchi prodotti che hanno solo "price" al nuovo formato con priceEM e priceDT
-      const migratedProducts = savedProducts.map((p: any) => {
-        if (p.price !== undefined && (p.priceEM === undefined || p.priceDT === undefined)) {
-          return {
-            ...p,
-            priceEM: p.price,
-            priceDT: p.price,
-            price: undefined
-          }
-        }
-        // Assicura che priceEM e priceDT esistano
-        return {
-          ...p,
-          priceEM: p.priceEM || 0,
-          priceDT: p.priceDT || 0
-        }
-      })
-      setProducts(migratedProducts)
-      localStorage.setItem('products', JSON.stringify(migratedProducts))
-    }
-  }, [])
-
-  const saveProducts = (newProducts: Product[]) => {
-    setProducts(newProducts)
-    localStorage.setItem('products', JSON.stringify(newProducts))
-  }
-
-  const addProduct = () => {
-    const newProduct: Product = {
-      id: Date.now().toString(),
-      ...editForm
-    }
-    const updatedProducts = [...products, newProduct]
-    saveProducts(updatedProducts)
+  const addProductHandler = async () => {
+    await createProduct.mutateAsync(editForm)
     setIsAdding(false)
-    setEditForm({ name: "", description: "", priceEM: 0, priceDT: 0, category: "", unit: "" })
-    toast({
-      title: "Prodotto Aggiunto",
-      description: "Il nuovo prodotto è stato salvato con successo",
-    })
+    setEditForm({ name: "", description: "", price_em: 0, price_dt: 0, category: "", unit: "" })
   }
 
-  const updateProduct = () => {
+  const updateProductHandler = async () => {
     if (!isEditing) return
     
-    const updatedProducts = products.map(p => 
-      p.id === isEditing ? { ...p, ...editForm } : p
-    )
-    saveProducts(updatedProducts)
+    await updateProduct.mutateAsync({ id: isEditing, ...editForm })
     setIsEditing(null)
-    setEditForm({ name: "", description: "", priceEM: 0, priceDT: 0, category: "", unit: "" })
-    toast({
-      title: "Prodotto Aggiornato",
-      description: "Le modifiche sono state salvate con successo",
-    })
+    setEditForm({ name: "", description: "", price_em: 0, price_dt: 0, category: "", unit: "" })
   }
 
-  const deleteProduct = (id: string) => {
-    const updatedProducts = products.filter(p => p.id !== id)
-    saveProducts(updatedProducts)
-    toast({
-      title: "Prodotto Eliminato",
-      description: "Il prodotto è stato rimosso dal catalogo",
-    })
+  const deleteProductHandler = async (id: string) => {
+    await deleteProduct.mutateAsync(id)
   }
 
-  const startEdit = (product: Product) => {
+  const startEdit = (product: any) => {
     setIsEditing(product.id)
     setEditForm({
       name: product.name,
-      description: product.description,
-      priceEM: product.priceEM,
-      priceDT: product.priceDT,
+      description: product.description || "",
+      price_em: product.price_em,
+      price_dt: product.price_dt,
       category: product.category,
       unit: product.unit
     })
@@ -152,79 +61,15 @@ const Products = () => {
   const cancelEdit = () => {
     setIsEditing(null)
     setIsAdding(false)
-    setEditForm({ name: "", description: "", priceEM: 0, priceDT: 0, category: "", unit: "" })
+    setEditForm({ name: "", description: "", price_em: 0, price_dt: 0, category: "", unit: "" })
   }
 
-  const exportAllProducts = () => {
-    const dataStr = JSON.stringify(products, null, 2)
-    const dataBlob = new Blob([dataStr], { type: 'application/json' })
-    const url = URL.createObjectURL(dataBlob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `prodotti-${new Date().toISOString().split('T')[0]}.json`
-    link.click()
-    URL.revokeObjectURL(url)
-    toast({
-      title: "Prodotti Esportati",
-      description: `${products.length} prodotti esportati con successo`,
-    })
-  }
-
-  const importProducts = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      try {
-        const importedData = JSON.parse(e.target?.result as string)
-        
-        // Validate the imported data
-        const validationResult = ProductArraySchema.safeParse(importedData)
-        
-        if (!validationResult.success) {
-          const errorMessages = validationResult.error.errors.map(err => 
-            `${err.path.join('.')}: ${err.message}`
-          ).join(', ')
-          
-          toast({
-            title: "Errore Validazione",
-            description: `I dati importati non sono validi: ${errorMessages.substring(0, 100)}...`,
-            variant: "destructive"
-          })
-          return
-        }
-
-        const importedProducts = validationResult.data as Product[]
-
-        const shouldOverwrite = confirm(
-          `Vuoi sovrascrivere i ${products.length} prodotti esistenti con i ${importedProducts.length} prodotti importati?\n\nClicca OK per sovrascrivere, Annulla per aggiungere ai prodotti esistenti.`
-        )
-
-        let updatedProducts: Product[]
-        if (shouldOverwrite) {
-          updatedProducts = importedProducts
-        } else {
-          updatedProducts = [...products, ...importedProducts]
-        }
-
-        saveProducts(updatedProducts)
-        toast({
-          title: "Prodotti Importati",
-          description: `${importedProducts.length} prodotti importati con successo`,
-        })
-      } catch (error) {
-        toast({
-          title: "Errore",
-          description: "Errore durante l'importazione. Verifica che il file sia corretto.",
-          variant: "destructive"
-        })
-      }
-    }
-    reader.readAsText(file)
-    
-    // Reset input per permettere di caricare lo stesso file più volte
-    event.target.value = ''
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   const categories = [...new Set(products.map(p => p.category))]
@@ -241,31 +86,10 @@ const Products = () => {
             Gestisci il catalogo dei tuoi prodotti e servizi
           </p>
         </div>
-        <div className="flex gap-2">
-          <label htmlFor="import-products">
-            <Button variant="outline" asChild>
-              <span className="cursor-pointer gap-2">
-                <Upload className="h-4 w-4" />
-                Importa
-              </span>
-            </Button>
-          </label>
-          <input
-            id="import-products"
-            type="file"
-            accept=".json"
-            onChange={importProducts}
-            className="hidden"
-          />
-          <Button variant="outline" onClick={exportAllProducts} className="gap-2">
-            <Download className="h-4 w-4" />
-            Esporta
-          </Button>
-          <Button onClick={() => setIsAdding(true)} className="gap-2">
-            <Plus className="h-4 w-4" />
-            Nuovo Prodotto
-          </Button>
-        </div>
+        <Button onClick={() => setIsAdding(true)} className="gap-2">
+          <Plus className="h-4 w-4" />
+          Nuovo Prodotto
+        </Button>
       </div>
 
       {/* Category Filter */}
@@ -323,7 +147,7 @@ const Products = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-success">
-              € {products.length > 0 ? (products.reduce((sum, p) => sum + p.priceEM, 0) / products.length).toFixed(2) : '0.00'}
+              € {products.length > 0 ? (products.reduce((sum, p) => sum + p.price_em, 0) / products.length).toFixed(2) : '0.00'}
             </div>
           </CardContent>
         </Card>
@@ -374,8 +198,8 @@ const Products = () => {
                   type="number"
                   step="0.01"
                   min="0"
-                  value={editForm.priceEM}
-                  onChange={(e) => setEditForm({...editForm, priceEM: parseFloat(e.target.value) || 0})}
+                  value={editForm.price_em}
+                  onChange={(e) => setEditForm({...editForm, price_em: parseFloat(e.target.value) || 0})}
                   placeholder="0.00"
                 />
               </div>
@@ -386,8 +210,8 @@ const Products = () => {
                   type="number"
                   step="0.01"
                   min="0"
-                  value={editForm.priceDT}
-                  onChange={(e) => setEditForm({...editForm, priceDT: parseFloat(e.target.value) || 0})}
+                  value={editForm.price_dt}
+                  onChange={(e) => setEditForm({...editForm, price_dt: parseFloat(e.target.value) || 0})}
                   placeholder="0.00"
                 />
               </div>
@@ -403,8 +227,9 @@ const Products = () => {
             </div>
             <div className="flex gap-2">
               <Button 
-                onClick={isAdding ? addProduct : updateProduct}
+                onClick={isAdding ? addProductHandler : updateProductHandler}
                 className="gap-2"
+                disabled={createProduct.isPending || updateProduct.isPending}
               >
                 <Save className="h-4 w-4" />
                 Salva
@@ -441,7 +266,8 @@ const Products = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => deleteProduct(product.id)}
+                    onClick={() => deleteProductHandler(product.id)}
+                    disabled={deleteProduct.isPending}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -455,11 +281,11 @@ const Products = () => {
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">Fornitore EM:</span>
-                  <span className="font-semibold text-success">€ {(product.priceEM || 0).toFixed(2)} / {product.unit}</span>
+                  <span className="font-semibold text-success">€ {product.price_em.toFixed(2)} / {product.unit}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">Fornitore DT:</span>
-                  <span className="font-semibold text-success">€ {(product.priceDT || 0).toFixed(2)} / {product.unit}</span>
+                  <span className="font-semibold text-success">€ {product.price_dt.toFixed(2)} / {product.unit}</span>
                 </div>
               </div>
             </CardContent>
