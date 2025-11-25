@@ -1,21 +1,30 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { signUp, signIn, session } = useAuth();
+  const [searchParams] = useSearchParams();
+  const { signIn, session, resetPassword, updatePassword } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [mode, setMode] = useState<"login" | "reset" | "update">("login");
+
+  // Check URL params for reset mode
+  useEffect(() => {
+    const urlMode = searchParams.get("mode");
+    if (urlMode === "reset") {
+      setMode("update");
+    }
+  }, [searchParams]);
 
   // Redirect if already authenticated
-  if (session) {
+  if (session && mode !== "update") {
     navigate("/");
     return null;
   }
@@ -25,9 +34,11 @@ const Auth = () => {
     password: "",
   });
 
-  const [signupForm, setSignupForm] = useState({
-    fullName: "",
+  const [resetForm, setResetForm] = useState({
     email: "",
+  });
+
+  const [updatePasswordForm, setUpdatePasswordForm] = useState({
     password: "",
     confirmPassword: "",
   });
@@ -53,40 +64,55 @@ const Auth = () => {
     }
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    if (!signupForm.fullName || !signupForm.email || !signupForm.password) {
-      setError("Compila tutti i campi obbligatori");
+    if (!resetForm.email) {
+      setError("Inserisci la tua email");
       setLoading(false);
       return;
     }
 
-    if (signupForm.password.length < 6) {
+    const { error } = await resetPassword(resetForm.email);
+    
+    if (!error) {
+      setMode("login");
+      setResetForm({ email: "" });
+    }
+    setLoading(false);
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    if (!updatePasswordForm.password || !updatePasswordForm.confirmPassword) {
+      setError("Inserisci la nuova password");
+      setLoading(false);
+      return;
+    }
+
+    if (updatePasswordForm.password.length < 6) {
       setError("La password deve essere di almeno 6 caratteri");
       setLoading(false);
       return;
     }
 
-    if (signupForm.password !== signupForm.confirmPassword) {
+    if (updatePasswordForm.password !== updatePasswordForm.confirmPassword) {
       setError("Le password non coincidono");
       setLoading(false);
       return;
     }
 
-    const { error } = await signUp(
-      signupForm.email,
-      signupForm.password,
-      signupForm.fullName
-    );
-
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    } else {
+    const { error } = await updatePassword(updatePasswordForm.password);
+    
+    if (!error) {
       navigate("/");
+    } else {
+      setLoading(false);
     }
   };
 
@@ -98,127 +124,133 @@ const Auth = () => {
             Preventivi Pro
           </CardTitle>
           <CardDescription>
-            Gestisci i tuoi preventivi in modo professionale
+            {mode === "login" && "Accedi al sistema preventivi"}
+            {mode === "reset" && "Recupera la tua password"}
+            {mode === "update" && "Imposta una nuova password"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Accedi</TabsTrigger>
-              <TabsTrigger value="signup">Registrati</TabsTrigger>
-            </TabsList>
+          {mode === "login" && (
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="login-email">Email</Label>
+                <Input
+                  id="login-email"
+                  type="email"
+                  placeholder="tuo@email.com"
+                  value={loginForm.email}
+                  onChange={(e) =>
+                    setLoginForm({ ...loginForm, email: e.target.value })
+                  }
+                  disabled={loading}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="login-password">Password</Label>
+                <Input
+                  id="login-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={loginForm.password}
+                  onChange={(e) =>
+                    setLoginForm({ ...loginForm, password: e.target.value })
+                  }
+                  disabled={loading}
+                  required
+                />
+              </div>
+              {error && (
+                <p className="text-sm text-destructive">{error}</p>
+              )}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Accedi
+              </Button>
+              <Button
+                type="button"
+                variant="link"
+                className="w-full text-sm"
+                onClick={() => setMode("reset")}
+              >
+                Password dimenticata?
+              </Button>
+            </form>
+          )}
 
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
-                  <Input
-                    id="login-email"
-                    type="email"
-                    placeholder="tuo@email.com"
-                    value={loginForm.email}
-                    onChange={(e) =>
-                      setLoginForm({ ...loginForm, email: e.target.value })
-                    }
-                    disabled={loading}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="login-password">Password</Label>
-                  <Input
-                    id="login-password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={loginForm.password}
-                    onChange={(e) =>
-                      setLoginForm({ ...loginForm, password: e.target.value })
-                    }
-                    disabled={loading}
-                    required
-                  />
-                </div>
-                {error && (
-                  <p className="text-sm text-destructive">{error}</p>
-                )}
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Accedi
-                </Button>
-              </form>
-            </TabsContent>
+          {mode === "reset" && (
+            <form onSubmit={handleResetPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="reset-email">Email</Label>
+                <Input
+                  id="reset-email"
+                  type="email"
+                  placeholder="tuo@email.com"
+                  value={resetForm.email}
+                  onChange={(e) =>
+                    setResetForm({ email: e.target.value })
+                  }
+                  disabled={loading}
+                  required
+                />
+              </div>
+              {error && (
+                <p className="text-sm text-destructive">{error}</p>
+              )}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Invia link di recupero
+              </Button>
+              <Button
+                type="button"
+                variant="link"
+                className="w-full text-sm"
+                onClick={() => setMode("login")}
+              >
+                Torna al login
+              </Button>
+            </form>
+          )}
 
-            <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">Nome completo</Label>
-                  <Input
-                    id="signup-name"
-                    type="text"
-                    placeholder="Mario Rossi"
-                    value={signupForm.fullName}
-                    onChange={(e) =>
-                      setSignupForm({ ...signupForm, fullName: e.target.value })
-                    }
-                    disabled={loading}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    placeholder="tuo@email.com"
-                    value={signupForm.email}
-                    onChange={(e) =>
-                      setSignupForm({ ...signupForm, email: e.target.value })
-                    }
-                    disabled={loading}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={signupForm.password}
-                    onChange={(e) =>
-                      setSignupForm({ ...signupForm, password: e.target.value })
-                    }
-                    disabled={loading}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-confirm">Conferma Password</Label>
-                  <Input
-                    id="signup-confirm"
-                    type="password"
-                    placeholder="••••••••"
-                    value={signupForm.confirmPassword}
-                    onChange={(e) =>
-                      setSignupForm({
-                        ...signupForm,
-                        confirmPassword: e.target.value,
-                      })
-                    }
-                    disabled={loading}
-                    required
-                  />
-                </div>
-                {error && (
-                  <p className="text-sm text-destructive">{error}</p>
-                )}
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Registrati
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+          {mode === "update" && (
+            <form onSubmit={handleUpdatePassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="new-password">Nuova Password</Label>
+                <Input
+                  id="new-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={updatePasswordForm.password}
+                  onChange={(e) =>
+                    setUpdatePasswordForm({ ...updatePasswordForm, password: e.target.value })
+                  }
+                  disabled={loading}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Conferma Password</Label>
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={updatePasswordForm.confirmPassword}
+                  onChange={(e) =>
+                    setUpdatePasswordForm({ ...updatePasswordForm, confirmPassword: e.target.value })
+                  }
+                  disabled={loading}
+                  required
+                />
+              </div>
+              {error && (
+                <p className="text-sm text-destructive">{error}</p>
+              )}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Aggiorna Password
+              </Button>
+            </form>
+          )}
         </CardContent>
       </Card>
     </div>
