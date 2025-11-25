@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Eye, Edit, Trash2, Plus, Search, FileDown, Copy, Loader2 } from "lucide-react"
+import { Eye, Edit, Trash2, Plus, Search, FileDown, Copy, Loader2, FileJson } from "lucide-react"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { Link, useNavigate } from "react-router-dom"
 import { usePdfGenerator } from "@/hooks/usePdfGenerator"
 import { useToast } from "@/hooks/use-toast"
@@ -134,6 +135,42 @@ const Quotes = () => {
     }
   }
 
+  const handleExportJson = (quote: any) => {
+    const dataStr = JSON.stringify(quote, null, 2)
+    const dataBlob = new Blob([dataStr], { type: 'application/json' })
+    const url = URL.createObjectURL(dataBlob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `preventivo-${quote.quote_number}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+    
+    toast({
+      title: "Export completato",
+      description: "Il preventivo è stato esportato in JSON"
+    })
+  }
+
+  const handleExportAllJson = () => {
+    const dataStr = JSON.stringify(quotes, null, 2)
+    const dataBlob = new Blob([dataStr], { type: 'application/json' })
+    const url = URL.createObjectURL(dataBlob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `preventivi-${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+    
+    toast({
+      title: "Export completato",
+      description: `${quotes.length} preventivi esportati in JSON`
+    })
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -151,12 +188,28 @@ const Quotes = () => {
             Gestisci tutti i tuoi preventivi
           </p>
         </div>
-        <Link to="/new-quote">
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            Nuovo Preventivo
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <FileDown className="h-4 w-4" />
+                Esporta
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleExportAllJson} disabled={quotes.length === 0}>
+                <FileJson className="h-4 w-4 mr-2" />
+                Esporta tutti (JSON)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Link to="/new-quote">
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              Nuovo Preventivo
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Search */}
@@ -281,15 +334,26 @@ const Quotes = () => {
                                 <DialogHeader>
                                   <div className="flex items-center justify-between">
                                     <DialogTitle>Dettagli Preventivo {quote.quote_number}</DialogTitle>
-                                    <Button 
-                                      variant="outline" 
-                                      size="sm"
-                                      onClick={() => handleGeneratePdf(quote)}
-                                      className="gap-2"
-                                    >
-                                      <FileDown className="h-4 w-4" />
-                                      Esporta PDF
-                                    </Button>
+                                    <div className="flex gap-2">
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => handleGeneratePdf(quote)}
+                                        className="gap-2"
+                                      >
+                                        <FileDown className="h-4 w-4" />
+                                        PDF
+                                      </Button>
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => handleExportJson(quote)}
+                                        className="gap-2"
+                                      >
+                                        <FileJson className="h-4 w-4" />
+                                        JSON
+                                      </Button>
+                                    </div>
                                   </div>
                                 </DialogHeader>
                                 <div className="space-y-4">
