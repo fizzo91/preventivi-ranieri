@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { cleanOldLocalStorageData } from "@/lib/cleanLocalStorage";
 
 interface Profile {
   id: string;
@@ -60,6 +61,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         
+        // Clean old localStorage data on login
+        if (session?.user && event === 'SIGNED_IN') {
+          cleanOldLocalStorageData();
+        }
+        
         // Defer profile fetch to avoid blocking
         if (session?.user) {
           setTimeout(() => {
@@ -77,6 +83,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
+        // Clean old localStorage data on session restore
+        cleanOldLocalStorageData();
         fetchProfile(session.user.id).finally(() => setLoading(false));
       } else {
         setLoading(false);

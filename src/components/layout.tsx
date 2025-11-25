@@ -1,6 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
-import { ReactNode, useEffect, useState } from "react"
+import { ReactNode } from "react"
 import { useAuth } from "@/contexts/AuthContext"
 import {
   DropdownMenu,
@@ -11,10 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { LogOut, Settings, User } from "lucide-react"
+import { LogOut, Settings } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { MigrationDialog } from "@/components/MigrationDialog"
-import { hasLocalStorageData } from "@/lib/migrate"
 
 interface LayoutProps {
   children: ReactNode
@@ -23,15 +21,6 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
-  const [showMigration, setShowMigration] = useState(false);
-
-  useEffect(() => {
-    // Check if migration is needed on first load
-    const migrationCompleted = localStorage.getItem("migrationCompleted");
-    if (!migrationCompleted && hasLocalStorageData()) {
-      setShowMigration(true);
-    }
-  }, []);
 
   const getInitials = (name: string | null) => {
     if (!name) return "U";
@@ -82,10 +71,6 @@ export function Layout({ children }: LayoutProps) {
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Impostazioni</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowMigration(true)}>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Migrazione Dati</span>
-                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />
@@ -100,8 +85,6 @@ export function Layout({ children }: LayoutProps) {
           </main>
         </div>
       </div>
-
-      <MigrationDialog open={showMigration} onOpenChange={setShowMigration} />
     </SidebarProvider>
   )
 }
