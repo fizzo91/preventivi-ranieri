@@ -38,6 +38,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { useProducts, useCreateProduct } from "@/hooks/useProducts"
 import { useCreateQuote, useUpdateQuote } from "@/hooks/useQuotes"
+import { useRecentProductIds } from "@/hooks/useRecentProducts"
 
 interface Product {
   id: string
@@ -82,6 +83,7 @@ interface Risk {
 interface SortableItemProps {
   item: QuoteItem
   products: Product[]
+  recentProductIds: string[]
   onSelectProduct: (itemId: string, productId: string) => void
   onUpdateItem: (id: string, field: keyof QuoteItem, value: any) => void
   onRemoveItem: (id: string) => void
@@ -89,7 +91,7 @@ interface SortableItemProps {
   onAddProduct: (product: Omit<Product, "id" | "user_id" | "created_at" | "updated_at">) => void
 }
 
-function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveItem, canRemove, onAddProduct }: SortableItemProps) {
+function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpdateItem, onRemoveItem, canRemove, onAddProduct }: SortableItemProps) {
   const [isAddProductOpen, setIsAddProductOpen] = useState(false)
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -158,6 +160,7 @@ function SortableItem({ item, products, onSelectProduct, onUpdateItem, onRemoveI
               value={item.productId}
               placeholder="Cerca prodotto..."
               searchPlaceholder="Digita per cercare..."
+              recentIds={recentProductIds}
               onSelect={(value) => onSelectProduct(item.id, value)}
             />
           </div>
@@ -297,6 +300,7 @@ const NewQuote = () => {
   const editQuote = location.state?.editQuote
   
   const { data: products = [], isLoading: productsLoading } = useProducts()
+  const recentProductIds = useRecentProductIds()
   const createProduct = useCreateProduct()
   const createQuote = useCreateQuote()
   const updateQuote = useUpdateQuote()
@@ -900,6 +904,7 @@ const NewQuote = () => {
                         key={item.id}
                         item={item}
                         products={products}
+                        recentProductIds={recentProductIds}
                         onSelectProduct={(itemId, productId) => selectProduct(section.id, itemId, productId)}
                         onUpdateItem={(itemId, field, value) => updateItem(section.id, itemId, field, value)}
                         onRemoveItem={(itemId) => removeItem(section.id, itemId)}
