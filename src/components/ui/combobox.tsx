@@ -17,12 +17,20 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
+interface ComboboxOption {
+  value: string
+  label: string
+  price?: number
+  unit?: string
+}
+
 interface ComboboxProps {
-  options: Array<{ value: string; label: string; price?: number; unit?: string }>
+  options: ComboboxOption[]
   value?: string
   placeholder?: string
   onSelect: (value: string) => void
   searchPlaceholder?: string
+  recentIds?: string[]
 }
 
 export function Combobox({
@@ -30,9 +38,60 @@ export function Combobox({
   value,
   placeholder = "Seleziona...",
   onSelect,
-  searchPlaceholder = "Cerca..."
+  searchPlaceholder = "Cerca...",
+  recentIds = []
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
+
+  const { recentOptions, otherOptions } = React.useMemo(() => {
+    if (recentIds.length === 0) {
+      return { recentOptions: [], otherOptions: options }
+    }
+    
+    const recentSet = new Set(recentIds)
+    const recent: ComboboxOption[] = []
+    const other: ComboboxOption[] = []
+    
+    options.forEach(option => {
+      if (recentSet.has(option.value)) {
+        recent.push(option)
+      } else {
+        other.push(option)
+      }
+    })
+    
+    // Sort recent by the order in recentIds
+    recent.sort((a, b) => recentIds.indexOf(a.value) - recentIds.indexOf(b.value))
+    
+    return { recentOptions: recent, otherOptions: other }
+  }, [options, recentIds])
+
+  const renderOption = (option: ComboboxOption) => (
+    <CommandItem
+      key={option.value}
+      value={option.label}
+      onSelect={(currentValue) => {
+        const selectedOption = options.find(opt => opt.label === currentValue)
+        onSelect(selectedOption ? selectedOption.value : "")
+        setOpen(false)
+      }}
+    >
+      <Check
+        className={cn(
+          "mr-2 h-4 w-4",
+          value === option.value ? "opacity-100" : "opacity-0"
+        )}
+      />
+      <div className="flex flex-col">
+        <span>{option.label}</span>
+        {option.price && option.unit && (
+          <span className="text-sm text-muted-foreground">
+            €{option.price.toFixed(2)}/{option.unit}
+          </span>
+        )}
+      </div>
+    </CommandItem>
+  )
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -54,33 +113,13 @@ export function Combobox({
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>Nessun prodotto trovato.</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.label}
-                  onSelect={(currentValue) => {
-                    const selectedOption = options.find(opt => opt.label === currentValue)
-                    onSelect(selectedOption ? selectedOption.value : "")
-                    setOpen(false)
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  <div className="flex flex-col">
-                    <span>{option.label}</span>
-                    {option.price && option.unit && (
-                      <span className="text-sm text-muted-foreground">
-                        €{option.price.toFixed(2)}/{option.unit}
-                      </span>
-                    )}
-                  </div>
-                </CommandItem>
-              ))}
+            {recentOptions.length > 0 && (
+              <CommandGroup heading="Usati di recente">
+                {recentOptions.map(renderOption)}
+              </CommandGroup>
+            )}
+            <CommandGroup heading={recentOptions.length > 0 ? "Tutti i prodotti" : undefined}>
+              {otherOptions.map(renderOption)}
             </CommandGroup>
           </CommandList>
         </Command>
