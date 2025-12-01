@@ -114,11 +114,7 @@ const Auth = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent font-mono text-center">COSTI DI PRODUZIONE</CardTitle>
-          <CardDescription>
-            {mode === "login" && "Accedi al sistema preventivi"}
-            {mode === "reset" && "Recupera la tua password"}
-            {mode === "update" && "Imposta una nuova password"}
-          </CardDescription>
+          
         </CardHeader>
         <CardContent>
           {mode === "login" && <form onSubmit={handleLogin} className="space-y-4">
