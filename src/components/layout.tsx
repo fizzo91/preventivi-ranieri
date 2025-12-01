@@ -43,11 +43,12 @@ export function Layout({ children }: LayoutProps) {
         <AppSidebar />
         
         <div className="flex-1 flex flex-col">
-          <header className="h-16 border-b bg-card flex items-center justify-between px-4 sticky top-0 z-10">
-            <div className="flex items-center">
-              <SidebarTrigger className="mr-4" />
-              <h1 className="text-xl font-semibold text-foreground">
-                Sistema Preventivi
+          <header className="h-14 sm:h-16 border-b bg-card flex items-center justify-between px-3 sm:px-4 sticky top-0 z-10">
+            <div className="flex items-center gap-2 min-w-0">
+              <SidebarTrigger className="shrink-0" />
+              <h1 className="text-base sm:text-xl font-semibold text-foreground truncate">
+                <span className="hidden sm:inline">Sistema Preventivi</span>
+                <span className="sm:hidden">Preventivi</span>
               </h1>
             </div>
 
@@ -80,7 +81,7 @@ export function Layout({ children }: LayoutProps) {
             </DropdownMenu>
           </header>
 
-          <main className="flex-1 p-6 bg-background">
+          <main className="flex-1 p-3 sm:p-4 md:p-6 bg-background">
             {children}
           </main>
         </div>

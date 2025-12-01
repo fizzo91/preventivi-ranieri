@@ -678,24 +678,24 @@ const NewQuote = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      <div className="flex justify-between items-center">
+    <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6 md:space-y-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">{editQuote ? 'Modifica Preventivo' : 'Nuovo Preventivo'}</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{editQuote ? 'Modifica Preventivo' : 'Nuovo Preventivo'}</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
             Lavorazione Pietra Lavica Smaltata
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="gap-2">
+        <div className="flex gap-2 w-full sm:w-auto flex-wrap">
+          <Button variant="outline" className="gap-2 flex-1 sm:flex-none">
             <Eye className="h-4 w-4" />
-            Anteprima
+            <span className="hidden sm:inline">Anteprima</span>
           </Button>
-          <Button onClick={duplicateQuote} variant="outline" className="gap-2">
+          <Button onClick={duplicateQuote} variant="outline" className="gap-2 flex-1 sm:flex-none">
             <Copy className="h-4 w-4" />
-            Duplica Preventivo
+            <span className="hidden sm:inline">Duplica</span>
           </Button>
-          <Button onClick={saveQuote} className="gap-2" disabled={createQuote.isPending || updateQuote.isPending}>
+          <Button onClick={saveQuote} className="gap-2 flex-1 sm:flex-none" disabled={createQuote.isPending || updateQuote.isPending}>
             <Save className="h-4 w-4" />
             Salva
           </Button>
@@ -707,7 +707,7 @@ const NewQuote = () => {
         <CardHeader>
           <CardTitle>Informazioni Preventivo</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <div className="space-y-2">
             <Label htmlFor="quote-number">Numero Preventivo</Label>
             <Input
@@ -825,10 +825,10 @@ const NewQuote = () => {
       </Card>
 
       {/* Sezioni del Preventivo */}
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">Progetti e Lavorazioni</h2>
-          <Button onClick={addSection} variant="outline" className="gap-2">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h2 className="text-xl sm:text-2xl font-semibold">Progetti e Lavorazioni</h2>
+          <Button onClick={addSection} variant="outline" className="gap-2 w-full sm:w-auto">
             <FolderPlus className="h-4 w-4" />
             Nuova Sezione
           </Button>
@@ -836,12 +836,12 @@ const NewQuote = () => {
 
         {sections.map((section) => (
           <Card key={section.id} className="border-l-4 border-l-primary">
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col space-y-4">
               <div className="flex-1 space-y-2">
                 <Input
                   value={section.name}
                   onChange={(e) => updateSectionName(section.id, e.target.value)}
-                  className="text-lg font-semibold border-none p-0 h-auto bg-transparent"
+                  className="text-base sm:text-lg font-semibold border-none p-0 h-auto bg-transparent"
                 />
                 <Textarea
                   value={section.description}
@@ -851,37 +851,39 @@ const NewQuote = () => {
                   rows={2}
                 />
               </div>
-              <div className="flex items-center gap-4">
-                <div className="text-lg font-bold text-primary">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="text-base sm:text-lg font-bold text-primary">
                   Totale: € {section.total.toFixed(2)}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                   <Button 
                     onClick={() => addItem(section.id)} 
                     size="sm" 
                     variant="outline" 
-                    className="gap-2"
+                    className="gap-2 flex-1 sm:flex-none"
                   >
                     <Plus className="h-4 w-4" />
-                    Aggiungi Voce
+                    <span className="hidden sm:inline">Aggiungi Voce</span>
+                    <span className="sm:hidden">Voce</span>
                   </Button>
                   <Button
                     onClick={() => duplicateSection(section.id)}
                     size="sm"
                     variant="outline"
-                    className="gap-2"
+                    className="gap-2 flex-1 sm:flex-none"
                   >
                     <Copy className="h-4 w-4" />
-                    Duplica
+                    <span className="hidden sm:inline">Duplica</span>
                   </Button>
                   {sections.length > 1 && (
                     <Button
                       onClick={() => removeSection(section.id)}
                       size="sm"
                       variant="outline"
-                      className="gap-2 text-destructive"
+                      className="gap-2 text-destructive flex-1 sm:flex-none"
                     >
                       <Trash2 className="h-4 w-4" />
+                      <span className="hidden sm:inline">Elimina</span>
                     </Button>
                   )}
                 </div>

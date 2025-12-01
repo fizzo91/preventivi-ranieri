@@ -95,19 +95,19 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 sm:space-y-6 md:space-y-8">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
             Panoramica della tua attività preventivi
           </p>
         </div>
-        <Link to="/new-quote">
-          <Button size="lg" className="gap-2">
+        <Link to="/new-quote" className="w-full sm:w-auto">
+          <Button size="lg" className="gap-2 w-full sm:w-auto">
             <Plus className="h-4 w-4" />
-            Nuovo Preventivo
+            <span>Nuovo Preventivo</span>
           </Button>
         </Link>
       </div>
