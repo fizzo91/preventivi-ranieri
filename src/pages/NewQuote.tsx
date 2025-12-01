@@ -140,36 +140,35 @@ function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpd
     <div
       ref={setNodeRef}
       style={style}
-      className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end p-4 border rounded-lg bg-card"
+      className="space-y-4 p-3 sm:p-4 border rounded-lg bg-card"
     >
-      <div className="md:col-span-1 flex items-end">
+      <div className="flex items-start gap-2">
         <div
           {...attributes}
           {...listeners}
-          className="p-2 hover:bg-muted rounded cursor-move"
+          className="p-2 hover:bg-muted rounded cursor-move shrink-0"
         >
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
-      </div>
-      <div className="md:col-span-4 space-y-2">
-        <Label>Prodotto</Label>
-        <div className="flex gap-2">
-          <div className="flex-1">
-            <Combobox
-              options={productOptions}
-              value={item.productId}
-              placeholder="Cerca prodotto..."
-              searchPlaceholder="Digita per cercare..."
-              recentIds={recentProductIds}
-              onSelect={(value) => onSelectProduct(item.id, value)}
-            />
-          </div>
-          <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="icon" className="shrink-0">
-                <Plus className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
+        <div className="flex-1 space-y-2">
+          <Label>Prodotto</Label>
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Combobox
+                options={productOptions}
+                value={item.productId}
+                placeholder="Cerca prodotto..."
+                searchPlaceholder="Digita per cercare..."
+                recentIds={recentProductIds}
+                onSelect={(value) => onSelectProduct(item.id, value)}
+              />
+            </div>
+            <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="icon" className="shrink-0">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Aggiungi Prodotto Custom</DialogTitle>
@@ -251,42 +250,45 @@ function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpd
           </Dialog>
         </div>
       </div>
-      <div className="md:col-span-2 space-y-2">
-        <Label>Quantità</Label>
-        <div className="flex items-center gap-2">
-        <Input
-          type="number"
-          step="0.01"
-          value={item.quantity}
-          onChange={(e) => onUpdateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
-        />
-          {item.unit && <span className="text-sm text-muted-foreground">{item.unit}</span>}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div className="space-y-2">
+          <Label>Quantità</Label>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              step="0.01"
+              value={item.quantity}
+              onChange={(e) => onUpdateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
+            />
+            {item.unit && <span className="text-xs sm:text-sm text-muted-foreground">{item.unit}</span>}
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label>Prezzo €</Label>
+          <Input
+            type="number"
+            step="0.01"
+            value={item.price}
+            onChange={(e) => onUpdateItem(item.id, 'price', parseFloat(e.target.value) || 0)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Totale</Label>
+          <div className="h-10 px-3 py-2 bg-muted rounded-md flex items-center font-medium text-sm">
+            € {item.total.toFixed(2)}
+          </div>
         </div>
       </div>
-      <div className="md:col-span-2 space-y-2">
-        <Label>Prezzo €</Label>
-        <Input
-          type="number"
-          step="0.01"
-          value={item.price}
-          onChange={(e) => onUpdateItem(item.id, 'price', parseFloat(e.target.value) || 0)}
-        />
-      </div>
-      <div className="md:col-span-2 space-y-2">
-        <Label>Totale</Label>
-        <div className="h-10 px-3 py-2 bg-muted rounded-md flex items-center font-medium">
-          € {item.total.toFixed(2)}
-        </div>
-      </div>
-      <div className="md:col-span-1 space-y-2">
-        <Label className="invisible">Azioni</Label>
+      <div className="space-y-2">
         <Button
           variant="outline"
           size="sm"
           onClick={() => onRemoveItem(item.id)}
           disabled={!canRemove}
+          className="w-full sm:w-auto gap-2"
         >
           <Trash2 className="h-4 w-4" />
+          <span className="sm:inline">Rimuovi</span>
         </Button>
       </div>
     </div>
@@ -707,7 +709,7 @@ const NewQuote = () => {
         <CardHeader>
           <CardTitle>Informazioni Preventivo</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           <div className="space-y-2">
             <Label htmlFor="quote-number">Numero Preventivo</Label>
             <Input
