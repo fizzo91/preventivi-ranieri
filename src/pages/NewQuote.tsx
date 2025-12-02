@@ -250,7 +250,8 @@ function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpd
           </Dialog>
         </div>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+    </div>
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         <div className="space-y-2">
           <Label>Quantità</Label>
           <div className="flex items-center gap-2">
