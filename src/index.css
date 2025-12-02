@@ -28,9 +28,9 @@ All colors MUST be HSL.
     --secondary: 215 19% 34%;
     --secondary-foreground: 210 40% 98%;
 
-    /* Grigio pietra */
-    --muted: 215 20% 65%;
-    --muted-foreground: 222 47% 11%;
+    /* Grigio pietra - aumentato contrasto */
+    --muted: 215 25% 85%;
+    --muted-foreground: 222 47% 20%;
 
     /* Arancione lava accento */
     --accent: 210 40% 98%;
@@ -126,8 +126,8 @@ All colors MUST be HSL.
     --secondary: 215 19% 34%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 215 16% 46%;
-    --muted-foreground: 210 40% 98%;
+    --muted: 215 16% 30%;
+    --muted-foreground: 210 40% 96%;
 
     --accent: 228 84% 4%;
     --accent-foreground: 215 20% 65%;
