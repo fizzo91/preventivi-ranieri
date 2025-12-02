@@ -223,66 +223,68 @@ const Clients = () => {
       )}
 
       {/* Clients List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {filteredClients.map((client) => (
           <Card key={client.id} className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-primary" />
-                  <div>
-                    <CardTitle className="text-lg">{client.name}</CardTitle>
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-start gap-2">
+                <div className="flex items-start gap-2 flex-1 min-w-0">
+                  <User className="h-4 w-4 sm:h-5 sm:w-5 text-primary shrink-0 mt-0.5" />
+                  <div className="min-w-0 flex-1">
+                    <CardTitle className="text-base sm:text-lg truncate">{client.name}</CardTitle>
                     {client.company && (
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <Building className="h-3 w-3" />
-                        {client.company}
+                      <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                        <Building className="h-3 w-3 shrink-0" />
+                        <span className="truncate">{client.company}</span>
                       </p>
                     )}
                   </div>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-1 shrink-0">
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => startEdit(client)}
+                    className="h-8 w-8 p-0"
                   >
-                    <Edit className="h-4 w-4" />
+                    <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => deleteClientHandler(client.id)}
                     disabled={deleteClient.isPending}
+                    className="h-8 w-8 p-0"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-2">
               {client.email && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{client.email}</span>
+                <div className="flex items-start gap-2 text-xs sm:text-sm">
+                  <Mail className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                  <span className="break-all">{client.email}</span>
                 </div>
               )}
               {client.phone && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span>{client.phone}</span>
                 </div>
               )}
               {client.address && (
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xs sm:text-sm text-muted-foreground pt-2 border-t line-clamp-2">
                   {client.address}
                 </div>
               )}
               {client.notes && (
-                <div className="text-sm text-muted-foreground border-t pt-2">
+                <div className="text-xs sm:text-sm text-muted-foreground border-t pt-2 line-clamp-2">
                   {client.notes}
                 </div>
               )}
-              <div className="text-xs text-muted-foreground border-t pt-2">
+              <div className="text-[10px] sm:text-xs text-muted-foreground border-t pt-2">
                 Aggiunto: {new Date(client.created_at).toLocaleDateString('it-IT')}
               </div>
             </CardContent>

@@ -134,13 +134,13 @@ const Dashboard = () => {
 
       {/* Category Breakdown Chart */}
       <Card>
-        <CardHeader>
-          <CardTitle>Analisi per Categoria</CardTitle>
-          <p className="text-sm text-muted-foreground">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base sm:text-lg">Analisi per Categoria</CardTitle>
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Distribuzione dei valori totali da tutti i preventivi
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-2 sm:px-6">
           {categoryData.length > 0 && categoryData.some(d => d.value > 0) ? (
             <ChartContainer
               config={{
@@ -149,22 +149,29 @@ const Dashboard = () => {
                   color: "hsl(var(--chart-1))",
                 },
               }}
-              className="h-[300px]"
+              className="h-[250px] sm:h-[300px] w-full"
             >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={categoryData}>
+                <BarChart data={categoryData} margin={{ left: -20, right: 10, top: 10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis 
                     dataKey="name" 
-                    className="text-xs"
-                    tick={{ fill: 'hsl(var(--foreground))' }}
+                    className="text-[10px] sm:text-xs"
+                    tick={{ fill: 'hsl(var(--foreground))', fontSize: 10 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
                   />
                   <YAxis 
-                    className="text-xs"
-                    tick={{ fill: 'hsl(var(--foreground))' }}
+                    className="text-[10px] sm:text-xs"
+                    tick={{ fill: 'hsl(var(--foreground))', fontSize: 10 }}
                     tickFormatter={(value) => `€${value}`}
+                    width={50}
                   />
-                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartTooltip 
+                    content={<ChartTooltipContent />}
+                    wrapperStyle={{ fontSize: '12px' }}
+                  />
                   <Bar 
                     dataKey="value" 
                     radius={[8, 8, 0, 0]}
@@ -173,7 +180,7 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </ChartContainer>
           ) : (
-            <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+            <div className="h-[250px] sm:h-[300px] flex items-center justify-center text-muted-foreground text-sm text-center px-4">
               Nessun dato disponibile. Crea dei preventivi per visualizzare l'analisi.
             </div>
           )}
@@ -182,89 +189,91 @@ const Dashboard = () => {
 
       {/* Recent Quotes */}
       <Card>
-        <CardHeader>
-          <CardTitle>Preventivi Recenti</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base sm:text-lg">Preventivi Recenti</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {recentQuotes.length > 0 ? (
-              recentQuotes.map((quote) => (
-                <div key={quote.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="space-y-1">
-                    <p className="font-medium">{quote.quote_number}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {quote.client_name} {quote.client_company && `• ${quote.client_company}`}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(quote.date).toLocaleDateString('it-IT')}
-                    </p>
+        <CardContent className="space-y-3">
+          {recentQuotes.length > 0 ? (
+            <>
+              <div className="space-y-3">
+                {recentQuotes.map((quote) => (
+                  <div key={quote.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 sm:p-4 border rounded-lg">
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <p className="font-medium text-sm sm:text-base truncate">{quote.quote_number}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                        {quote.client_name} {quote.client_company && `• ${quote.client_company}`}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(quote.date).toLocaleDateString('it-IT')}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between sm:flex-col sm:items-end sm:text-right gap-2 sm:space-y-1">
+                      <p className="font-semibold text-sm sm:text-base text-success">
+                        € {quote.total_amount?.toFixed(2) || '0.00'}
+                      </p>
+                      <p className="text-xs sm:text-sm text-muted-foreground capitalize">{quote.status}</p>
+                    </div>
                   </div>
-                  <div className="text-right space-y-1">
-                    <p className="font-semibold text-success">
-                      € {quote.total_amount?.toFixed(2) || '0.00'}
-                    </p>
-                    <p className="text-sm text-muted-foreground">{quote.status}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                Nessun preventivo disponibile. Crea il tuo primo preventivo!
+                ))}
               </div>
-            )}
-          </div>
-          <div className="mt-4 text-center">
-            <Link to="/quotes">
-              <Button variant="outline">Vedi Tutti i Preventivi</Button>
-            </Link>
-          </div>
+              <div className="pt-2 text-center">
+                <Link to="/quotes" className="w-full sm:w-auto inline-block">
+                  <Button variant="outline" className="w-full sm:w-auto">Vedi Tutti i Preventivi</Button>
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground text-sm">
+              Nessun preventivo disponibile. Crea il tuo primo preventivo!
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link to="/new-quote">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Plus className="h-5 w-5 text-primary" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Link to="/new-quote" className="block">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 Crea Preventivo
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Inizia un nuovo preventivo per un cliente
               </p>
             </CardContent>
           </Card>
         </Link>
 
-        <Link to="/products">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calculator className="h-5 w-5 text-success" />
+        <Link to="/products" className="block">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Calculator className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
                 Gestisci Prodotti
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Aggiungi o modifica i tuoi prodotti e servizi
               </p>
             </CardContent>
           </Card>
         </Link>
 
-        <Link to="/clients">
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-warning" />
+        <Link to="/clients" className="block sm:col-span-2 lg:col-span-1">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
                 Archivio Clienti
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Visualizza e gestisci i dati dei tuoi clienti
               </p>
             </CardContent>
