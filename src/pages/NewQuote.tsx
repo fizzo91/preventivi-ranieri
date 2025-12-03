@@ -140,17 +140,18 @@ function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpd
     <div
       ref={setNodeRef}
       style={style}
-      className="space-y-4 p-3 sm:p-4 border rounded-lg bg-card"
+      className="p-3 md:p-4 border rounded-lg bg-card space-y-3"
     >
-      <div className="flex items-start gap-2">
+      {/* Desktop: tutto in una riga */}
+      <div className="hidden md:grid md:grid-cols-[auto_1fr_120px_120px_120px_auto] gap-3 items-end">
         <div
           {...attributes}
           {...listeners}
-          className="p-2 hover:bg-muted rounded cursor-move shrink-0"
+          className="p-2 hover:bg-muted rounded cursor-move"
         >
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
-        <div className="flex-1 space-y-2">
+        <div className="space-y-2">
           <Label>Prodotto</Label>
           <div className="flex gap-2">
             <div className="flex-1">
@@ -169,99 +170,97 @@ function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpd
                   <Plus className="h-4 w-4" />
                 </Button>
               </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Aggiungi Prodotto Custom</DialogTitle>
-                <DialogDescription>
-                  Crea un nuovo prodotto da utilizzare nel preventivo
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Nome Prodotto</Label>
-                  <Input
-                    id="name"
-                    value={newProduct.name}
-                    onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                    placeholder="es. Pietra Lavica Premium"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="description">Descrizione</Label>
-                  <Textarea
-                    id="description"
-                    value={newProduct.description}
-                    onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                    placeholder="Descrizione del prodotto..."
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Aggiungi Prodotto Custom</DialogTitle>
+                  <DialogDescription>
+                    Crea un nuovo prodotto da utilizzare nel preventivo
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="category">Categoria</Label>
+                    <Label htmlFor="name">Nome Prodotto</Label>
                     <Input
-                      id="category"
-                      value={newProduct.category}
-                      onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-                      placeholder="es. Pietra"
+                      id="name"
+                      value={newProduct.name}
+                      onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                      placeholder="es. Pietra Lavica Premium"
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="unit">Unità</Label>
-                    <Input
-                      id="unit"
-                      value={newProduct.unit}
-                      onChange={(e) => setNewProduct({ ...newProduct, unit: e.target.value })}
-                      placeholder="es. mq, ml, pz"
+                    <Label htmlFor="description">Descrizione</Label>
+                    <Textarea
+                      id="description"
+                      value={newProduct.description}
+                      onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                      placeholder="Descrizione del prodotto..."
                     />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="category">Categoria</Label>
+                      <Input
+                        id="category"
+                        value={newProduct.category}
+                        onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                        placeholder="es. Pietra"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="unit">Unità</Label>
+                      <Input
+                        id="unit"
+                        value={newProduct.unit}
+                        onChange={(e) => setNewProduct({ ...newProduct, unit: e.target.value })}
+                        placeholder="es. mq, ml, pz"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="priceEM">Prezzo EM (€)</Label>
+                      <Input
+                        id="priceEM"
+                        type="number"
+                        step="0.01"
+                        value={newProduct.price_em}
+                        onChange={(e) => setNewProduct({ ...newProduct, price_em: parseFloat(e.target.value) || 0 })}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="priceDT">Prezzo DT (€)</Label>
+                      <Input
+                        id="priceDT"
+                        type="number"
+                        step="0.01"
+                        value={newProduct.price_dt}
+                        onChange={(e) => setNewProduct({ ...newProduct, price_dt: parseFloat(e.target.value) || 0 })}
+                      />
+                    </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="priceEM">Prezzo EM (€)</Label>
-                    <Input
-                      id="priceEM"
-                      type="number"
-                      step="0.01"
-                      value={newProduct.price_em}
-                      onChange={(e) => setNewProduct({ ...newProduct, price_em: parseFloat(e.target.value) || 0 })}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="priceDT">Prezzo DT (€)</Label>
-                    <Input
-                      id="priceDT"
-                      type="number"
-                      step="0.01"
-                      value={newProduct.price_dt}
-                      onChange={(e) => setNewProduct({ ...newProduct, price_dt: parseFloat(e.target.value) || 0 })}
-                    />
-                  </div>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsAddProductOpen(false)}>
-                  Annulla
-                </Button>
-                <Button onClick={handleAddProduct}>
-                  Aggiungi Prodotto
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsAddProductOpen(false)}>
+                    Annulla
+                  </Button>
+                  <Button onClick={handleAddProduct}>
+                    Aggiungi Prodotto
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
-      </div>
-    </div>
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         <div className="space-y-2">
           <Label>Quantità</Label>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Input
               type="number"
               step="0.01"
               value={item.quantity}
               onChange={(e) => onUpdateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
             />
-            {item.unit && <span className="text-xs sm:text-sm text-muted-foreground">{item.unit}</span>}
+            {item.unit && <span className="text-xs text-muted-foreground">{item.unit}</span>}
           </div>
         </div>
         <div className="space-y-2">
@@ -279,17 +278,86 @@ function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpd
             € {item.total.toFixed(2)}
           </div>
         </div>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => onRemoveItem(item.id)}
+          disabled={!canRemove}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
       </div>
-      <div className="space-y-2">
+
+      {/* Mobile: layout impilato */}
+      <div className="md:hidden space-y-3">
+        <div className="flex items-start gap-2">
+          <div
+            {...attributes}
+            {...listeners}
+            className="p-2 hover:bg-muted rounded cursor-move shrink-0"
+          >
+            <GripVertical className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <div className="flex-1 space-y-2">
+            <Label>Prodotto</Label>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Combobox
+                  options={productOptions}
+                  value={item.productId}
+                  placeholder="Cerca prodotto..."
+                  searchPlaceholder="Digita per cercare..."
+                  recentIds={recentProductIds}
+                  onSelect={(value) => onSelectProduct(item.id, value)}
+                />
+              </div>
+              <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="icon" className="shrink-0">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+              </Dialog>
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <div className="space-y-2">
+            <Label>Quantità</Label>
+            <div className="flex items-center gap-1">
+              <Input
+                type="number"
+                step="0.01"
+                value={item.quantity}
+                onChange={(e) => onUpdateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label>Prezzo €</Label>
+            <Input
+              type="number"
+              step="0.01"
+              value={item.price}
+              onChange={(e) => onUpdateItem(item.id, 'price', parseFloat(e.target.value) || 0)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Totale</Label>
+            <div className="h-10 px-2 py-2 bg-muted rounded-md flex items-center font-medium text-xs">
+              € {item.total.toFixed(2)}
+            </div>
+          </div>
+        </div>
         <Button
           variant="outline"
           size="sm"
           onClick={() => onRemoveItem(item.id)}
           disabled={!canRemove}
-          className="w-full sm:w-auto gap-2"
+          className="w-full gap-2"
         >
           <Trash2 className="h-4 w-4" />
-          <span className="sm:inline">Rimuovi</span>
+          Rimuovi
         </Button>
       </div>
     </div>
