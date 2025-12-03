@@ -74,10 +74,10 @@ const Settings = () => {
   }
 
   return (
-    <div className="space-y-6 sm:space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-8 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Impostazioni</h1>
-        <p className="text-sm sm:text-base text-muted-foreground mt-1">
+        <h1 className="text-3xl font-bold text-foreground">Impostazioni</h1>
+        <p className="text-muted-foreground mt-1">
           Configura l'azienda e visualizza le statistiche dei dati
         </p>
       </div>
@@ -169,7 +169,7 @@ const Settings = () => {
             />
           </div>
 
-          <Button onClick={saveSettings} className="gap-2 w-full sm:w-auto">
+          <Button onClick={saveSettings} className="gap-2">
             <Save className="h-4 w-4" />
             Salva Impostazioni
           </Button>

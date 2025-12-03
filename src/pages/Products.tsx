@@ -78,17 +78,17 @@ const Products = () => {
     : products.filter(p => p.category === selectedCategory)
 
   return (
-    <div className="space-y-4 sm:space-y-6 md:space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-8">
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Prodotti e Servizi</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Prodotti e Servizi</h1>
+          <p className="text-muted-foreground mt-1">
             Gestisci il catalogo dei tuoi prodotti e servizi
           </p>
         </div>
-        <Button onClick={() => setIsAdding(true)} className="gap-2 w-full sm:w-auto">
+        <Button onClick={() => setIsAdding(true)} className="gap-2">
           <Plus className="h-4 w-4" />
-          <span className="sm:inline">Nuovo Prodotto</span>
+          Nuovo Prodotto
         </Button>
       </div>
 
@@ -249,23 +249,23 @@ const Products = () => {
           <Card key={product.id} className="hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex justify-between items-start">
-                <div className="flex-1 min-w-0">
-                  <CardTitle className="truncate">{product.name}</CardTitle>
+                <div>
+                  <CardTitle className="text-lg">{product.name}</CardTitle>
                   <Badge variant="secondary" className="mt-1">
                     {product.category}
                   </Badge>
                 </div>
-                <div className="flex gap-2 shrink-0">
+                <div className="flex gap-1">
                   <Button 
                     variant="outline" 
-                    size="icon"
+                    size="sm"
                     onClick={() => startEdit(product)}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button 
                     variant="outline" 
-                    size="icon"
+                    size="sm"
                     onClick={() => deleteProductHandler(product.id)}
                     disabled={deleteProduct.isPending}
                   >
@@ -274,11 +274,11 @@ const Products = () => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground line-clamp-2">
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
                 {product.description}
               </p>
-              <div className="space-y-2 pt-2 border-t">
+              <div className="space-y-2">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">Fornitore EM:</span>
                   <span className="font-semibold text-success">€ {product.price_em.toFixed(2)} / {product.unit}</span>

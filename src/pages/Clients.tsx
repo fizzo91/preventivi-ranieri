@@ -82,17 +82,17 @@ const Clients = () => {
   )
 
   return (
-    <div className="space-y-4 sm:space-y-6 md:space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-8">
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Clienti</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Clienti</h1>
+          <p className="text-muted-foreground mt-1">
             Gestisci l'archivio dei tuoi clienti
           </p>
         </div>
-        <Button onClick={() => setIsAdding(true)} className="gap-2 w-full sm:w-auto">
+        <Button onClick={() => setIsAdding(true)} className="gap-2">
           <Plus className="h-4 w-4" />
-          <span className="sm:inline">Nuovo Cliente</span>
+          Nuovo Cliente
         </Button>
       </div>
 
@@ -228,29 +228,29 @@ const Clients = () => {
           <Card key={client.id} className="hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex justify-between items-start">
-                <div className="flex items-start gap-3 flex-1 min-w-0">
-                  <User className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <div className="min-w-0 flex-1">
-                    <CardTitle className="truncate">{client.name}</CardTitle>
+                <div className="flex items-center gap-2">
+                  <User className="h-5 w-5 text-primary" />
+                  <div>
+                    <CardTitle className="text-lg">{client.name}</CardTitle>
                     {client.company && (
-                      <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                        <Building className="h-4 w-4 shrink-0" />
-                        <span className="truncate">{client.company}</span>
+                      <p className="text-sm text-muted-foreground flex items-center gap-1">
+                        <Building className="h-3 w-3" />
+                        {client.company}
                       </p>
                     )}
                   </div>
                 </div>
-                <div className="flex gap-2 shrink-0">
+                <div className="flex gap-1">
                   <Button 
                     variant="outline" 
-                    size="icon"
+                    size="sm"
                     onClick={() => startEdit(client)}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button 
                     variant="outline" 
-                    size="icon"
+                    size="sm"
                     onClick={() => deleteClientHandler(client.id)}
                     disabled={deleteClient.isPending}
                   >
@@ -259,26 +259,26 @@ const Clients = () => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-3">
               {client.email && (
-                <div className="flex items-start gap-2 text-sm">
-                  <Mail className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-                  <span className="break-all">{client.email}</span>
+                <div className="flex items-center gap-2 text-sm">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <span>{client.email}</span>
                 </div>
               )}
               {client.phone && (
                 <div className="flex items-center gap-2 text-sm">
-                  <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <Phone className="h-4 w-4 text-muted-foreground" />
                   <span>{client.phone}</span>
                 </div>
               )}
               {client.address && (
-                <div className="text-sm text-muted-foreground pt-2 border-t line-clamp-2">
+                <div className="text-sm text-muted-foreground">
                   {client.address}
                 </div>
               )}
               {client.notes && (
-                <div className="text-sm text-muted-foreground border-t pt-2 line-clamp-2">
+                <div className="text-sm text-muted-foreground border-t pt-2">
                   {client.notes}
                 </div>
               )}
