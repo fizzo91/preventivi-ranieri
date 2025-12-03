@@ -294,16 +294,16 @@ const Quotes = () => {
                   </h3>
                   <div className="space-y-4">
                      {groupedQuotes[month].map((quote) => (
-                      <div key={quote.id} className="flex flex-col gap-3 p-3 sm:p-4 border rounded-lg">
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      <div key={quote.id} className="flex flex-col gap-4 p-4 border rounded-lg">
+                        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
                           <div className="space-y-1 flex-1 min-w-0">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                              <p className="font-medium text-sm sm:text-base">{quote.quote_number}</p>
+                            <div className="flex flex-col md:flex-row md:items-center gap-2">
+                              <p className="font-medium">{quote.quote_number}</p>
                               <Select
                                 value={quote.status}
                                 onValueChange={(value) => handleUpdateQuoteStatus(quote.id, value)}
                               >
-                                <SelectTrigger className="w-full sm:w-[120px] h-7 text-xs sm:text-sm">
+                                <SelectTrigger className="w-full md:w-[120px]">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -312,31 +312,31 @@ const Quotes = () => {
                                 </SelectContent>
                               </Select>
                             </div>
-                            <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                            <p className="text-sm text-muted-foreground truncate">
                               {quote.client_name} {quote.client_company && `• ${quote.client_company}`}
                             </p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-sm text-muted-foreground">
                               {new Date(quote.date).toLocaleDateString('it-IT')}
                             </p>
                           </div>
-                          <div className="flex items-center justify-between sm:justify-end gap-3">
-                            <p className="font-semibold text-sm sm:text-base text-success whitespace-nowrap">
+                          <div className="flex items-center justify-between md:justify-end gap-3">
+                            <p className="font-semibold text-success whitespace-nowrap">
                               € {quote.total_amount?.toFixed(2) || '0.00'}
                             </p>
                           </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2">
                           <Dialog>
                             <DialogTrigger asChild>
-                              <Button variant="outline" size="sm" className="flex-1 text-xs sm:text-sm">
-                                <Eye className="h-4 w-4 mr-1 sm:mr-2" />
-                                <span>Dettagli</span>
+                              <Button variant="outline" size="sm">
+                                <Eye className="h-4 w-4 mr-2" />
+                                Dettagli
                               </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+                            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                               <DialogHeader>
                                 <div className="flex flex-col gap-3">
-                                  <DialogTitle className="text-base sm:text-lg pr-6">
+                                  <DialogTitle>
                                     Preventivo {quote.quote_number}
                                   </DialogTitle>
                                   <div className="flex gap-2">
@@ -344,44 +344,44 @@ const Quotes = () => {
                                       variant="outline" 
                                       size="sm"
                                       onClick={() => handleGeneratePdf(quote)}
-                                      className="gap-1 flex-1 text-xs"
+                                      className="gap-2"
                                     >
-                                      <FileDown className="h-3 w-3 sm:h-4 sm:w-4" />
-                                      <span>PDF</span>
+                                      <FileDown className="h-4 w-4" />
+                                      PDF
                                     </Button>
                                     <Button 
                                       variant="outline" 
                                       size="sm"
                                       onClick={() => handleExportJson(quote)}
-                                      className="gap-1 flex-1 text-xs"
+                                      className="gap-2"
                                     >
-                                      <FileJson className="h-3 w-3 sm:h-4 sm:w-4" />
-                                      <span>JSON</span>
+                                      <FileJson className="h-4 w-4" />
+                                      JSON
                                     </Button>
                                   </div>
                                 </div>
                               </DialogHeader>
                               <div className="space-y-4">
-                                <div className="grid grid-cols-1 gap-4">
+                                <div className="grid grid-cols-2 gap-4">
                                   <div className="space-y-2">
-                                    <h4 className="font-semibold text-sm sm:text-base">Cliente</h4>
+                                    <h4 className="font-semibold">Cliente</h4>
                                     <div className="text-sm space-y-1">
                                       <p className="font-medium">{quote.client_name}</p>
                                       {quote.client_company && <p className="text-muted-foreground">{quote.client_company}</p>}
-                                      {quote.client_email && <p className="text-xs sm:text-sm break-all text-muted-foreground">{quote.client_email}</p>}
+                                      {quote.client_email && <p className="text-muted-foreground">{quote.client_email}</p>}
                                       {quote.client_phone && <p className="text-muted-foreground">{quote.client_phone}</p>}
                                     </div>
                                   </div>
-                                  <div className="space-y-2 border-t pt-3">
-                                    <h4 className="font-semibold text-sm sm:text-base">Dettagli</h4>
-                                    <div className="text-xs sm:text-sm space-y-1">
+                                  <div className="space-y-2">
+                                    <h4 className="font-semibold">Dettagli</h4>
+                                    <div className="text-sm space-y-1">
                                       <p><span className="text-muted-foreground">Numero:</span> {quote.quote_number}</p>
                                       <p><span className="text-muted-foreground">Data:</span> {new Date(quote.date).toLocaleDateString('it-IT')}</p>
                                       <p className="flex items-center gap-2">
                                         <span className="text-muted-foreground">Stato:</span>
                                         <Badge className={getStatusColor(quote.status)}>{quote.status}</Badge>
                                       </p>
-                                      <p className="text-base sm:text-lg font-bold text-success pt-1">
+                                      <p className="text-lg font-bold text-success pt-1">
                                         Totale: € {quote.total_amount?.toFixed(2) || '0.00'}
                                       </p>
                                     </div>
