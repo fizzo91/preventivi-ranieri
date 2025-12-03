@@ -244,50 +244,48 @@ const Products = () => {
       )}
 
       {/* Products List */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProducts.map((product) => (
           <Card key={product.id} className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex justify-between items-start gap-2">
+            <CardHeader>
+              <div className="flex justify-between items-start">
                 <div className="flex-1 min-w-0">
-                  <CardTitle className="text-base sm:text-lg truncate">{product.name}</CardTitle>
-                  <Badge variant="secondary" className="mt-1 text-xs">
+                  <CardTitle className="truncate">{product.name}</CardTitle>
+                  <Badge variant="secondary" className="mt-1">
                     {product.category}
                   </Badge>
                 </div>
-                <div className="flex gap-1 shrink-0">
+                <div className="flex gap-2 shrink-0">
                   <Button 
                     variant="outline" 
-                    size="sm"
+                    size="icon"
                     onClick={() => startEdit(product)}
-                    className="h-8 w-8 p-0"
                   >
-                    <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <Edit className="h-4 w-4" />
                   </Button>
                   <Button 
                     variant="outline" 
-                    size="sm"
+                    size="icon"
                     onClick={() => deleteProductHandler(product.id)}
                     disabled={deleteProduct.isPending}
-                    className="h-8 w-8 p-0"
                   >
-                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
+              <p className="text-sm text-muted-foreground line-clamp-2">
                 {product.description}
               </p>
               <div className="space-y-2 pt-2 border-t">
-                <div className="flex justify-between items-center text-xs sm:text-sm gap-2">
-                  <span className="text-muted-foreground shrink-0">Fornitore EM:</span>
-                  <span className="font-semibold text-success text-right">€ {product.price_em.toFixed(2)} / {product.unit}</span>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Fornitore EM:</span>
+                  <span className="font-semibold text-success">€ {product.price_em.toFixed(2)} / {product.unit}</span>
                 </div>
-                <div className="flex justify-between items-center text-xs sm:text-sm gap-2">
-                  <span className="text-muted-foreground shrink-0">Fornitore DT:</span>
-                  <span className="font-semibold text-success text-right">€ {product.price_dt.toFixed(2)} / {product.unit}</span>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Fornitore DT:</span>
+                  <span className="font-semibold text-success">€ {product.price_dt.toFixed(2)} / {product.unit}</span>
                 </div>
               </div>
             </CardContent>
