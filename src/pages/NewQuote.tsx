@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy, Loader2 } from "lucide-react"
+import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy, Loader2, Calculator } from "lucide-react"
+import { StoneCalculator } from "@/components/StoneCalculator"
 import { useToast } from "@/hooks/use-toast"
 import {
   Dialog,
@@ -335,6 +336,55 @@ const NewQuote = () => {
       total: 0
     }
   ])
+
+  const [stoneCalculatorOpen, setStoneCalculatorOpen] = useState(false)
+  const [stoneCalculatorSectionId, setStoneCalculatorSectionId] = useState<string | null>(null)
+
+  const openStoneCalculator = (sectionId: string) => {
+    setStoneCalculatorSectionId(sectionId)
+    setStoneCalculatorOpen(true)
+  }
+
+  const handleStoneCalculatorConfirm = (totalMq: number, costoTotale: number) => {
+    if (stoneCalculatorSectionId) {
+      // Trova o crea un item "Pietra Lavica" nella sezione
+      setSections(sections.map(section => {
+        if (section.id === stoneCalculatorSectionId) {
+          const existingStoneItemIndex = section.items.findIndex(item => 
+            item.productName.toLowerCase().includes('pietra') || item.category.toLowerCase().includes('pietra')
+          )
+          
+          if (existingStoneItemIndex >= 0) {
+            // Aggiorna l'item esistente
+            const updatedItems = [...section.items]
+            updatedItems[existingStoneItemIndex] = {
+              ...updatedItems[existingStoneItemIndex],
+              quantity: totalMq,
+              price: totalMq > 0 ? costoTotale / totalMq : 0,
+              total: costoTotale,
+              unit: 'mq'
+            }
+            return { ...section, items: updatedItems }
+          } else {
+            // Crea un nuovo item
+            const newItem: QuoteItem = {
+              id: Date.now().toString(),
+              productId: "",
+              productName: "Pietra Lavica Smaltata",
+              category: "Pietra",
+              description: "Calcolato con calcolatore pietra",
+              quantity: totalMq,
+              price: totalMq > 0 ? costoTotale / totalMq : 0,
+              unit: "mq",
+              total: costoTotale
+            }
+            return { ...section, items: [...section.items, newItem] }
+          }
+        }
+        return section
+      }))
+    }
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -855,7 +905,16 @@ const NewQuote = () => {
                 <div className="text-lg font-bold text-primary">
                   Totale: € {section.total.toFixed(2)}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
+                  <Button 
+                    onClick={() => openStoneCalculator(section.id)} 
+                    size="sm" 
+                    variant="outline" 
+                    className="gap-2"
+                  >
+                    <Calculator className="h-4 w-4" />
+                    Calc. Pietra
+                  </Button>
                   <Button 
                     onClick={() => addItem(section.id)} 
                     size="sm" 
@@ -1077,6 +1136,12 @@ const NewQuote = () => {
           />
         </CardContent>
       </Card>
+      {/* Stone Calculator Dialog */}
+      <StoneCalculator
+        open={stoneCalculatorOpen}
+        onOpenChange={setStoneCalculatorOpen}
+        onConfirm={handleStoneCalculatorConfirm}
+      />
     </div>
   )
 }
