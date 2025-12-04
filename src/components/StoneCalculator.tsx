@@ -35,9 +35,6 @@ interface StoneCalculatorProps {
 }
 
 const defaultCosts = {
-  costoPietraMq: 85.66,
-  costoEngobbioMq: 32.62,
-  costoSmaltaturaMq: 137.62,
   percentuale: 0,
   imballoMq: 10.17
 }
@@ -49,9 +46,9 @@ function createInitialPiece(): StonePiece {
     dim1: 0,
     dim2: 0,
     mqPezzo: 0,
-    costoPietraMq: defaultCosts.costoPietraMq,
-    costoEngobbioMq: defaultCosts.costoEngobbioMq,
-    costoSmaltaturaMq: defaultCosts.costoSmaltaturaMq,
+    costoPietraMq: 0,
+    costoEngobbioMq: 0,
+    costoSmaltaturaMq: 0,
     totaleSmaltatura: 0,
     percentuale: defaultCosts.percentuale,
     imballoMq: defaultCosts.imballoMq,
@@ -69,9 +66,9 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
     dim1: 0,
     dim2: 0,
     mqPezzo: 0,
-    costoPietraMq: baseCosts.costoPietraMq,
-    costoEngobbioMq: baseCosts.costoEngobbioMq,
-    costoSmaltaturaMq: baseCosts.costoSmaltaturaMq,
+    costoPietraMq: 0,
+    costoEngobbioMq: 0,
+    costoSmaltaturaMq: 0,
     totaleSmaltatura: 0,
     percentuale: baseCosts.percentuale,
     imballoMq: baseCosts.imballoMq,
@@ -82,18 +79,30 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
     // mq pezzo = (dim1 * dim2) / 1.000.000 (conversione mm² -> m²)
     const mqPezzo = (piece.dim1 * piece.dim2) / 1000000
     
+    // PIETRA = (35*SP) + 20*SP*MQ
+    const costoPietraMq = (35 * piece.sp) + (20 * piece.sp * mqPezzo)
+    
+    // ENGOBBIO = (80+(SP*20)-90) + ((MQ*45)-15)
+    const costoEngobbioMq = (80 + (piece.sp * 20) - 90) + ((mqPezzo * 45) - 15)
+    
+    // SMALTATURA = 80 + 20*SP + 45*MQ
+    const costoSmaltaturaMq = 80 + (20 * piece.sp) + (45 * mqPezzo)
+    
     // Totale smaltatura = engobbio + smaltatura
-    const totaleSmaltatura = piece.costoEngobbioMq + piece.costoSmaltaturaMq
+    const totaleSmaltatura = costoEngobbioMq + costoSmaltaturaMq
     
     // Applicazione percentuale
     const totaleConPercentuale = totaleSmaltatura * (1 + piece.percentuale / 100)
     
     // Costo totale al mq = pietra + totale smaltatura (con %) + imballo
-    const costoTotaleMq = piece.costoPietraMq + totaleConPercentuale + piece.imballoMq
+    const costoTotaleMq = costoPietraMq + totaleConPercentuale + piece.imballoMq
     
     return {
       ...piece,
       mqPezzo,
+      costoPietraMq,
+      costoEngobbioMq,
+      costoSmaltaturaMq,
       totaleSmaltatura,
       costoTotaleMq
     }
@@ -123,9 +132,6 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
     setPieces(pieces.map(piece => 
       calculatePiece({
         ...piece,
-        costoPietraMq: baseCosts.costoPietraMq,
-        costoEngobbioMq: baseCosts.costoEngobbioMq,
-        costoSmaltaturaMq: baseCosts.costoSmaltaturaMq,
         percentuale: baseCosts.percentuale,
         imballoMq: baseCosts.imballoMq
       })
@@ -159,40 +165,10 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
         {/* Costi Base Parametrizzati */}
         <Card className="mb-4">
           <CardHeader className="py-3">
-            <CardTitle className="text-sm">Costi Base (€/mq)</CardTitle>
+            <CardTitle className="text-sm">Parametri Base</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs">Pietra</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={baseCosts.costoPietraMq}
-                  onChange={(e) => setBaseCosts({ ...baseCosts, costoPietraMq: parseFloat(e.target.value) || 0 })}
-                  className="h-8"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Engobbio</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={baseCosts.costoEngobbioMq}
-                  onChange={(e) => setBaseCosts({ ...baseCosts, costoEngobbioMq: parseFloat(e.target.value) || 0 })}
-                  className="h-8"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Smaltatura</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={baseCosts.costoSmaltaturaMq}
-                  onChange={(e) => setBaseCosts({ ...baseCosts, costoSmaltaturaMq: parseFloat(e.target.value) || 0 })}
-                  className="h-8"
-                />
-              </div>
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">% Maggiorazione</Label>
                 <Input
@@ -204,7 +180,7 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Imballo</Label>
+                <Label className="text-xs">Imballo €/mq</Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -276,32 +252,14 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
                   <td className="px-2 py-2 bg-amber-50 dark:bg-amber-900/20 font-medium">
                     {piece.mqPezzo.toFixed(4)}
                   </td>
-                  <td className="px-1 py-2">
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={piece.costoPietraMq}
-                      onChange={(e) => updatePiece(piece.id, 'costoPietraMq', parseFloat(e.target.value) || 0)}
-                      className="h-8 w-20"
-                    />
+                  <td className="px-2 py-2 bg-muted/30 text-muted-foreground">
+                    {piece.costoPietraMq.toFixed(2)}
                   </td>
-                  <td className="px-1 py-2">
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={piece.costoEngobbioMq}
-                      onChange={(e) => updatePiece(piece.id, 'costoEngobbioMq', parseFloat(e.target.value) || 0)}
-                      className="h-8 w-20"
-                    />
+                  <td className="px-2 py-2 bg-muted/30 text-muted-foreground">
+                    {piece.costoEngobbioMq.toFixed(2)}
                   </td>
-                  <td className="px-1 py-2">
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={piece.costoSmaltaturaMq}
-                      onChange={(e) => updatePiece(piece.id, 'costoSmaltaturaMq', parseFloat(e.target.value) || 0)}
-                      className="h-8 w-20"
-                    />
+                  <td className="px-2 py-2 bg-muted/30 text-muted-foreground">
+                    {piece.costoSmaltaturaMq.toFixed(2)}
                   </td>
                   <td className="px-2 py-2 bg-amber-50 dark:bg-amber-900/20 font-medium">
                     {piece.totaleSmaltatura.toFixed(2)}
