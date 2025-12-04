@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy, Loader2, Calculator } from "lucide-react"
-import { StoneCalculator } from "@/components/StoneCalculator"
+import { StoneCalculator, StoneCalculatorResult } from "@/components/StoneCalculator"
 import { useToast } from "@/hooks/use-toast"
 import {
   Dialog,
@@ -345,41 +345,66 @@ const NewQuote = () => {
     setStoneCalculatorOpen(true)
   }
 
-  const handleStoneCalculatorConfirm = (totalMq: number, costoTotale: number) => {
+  const handleStoneCalculatorConfirm = (result: StoneCalculatorResult) => {
     if (stoneCalculatorSectionId) {
-      // Trova o crea un item "Pietra Lavica" nella sezione
       setSections(sections.map(section => {
         if (section.id === stoneCalculatorSectionId) {
-          const existingStoneItemIndex = section.items.findIndex(item => 
-            item.productName.toLowerCase().includes('pietra') || item.category.toLowerCase().includes('pietra')
+          // Rimuovi eventuali item pietra esistenti
+          const filteredItems = section.items.filter(item => 
+            !['pietra', 'engobbio', 'smaltatura', 'imballo'].some(keyword => 
+              item.productName.toLowerCase().includes(keyword)
+            )
           )
           
-          if (existingStoneItemIndex >= 0) {
-            // Aggiorna l'item esistente
-            const updatedItems = [...section.items]
-            updatedItems[existingStoneItemIndex] = {
-              ...updatedItems[existingStoneItemIndex],
-              quantity: totalMq,
-              price: totalMq > 0 ? costoTotale / totalMq : 0,
-              total: costoTotale,
-              unit: 'mq'
-            }
-            return { ...section, items: updatedItems }
-          } else {
-            // Crea un nuovo item
-            const newItem: QuoteItem = {
-              id: Date.now().toString(),
+          const timestamp = Date.now()
+          const newItems: QuoteItem[] = [
+            {
+              id: `${timestamp}-pietra`,
               productId: "",
-              productName: "Pietra Lavica Smaltata",
-              category: "Pietra",
-              description: "Calcolato con calcolatore pietra",
-              quantity: totalMq,
-              price: totalMq > 0 ? costoTotale / totalMq : 0,
+              productName: "Pietra",
+              category: "Calcolatore Pietra",
+              description: `${result.totalMq.toFixed(4)} mq`,
+              quantity: result.totalMq,
+              price: result.totalMq > 0 ? result.costoPietra / result.totalMq : 0,
               unit: "mq",
-              total: costoTotale
+              total: result.costoPietra
+            },
+            {
+              id: `${timestamp}-engobbio`,
+              productId: "",
+              productName: "Engobbio",
+              category: "Calcolatore Pietra",
+              description: `${result.totalMq.toFixed(4)} mq`,
+              quantity: result.totalMq,
+              price: result.totalMq > 0 ? result.costoEngobbio / result.totalMq : 0,
+              unit: "mq",
+              total: result.costoEngobbio
+            },
+            {
+              id: `${timestamp}-smaltatura`,
+              productId: "",
+              productName: "Smaltatura",
+              category: "Calcolatore Pietra",
+              description: `${result.totalMq.toFixed(4)} mq`,
+              quantity: result.totalMq,
+              price: result.totalMq > 0 ? result.costoSmaltatura / result.totalMq : 0,
+              unit: "mq",
+              total: result.costoSmaltatura
+            },
+            {
+              id: `${timestamp}-imballo`,
+              productId: "",
+              productName: "Imballo",
+              category: "Calcolatore Pietra",
+              description: `${result.totalMq.toFixed(4)} mq`,
+              quantity: result.totalMq,
+              price: result.totalMq > 0 ? result.costoImballo / result.totalMq : 0,
+              unit: "mq",
+              total: result.costoImballo
             }
-            return { ...section, items: [...section.items, newItem] }
-          }
+          ]
+          
+          return { ...section, items: [...filteredItems, ...newItems] }
         }
         return section
       }))
