@@ -42,29 +42,41 @@ const defaultCosts = {
   imballoMq: 10.17
 }
 
-export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculatorProps) {
-  const [pieces, setPieces] = useState<StonePiece[]>([
-    createNewPiece()
-  ])
-  
-  const [baseCosts, setBaseCosts] = useState(defaultCosts)
-
-  function createNewPiece(): StonePiece {
-    return {
-      id: Date.now().toString(),
-      sp: 2,
-      dim1: 0,
-      dim2: 0,
-      mqPezzo: 0,
-      costoPietraMq: baseCosts.costoPietraMq,
-      costoEngobbioMq: baseCosts.costoEngobbioMq,
-      costoSmaltaturaMq: baseCosts.costoSmaltaturaMq,
-      totaleSmaltatura: 0,
-      percentuale: baseCosts.percentuale,
-      imballoMq: baseCosts.imballoMq,
-      costoTotaleMq: 0
-    }
+function createInitialPiece(): StonePiece {
+  return {
+    id: Date.now().toString(),
+    sp: 2,
+    dim1: 0,
+    dim2: 0,
+    mqPezzo: 0,
+    costoPietraMq: defaultCosts.costoPietraMq,
+    costoEngobbioMq: defaultCosts.costoEngobbioMq,
+    costoSmaltaturaMq: defaultCosts.costoSmaltaturaMq,
+    totaleSmaltatura: 0,
+    percentuale: defaultCosts.percentuale,
+    imballoMq: defaultCosts.imballoMq,
+    costoTotaleMq: 0
   }
+}
+
+export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculatorProps) {
+  const [baseCosts, setBaseCosts] = useState(defaultCosts)
+  const [pieces, setPieces] = useState<StonePiece[]>([createInitialPiece()])
+
+  const createNewPiece = (): StonePiece => ({
+    id: Date.now().toString(),
+    sp: 2,
+    dim1: 0,
+    dim2: 0,
+    mqPezzo: 0,
+    costoPietraMq: baseCosts.costoPietraMq,
+    costoEngobbioMq: baseCosts.costoEngobbioMq,
+    costoSmaltaturaMq: baseCosts.costoSmaltaturaMq,
+    totaleSmaltatura: 0,
+    percentuale: baseCosts.percentuale,
+    imballoMq: baseCosts.imballoMq,
+    costoTotaleMq: 0
+  })
 
   const calculatePiece = (piece: StonePiece): StonePiece => {
     // mq pezzo = (dim1 * dim2) / 1.000.000 (conversione mm² -> m²)
