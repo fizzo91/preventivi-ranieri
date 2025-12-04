@@ -28,15 +28,23 @@ interface StonePiece {
   costoTotaleMq: number
 }
 
+export interface StoneCalculatorResult {
+  totalMq: number
+  costoPietra: number
+  costoEngobbio: number
+  costoSmaltatura: number
+  costoImballo: number
+  costoTotale: number
+}
+
 interface StoneCalculatorProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onConfirm: (totalMq: number, costoTotale: number) => void
+  onConfirm: (result: StoneCalculatorResult) => void
 }
 
 const defaultCosts = {
-  percentuale: 0,
-  imballoMq: 10.17
+  percentuale: 0
 }
 
 function createInitialPiece(): StonePiece {
@@ -51,7 +59,7 @@ function createInitialPiece(): StonePiece {
     costoSmaltaturaMq: 0,
     totaleSmaltatura: 0,
     percentuale: defaultCosts.percentuale,
-    imballoMq: defaultCosts.imballoMq,
+    imballoMq: 0,
     costoTotaleMq: 0
   }
 }
@@ -71,7 +79,7 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
     costoSmaltaturaMq: 0,
     totaleSmaltatura: 0,
     percentuale: baseCosts.percentuale,
-    imballoMq: baseCosts.imballoMq,
+    imballoMq: 0,
     costoTotaleMq: 0
   })
 
@@ -88,6 +96,9 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
     // SMALTATURA = 80 + 20*SP + 45*MQ
     const costoSmaltaturaMq = 80 + (20 * piece.sp) + (45 * mqPezzo)
     
+    // IMBALLO = 5 + 4 + MQ * 3
+    const imballoMq = 5 + 4 + (mqPezzo * 3)
+    
     // Totale smaltatura = engobbio + smaltatura
     const totaleSmaltatura = costoEngobbioMq + costoSmaltaturaMq
     
@@ -95,7 +106,7 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
     const totaleConPercentuale = totaleSmaltatura * (1 + piece.percentuale / 100)
     
     // Costo totale al mq = pietra + totale smaltatura (con %) + imballo
-    const costoTotaleMq = costoPietraMq + totaleConPercentuale + piece.imballoMq
+    const costoTotaleMq = costoPietraMq + totaleConPercentuale + imballoMq
     
     return {
       ...piece,
@@ -103,6 +114,7 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
       costoPietraMq,
       costoEngobbioMq,
       costoSmaltaturaMq,
+      imballoMq,
       totaleSmaltatura,
       costoTotaleMq
     }
@@ -132,8 +144,7 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
     setPieces(pieces.map(piece => 
       calculatePiece({
         ...piece,
-        percentuale: baseCosts.percentuale,
-        imballoMq: baseCosts.imballoMq
+        percentuale: baseCosts.percentuale
       })
     ))
   }
@@ -144,11 +155,22 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
   }, [])
 
   const totalMq = pieces.reduce((sum, p) => sum + p.mqPezzo, 0)
-  const totalCosto = pieces.reduce((sum, p) => sum + (p.mqPezzo * p.costoTotaleMq), 0)
+  const totalPietra = pieces.reduce((sum, p) => sum + (p.mqPezzo * p.costoPietraMq), 0)
+  const totalEngobbio = pieces.reduce((sum, p) => sum + (p.mqPezzo * p.costoEngobbioMq), 0)
+  const totalSmaltatura = pieces.reduce((sum, p) => sum + (p.mqPezzo * p.costoSmaltaturaMq), 0)
+  const totalImballo = pieces.reduce((sum, p) => sum + (p.mqPezzo * p.imballoMq), 0)
+  const totalCosto = totalPietra + totalEngobbio + totalSmaltatura + totalImballo
   const avgCostoMq = totalMq > 0 ? totalCosto / totalMq : 0
 
   const handleConfirm = () => {
-    onConfirm(totalMq, totalCosto)
+    onConfirm({
+      totalMq,
+      costoPietra: totalPietra,
+      costoEngobbio: totalEngobbio,
+      costoSmaltatura: totalSmaltatura,
+      costoImballo: totalImballo,
+      costoTotale: totalCosto
+    })
     onOpenChange(false)
   }
 
@@ -162,33 +184,21 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
           </DialogTitle>
         </DialogHeader>
 
-        {/* Costi Base Parametrizzati */}
+        {/* Parametri */}
         <Card className="mb-4">
           <CardHeader className="py-3">
-            <CardTitle className="text-sm">Parametri Base</CardTitle>
+            <CardTitle className="text-sm">Parametri</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs">% Maggiorazione</Label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={baseCosts.percentuale}
-                  onChange={(e) => setBaseCosts({ ...baseCosts, percentuale: parseFloat(e.target.value) || 0 })}
-                  className="h-8"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Imballo €/mq</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={baseCosts.imballoMq}
-                  onChange={(e) => setBaseCosts({ ...baseCosts, imballoMq: parseFloat(e.target.value) || 0 })}
-                  className="h-8"
-                />
-              </div>
+            <div className="space-y-1 max-w-xs">
+              <Label className="text-xs">% Maggiorazione Smaltatura</Label>
+              <Input
+                type="number"
+                step="0.1"
+                value={baseCosts.percentuale}
+                onChange={(e) => setBaseCosts({ ...baseCosts, percentuale: parseFloat(e.target.value) || 0 })}
+                className="h-8"
+              />
             </div>
             <Button 
               variant="outline" 
@@ -273,14 +283,8 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
                       className="h-8 w-16"
                     />
                   </td>
-                  <td className="px-1 py-2">
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={piece.imballoMq}
-                      onChange={(e) => updatePiece(piece.id, 'imballoMq', parseFloat(e.target.value) || 0)}
-                      className="h-8 w-20"
-                    />
+                  <td className="px-2 py-2 bg-muted/30 text-muted-foreground">
+                    {piece.imballoMq.toFixed(2)}
                   </td>
                   <td className="px-2 py-2 bg-green-50 dark:bg-green-900/20 font-bold text-green-700 dark:text-green-400">
                     {piece.costoTotaleMq.toFixed(2)}
