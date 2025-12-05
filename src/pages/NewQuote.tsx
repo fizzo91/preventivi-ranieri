@@ -345,13 +345,16 @@ const NewQuote = () => {
     setStoneCalculatorOpen(true)
   }
 
+  // Funzione per arrotondare per eccesso a 2 decimali
+  const roundUp = (value: number): number => Math.ceil(value * 100) / 100
+
   const handleStoneCalculatorConfirm = (result: StoneCalculatorResult) => {
     if (stoneCalculatorSectionId) {
       setSections(sections.map(section => {
         if (section.id === stoneCalculatorSectionId) {
           // Rimuovi eventuali item pietra esistenti
           const filteredItems = section.items.filter(item => 
-            !['pietra', 'engobbio', 'smaltatura', 'imballo'].some(keyword => 
+            !['pietra', 'smaltatura', 'imballo'].some(keyword => 
               item.productName.toLowerCase().includes(keyword)
             )
           )
@@ -361,46 +364,35 @@ const NewQuote = () => {
             {
               id: `${timestamp}-pietra`,
               productId: "",
-              productName: "Pietra",
+              productName: `PIETRA SP. ${result.spessore}`,
               category: "Calcolatore Pietra",
-              description: `${result.totalMq.toFixed(4)} mq`,
-              quantity: result.totalMq,
-              price: result.totalMq > 0 ? result.costoPietra / result.totalMq : 0,
+              description: `${result.totalMq.toFixed(2)} mq`,
+              quantity: roundUp(result.totalMq),
+              price: result.totalMq > 0 ? roundUp(result.costoPietra / result.totalMq) : 0,
               unit: "mq",
-              total: result.costoPietra
-            },
-            {
-              id: `${timestamp}-engobbio`,
-              productId: "",
-              productName: "Engobbio",
-              category: "Calcolatore Pietra",
-              description: `${result.totalMq.toFixed(4)} mq`,
-              quantity: result.totalMq,
-              price: result.totalMq > 0 ? result.costoEngobbio / result.totalMq : 0,
-              unit: "mq",
-              total: result.costoEngobbio
+              total: roundUp(result.costoPietra)
             },
             {
               id: `${timestamp}-smaltatura`,
               productId: "",
-              productName: "Smaltatura",
+              productName: "TOT. SMALTATURA",
               category: "Calcolatore Pietra",
-              description: `${result.totalMq.toFixed(4)} mq`,
-              quantity: result.totalMq,
-              price: result.totalMq > 0 ? result.costoSmaltatura / result.totalMq : 0,
+              description: `${result.totalMq.toFixed(2)} mq (Engobbio + Smaltatura)`,
+              quantity: roundUp(result.totalMq),
+              price: result.totalMq > 0 ? roundUp(result.costoTotSmaltatura / result.totalMq) : 0,
               unit: "mq",
-              total: result.costoSmaltatura
+              total: roundUp(result.costoTotSmaltatura)
             },
             {
               id: `${timestamp}-imballo`,
               productId: "",
-              productName: "Imballo",
+              productName: "SERVIZIO IMBALLO",
               category: "Calcolatore Pietra",
-              description: `${result.totalMq.toFixed(4)} mq`,
-              quantity: result.totalMq,
-              price: result.totalMq > 0 ? result.costoImballo / result.totalMq : 0,
+              description: `${result.totalMq.toFixed(2)} mq`,
+              quantity: roundUp(result.totalMq),
+              price: result.totalMq > 0 ? roundUp(result.costoImballo / result.totalMq) : 0,
               unit: "mq",
-              total: result.costoImballo
+              total: roundUp(result.costoImballo)
             }
           ]
           

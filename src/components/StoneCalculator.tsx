@@ -28,11 +28,16 @@ interface StonePiece {
   costoTotaleMq: number
 }
 
+// Funzione per arrotondare per eccesso a 2 decimali
+function roundUp(value: number): number {
+  return Math.ceil(value * 100) / 100
+}
+
 export interface StoneCalculatorResult {
   totalMq: number
+  spessore: number // spessore per il nome prodotto
   costoPietra: number
-  costoEngobbio: number
-  costoSmaltatura: number
+  costoTotSmaltatura: number // engobbio + smaltatura
   costoImballo: number
   costoTotale: number
 }
@@ -154,20 +159,24 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
     setPieces(prev => prev.map(calculatePiece))
   }, [])
 
-  const totalMq = pieces.reduce((sum, p) => sum + p.mqPezzo, 0)
-  const totalPietra = pieces.reduce((sum, p) => sum + (p.mqPezzo * p.costoPietraMq), 0)
-  const totalEngobbio = pieces.reduce((sum, p) => sum + (p.mqPezzo * p.costoEngobbioMq), 0)
-  const totalSmaltatura = pieces.reduce((sum, p) => sum + (p.mqPezzo * p.costoSmaltaturaMq), 0)
-  const totalImballo = pieces.reduce((sum, p) => sum + (p.mqPezzo * p.imballoMq), 0)
-  const totalCosto = totalPietra + totalEngobbio + totalSmaltatura + totalImballo
-  const avgCostoMq = totalMq > 0 ? totalCosto / totalMq : 0
+  const totalMq = roundUp(pieces.reduce((sum, p) => sum + p.mqPezzo, 0))
+  const totalPietra = roundUp(pieces.reduce((sum, p) => sum + (p.mqPezzo * p.costoPietraMq), 0))
+  const totalEngobbio = roundUp(pieces.reduce((sum, p) => sum + (p.mqPezzo * p.costoEngobbioMq), 0))
+  const totalSmaltatura = roundUp(pieces.reduce((sum, p) => sum + (p.mqPezzo * p.costoSmaltaturaMq), 0))
+  const totalTotSmaltatura = roundUp(totalEngobbio + totalSmaltatura) // Somma engobbio + smaltatura
+  const totalImballo = roundUp(pieces.reduce((sum, p) => sum + (p.mqPezzo * p.imballoMq), 0))
+  const totalCosto = roundUp(totalPietra + totalTotSmaltatura + totalImballo)
+  const avgCostoMq = totalMq > 0 ? roundUp(totalCosto / totalMq) : 0
+  
+  // Prendi lo spessore dal primo pezzo (o usa un valore medio se diversi)
+  const spessore = pieces.length > 0 ? pieces[0].sp : 2
 
   const handleConfirm = () => {
     onConfirm({
       totalMq,
+      spessore,
       costoPietra: totalPietra,
-      costoEngobbio: totalEngobbio,
-      costoSmaltatura: totalSmaltatura,
+      costoTotSmaltatura: totalTotSmaltatura,
       costoImballo: totalImballo,
       costoTotale: totalCosto
     })
@@ -260,19 +269,19 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
                     />
                   </td>
                   <td className="px-2 py-2 bg-amber-50 dark:bg-amber-900/20 font-medium">
-                    {piece.mqPezzo.toFixed(4)}
+                    {roundUp(piece.mqPezzo).toFixed(2)}
                   </td>
                   <td className="px-2 py-2 bg-muted/30 text-muted-foreground">
-                    {piece.costoPietraMq.toFixed(2)}
+                    {roundUp(piece.costoPietraMq).toFixed(2)}
                   </td>
                   <td className="px-2 py-2 bg-muted/30 text-muted-foreground">
-                    {piece.costoEngobbioMq.toFixed(2)}
+                    {roundUp(piece.costoEngobbioMq).toFixed(2)}
                   </td>
                   <td className="px-2 py-2 bg-muted/30 text-muted-foreground">
-                    {piece.costoSmaltaturaMq.toFixed(2)}
+                    {roundUp(piece.costoSmaltaturaMq).toFixed(2)}
                   </td>
                   <td className="px-2 py-2 bg-amber-50 dark:bg-amber-900/20 font-medium">
-                    {piece.totaleSmaltatura.toFixed(2)}
+                    {roundUp(piece.totaleSmaltatura).toFixed(2)}
                   </td>
                   <td className="px-1 py-2">
                     <Input
@@ -284,10 +293,10 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
                     />
                   </td>
                   <td className="px-2 py-2 bg-muted/30 text-muted-foreground">
-                    {piece.imballoMq.toFixed(2)}
+                    {roundUp(piece.imballoMq).toFixed(2)}
                   </td>
                   <td className="px-2 py-2 bg-green-50 dark:bg-green-900/20 font-bold text-green-700 dark:text-green-400">
-                    {piece.costoTotaleMq.toFixed(2)}
+                    {roundUp(piece.costoTotaleMq).toFixed(2)}
                   </td>
                   <td className="px-1 py-2">
                     <Button
@@ -317,7 +326,7 @@ export function StoneCalculator({ open, onOpenChange, onConfirm }: StoneCalculat
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-sm text-muted-foreground">Totale mq</div>
-                <div className="text-2xl font-bold">{totalMq.toFixed(4)}</div>
+                <div className="text-2xl font-bold">{totalMq.toFixed(2)}</div>
               </div>
               <div>
                 <div className="text-sm text-muted-foreground">Costo Medio €/mq</div>
