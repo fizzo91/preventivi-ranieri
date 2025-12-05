@@ -441,8 +441,13 @@ const NewQuote = () => {
 
   // Ricalcola totali delle sezioni quando cambia il contenuto degli items o risks
   useEffect(() => {
-    setSections(prevSections => 
-      prevSections.map(section => {
+    const depsKey = sections.map(s => 
+      `${s.id}:${s.items.map(i => `${i.id}-${i.total}`).join(',')}:${s.risks.map(r => `${r.id}-${r.percentage}-${r.appliedToItemId}`).join(',')}:${s.finitura}`
+    ).join('|')
+    
+    setSections(prevSections => {
+      let hasChanges = false
+      const updatedSections = prevSections.map(section => {
         const itemsTotal = section.items.reduce((sum, item) => sum + item.total, 0)
         
         const risksTotal = section.risks.reduce((sum, risk) => {
@@ -455,10 +460,21 @@ const NewQuote = () => {
         }, 0)
         
         const newTotal = itemsTotal + risksTotal + section.finitura
-        return newTotal !== section.total ? { ...section, total: newTotal } : section
+        if (Math.abs(newTotal - section.total) > 0.001) {
+          hasChanges = true
+          return { ...section, total: newTotal }
+        }
+        return section
       })
-    )
-  }, [sections.flatMap(s => [...s.items.map(i => `${i.id}-${i.total}`), ...s.risks.map(r => `${r.id}-${r.percentage}-${r.appliedToItemId}`), `finitura-${s.finitura}`])])
+      return hasChanges ? updatedSections : prevSections
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(sections.map(s => ({ 
+    id: s.id, 
+    items: s.items.map(i => ({ id: i.id, total: i.total })), 
+    risks: s.risks.map(r => ({ id: r.id, percentage: r.percentage, appliedToItemId: r.appliedToItemId })),
+    finitura: s.finitura 
+  })))])
 
   const addSection = () => {
     const newSection: QuoteSection = {
