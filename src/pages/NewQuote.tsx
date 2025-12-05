@@ -156,14 +156,21 @@ function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpd
         <Label>Prodotto</Label>
         <div className="flex gap-2">
           <div className="flex-1">
-            <Combobox
-              options={productOptions}
-              value={item.productId}
-              placeholder="Cerca prodotto..."
-              searchPlaceholder="Digita per cercare..."
-              recentIds={recentProductIds}
-              onSelect={(value) => onSelectProduct(item.id, value)}
-            />
+            {/* Se è un prodotto fisso dalla calcolatrice, mostra solo il nome */}
+            {item.productName && !item.productId ? (
+              <div className="h-10 px-3 py-2 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-md flex items-center font-medium text-amber-800 dark:text-amber-200">
+                {item.productName}
+              </div>
+            ) : (
+              <Combobox
+                options={productOptions}
+                value={item.productId}
+                placeholder="Cerca prodotto..."
+                searchPlaceholder="Digita per cercare..."
+                recentIds={recentProductIds}
+                onSelect={(value) => onSelectProduct(item.id, value)}
+              />
+            )}
           </div>
           <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
             <DialogTrigger asChild>
