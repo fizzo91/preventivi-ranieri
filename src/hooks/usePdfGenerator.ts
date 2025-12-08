@@ -130,74 +130,82 @@ export const usePdfGenerator = () => {
           y += 4 + (lines * 3)
         }
         
-        // Stone Calculator Details
+        // Stone Calculator Details Table
         if (stoneItems.length > 0) {
           checkPageBreak(50)
           y += 5
           
+          // Get stone item details
+          const pietraItem = stoneItems.find((item: any) => item.productName.includes('PIETRA'))
+          const smaltItem = stoneItems.find((item: any) => item.productName.includes('SMALTATURA'))
+          const imballoItem = stoneItems.find((item: any) => item.productName.includes('IMBALLO'))
+          
+          // Extract SP and MQ
+          const mq = pietraItem?.quantity || 0
+          const spMatch = pietraItem?.productName.match(/SP\.\s*(\d+(?:\.\d+)?)/i)
+          const sp = spMatch ? parseFloat(spMatch[1]) : 2
+          
+          // Header with title and parameters
           pdf.setFillColor(255, 251, 235) // amber-50
           pdf.rect(margin, y, contentWidth, 8, 'F')
           pdf.setFontSize(9)
           pdf.setFont('helvetica', 'bold')
           pdf.setTextColor(146, 64, 14) // amber-800
           pdf.text('DETTAGLIO CALCOLO PIETRA', margin + 2, y + 5)
+          pdf.text(`SP: ${sp} cm`, margin + 80, y + 5)
+          pdf.text(`MQ Totali: ${mq.toFixed(2)} mq`, margin + 110, y + 5)
           pdf.setTextColor(0, 0, 0)
-          y += 12
+          y += 8
           
+          // Table column headers
+          const stoneColWidths = [70, 30, 35, 35]
+          const stoneColX = [margin, margin + 70, margin + 100, margin + 135]
+          
+          pdf.setFillColor(248, 249, 250)
+          pdf.rect(margin, y, contentWidth, 7, 'F')
           pdf.setFontSize(8)
+          pdf.setFont('helvetica', 'bold')
+          pdf.text('Voce', stoneColX[0] + 2, y + 5)
+          pdf.text('Qtà', stoneColX[1] + 2, y + 5)
+          pdf.text('Costo Unitario', stoneColX[2] + 2, y + 5)
+          pdf.text('Totale', stoneColX[3] + 2, y + 5)
+          y += 7
+          
+          // Data rows
           pdf.setFont('helvetica', 'normal')
           
-          // Get MQ from the first stone item
-          const pietraItem = stoneItems.find((item: any) => item.productName.includes('PIETRA'))
-          const smaltItem = stoneItems.find((item: any) => item.productName.includes('SMALTATURA'))
-          const imballoItem = stoneItems.find((item: any) => item.productName.includes('IMBALLO'))
-          
           if (pietraItem) {
-            const mq = pietraItem.quantity
-            // Extract SP from product name (e.g., "PIETRA SP. 2" -> 2)
-            const spMatch = pietraItem.productName.match(/SP\.\s*(\d+(?:\.\d+)?)/i)
-            const sp = spMatch ? parseFloat(spMatch[1]) : 2
-            
-            pdf.setFont('helvetica', 'bold')
-            pdf.text('Parametri:', margin + 2, y)
-            pdf.setFont('helvetica', 'normal')
-            pdf.text(`SP (Spessore): ${sp} cm   |   MQ Totali: ${mq.toFixed(2)} mq`, margin + 30, y)
+            pdf.text('PIETRA', stoneColX[0] + 2, y + 4)
+            pdf.text(`${pietraItem.quantity.toFixed(2)}`, stoneColX[1] + 2, y + 4)
+            pdf.text(`€ ${pietraItem.price.toFixed(2)}`, stoneColX[2] + 2, y + 4)
+            pdf.text(`€ ${pietraItem.total.toFixed(2)}`, stoneColX[3] + 2, y + 4)
             y += 6
-            
-            pdf.setFont('helvetica', 'bold')
-            pdf.text('Formule utilizzate:', margin + 2, y)
-            y += 5
-            
-            pdf.setFont('helvetica', 'normal')
-            pdf.text(`PIETRA = (35 x SP) + (20 x SP x MQ) = (35 x ${sp}) + (20 x ${sp} x ${mq.toFixed(2)}) = ${pietraItem.total.toFixed(2)}`, margin + 2, y)
-            y += 5
           }
           
           if (smaltItem) {
-            const mq = smaltItem.quantity
-            const spMatch = pietraItem?.productName.match(/SP\.\s*(\d+(?:\.\d+)?)/i)
-            const sp = spMatch ? parseFloat(spMatch[1]) : 2
-            
-            pdf.text(`ENGOBBIO = (80 + (SP x 20) - 90) + ((MQ x 45) - 15)`, margin + 2, y)
-            y += 4
-            pdf.text(`SMALTATURA = 80 + (20 x SP) + (45 x MQ)`, margin + 2, y)
-            y += 4
-            pdf.text(`TOT. SMALTATURA (Engobbio + Smaltatura) = ${smaltItem.total.toFixed(2)}`, margin + 2, y)
-            y += 5
+            pdf.text('TOT. SMALTATURA', stoneColX[0] + 2, y + 4)
+            pdf.text(`${smaltItem.quantity.toFixed(2)}`, stoneColX[1] + 2, y + 4)
+            pdf.text(`€ ${smaltItem.price.toFixed(2)}`, stoneColX[2] + 2, y + 4)
+            pdf.text(`€ ${smaltItem.total.toFixed(2)}`, stoneColX[3] + 2, y + 4)
+            y += 6
           }
           
           if (imballoItem) {
-            const mq = imballoItem.quantity
-            pdf.text(`IMBALLO = 5 + 4 + (MQ x 3) = 5 + 4 + (${mq.toFixed(2)} x 3) = ${imballoItem.total.toFixed(2)}`, margin + 2, y)
-            y += 5
+            pdf.text('SERVIZIO IMBALLO', stoneColX[0] + 2, y + 4)
+            pdf.text(`${imballoItem.quantity.toFixed(2)}`, stoneColX[1] + 2, y + 4)
+            pdf.text(`€ ${imballoItem.price.toFixed(2)}`, stoneColX[2] + 2, y + 4)
+            pdf.text(`€ ${imballoItem.total.toFixed(2)}`, stoneColX[3] + 2, y + 4)
+            y += 6
           }
           
-          // Total from calculator
+          // Total row
           const stoneTotalCalc = stoneItems.reduce((sum: number, item: any) => sum + item.total, 0)
-          y += 3
+          pdf.setFillColor(248, 249, 250)
+          pdf.rect(margin, y, contentWidth, 7, 'F')
           pdf.setFont('helvetica', 'bold')
-          pdf.text(`Totale Calcolatore Pietra: ${stoneTotalCalc.toFixed(2)}`, margin + 2, y)
-          y += 8
+          pdf.text('TOTALE', stoneColX[0] + 2, y + 5)
+          pdf.text(`€ ${stoneTotalCalc.toFixed(2)}`, stoneColX[3] + 2, y + 5)
+          y += 10
         }
 
         y += 5
