@@ -137,8 +137,6 @@ export const usePdfGenerator = () => {
           
           // Get stone item details
           const pietraItem = stoneItems.find((item: any) => item.productName.includes('PIETRA'))
-          const smaltItem = stoneItems.find((item: any) => item.productName.includes('SMALTATURA'))
-          const imballoItem = stoneItems.find((item: any) => item.productName.includes('IMBALLO'))
           
           // Extract SP and MQ
           const mq = pietraItem?.quantity || 0
@@ -182,24 +180,8 @@ export const usePdfGenerator = () => {
             y += 6
           }
           
-          if (smaltItem) {
-            pdf.text('TOT. SMALTATURA', stoneColX[0] + 2, y + 4)
-            pdf.text(`${smaltItem.quantity.toFixed(2)}`, stoneColX[1] + 2, y + 4)
-            pdf.text(`€ ${smaltItem.price.toFixed(2)}`, stoneColX[2] + 2, y + 4)
-            pdf.text(`€ ${smaltItem.total.toFixed(2)}`, stoneColX[3] + 2, y + 4)
-            y += 6
-          }
-          
-          if (imballoItem) {
-            pdf.text('SERVIZIO IMBALLO', stoneColX[0] + 2, y + 4)
-            pdf.text(`${imballoItem.quantity.toFixed(2)}`, stoneColX[1] + 2, y + 4)
-            pdf.text(`€ ${imballoItem.price.toFixed(2)}`, stoneColX[2] + 2, y + 4)
-            pdf.text(`€ ${imballoItem.total.toFixed(2)}`, stoneColX[3] + 2, y + 4)
-            y += 6
-          }
-          
           // Total row
-          const stoneTotalCalc = stoneItems.reduce((sum: number, item: any) => sum + item.total, 0)
+          const stoneTotalCalc = pietraItem?.total || 0
           pdf.setFillColor(248, 249, 250)
           pdf.rect(margin, y, contentWidth, 7, 'F')
           pdf.setFont('helvetica', 'bold')
