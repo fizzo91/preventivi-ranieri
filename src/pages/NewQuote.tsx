@@ -375,31 +375,9 @@ const NewQuote = () => {
               category: "Calcolatore Pietra",
               description: `${result.totalMq.toFixed(2)} mq`,
               quantity: roundUp(result.totalMq),
-              price: result.totalMq > 0 ? roundUp(result.costoPietra / result.totalMq) : 0,
+              price: result.totalMq > 0 ? roundUp(result.costoTotale / result.totalMq) : 0,
               unit: "mq",
-              total: roundUp(result.costoPietra)
-            },
-            {
-              id: `${timestamp}-smaltatura`,
-              productId: "",
-              productName: "TOT. SMALTATURA",
-              category: "Calcolatore Pietra",
-              description: `${result.totalMq.toFixed(2)} mq (Engobbio + Smaltatura)`,
-              quantity: roundUp(result.totalMq),
-              price: result.totalMq > 0 ? roundUp(result.costoTotSmaltatura / result.totalMq) : 0,
-              unit: "mq",
-              total: roundUp(result.costoTotSmaltatura)
-            },
-            {
-              id: `${timestamp}-imballo`,
-              productId: "",
-              productName: "SERVIZIO IMBALLO",
-              category: "Calcolatore Pietra",
-              description: `${result.totalMq.toFixed(2)} mq`,
-              quantity: roundUp(result.totalMq),
-              price: result.totalMq > 0 ? roundUp(result.costoImballo / result.totalMq) : 0,
-              unit: "mq",
-              total: roundUp(result.costoImballo)
+              total: roundUp(result.costoTotale)
             }
           ]
           
