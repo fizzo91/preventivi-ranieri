@@ -89,6 +89,49 @@ export const usePdfGenerator = () => {
           y += (descLines.length * 4) + 3
         }
 
+        // Chart Image
+        if (section.chartImage) {
+          try {
+            // Load image and add to PDF
+            const img = new Image()
+            img.crossOrigin = 'anonymous'
+            
+            await new Promise<void>((resolve, reject) => {
+              img.onload = () => resolve()
+              img.onerror = () => reject(new Error('Failed to load image'))
+              img.src = section.chartImage
+            })
+
+            // Calculate proportional dimensions
+            const maxWidth = contentWidth - 20
+            const maxHeight = 80
+            let imgWidth = img.width
+            let imgHeight = img.height
+
+            // Scale proportionally
+            if (imgWidth > maxWidth) {
+              const ratio = maxWidth / imgWidth
+              imgWidth = maxWidth
+              imgHeight = imgHeight * ratio
+            }
+            if (imgHeight > maxHeight) {
+              const ratio = maxHeight / imgHeight
+              imgHeight = maxHeight
+              imgWidth = imgWidth * ratio
+            }
+
+            // Check page break before image
+            checkPageBreak(imgHeight + 10)
+
+            // Center the image
+            const imgX = margin + (contentWidth - imgWidth) / 2
+            pdf.addImage(img, 'PNG', imgX, y, imgWidth, imgHeight)
+            y += imgHeight + 5
+          } catch (error) {
+            console.error('Error loading chart image:', error)
+          }
+        }
+
         checkPageBreak(30)
 
         // Items Table Header
