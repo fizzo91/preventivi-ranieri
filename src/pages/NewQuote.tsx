@@ -226,27 +226,18 @@ function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpd
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="priceEM">Prezzo EM (€)</Label>
-                    <Input
-                      id="priceEM"
-                      type="number"
-                      step="0.01"
-                      value={newProduct.price_em}
-                      onChange={(e) => setNewProduct({ ...newProduct, price_em: parseFloat(e.target.value) || 0 })}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="priceDT">Prezzo DT (€)</Label>
-                    <Input
-                      id="priceDT"
-                      type="number"
-                      step="0.01"
-                      value={newProduct.price_dt}
-                      onChange={(e) => setNewProduct({ ...newProduct, price_dt: parseFloat(e.target.value) || 0 })}
-                    />
-                  </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="priceDT">Prezzo (€)</Label>
+                  <Input
+                    id="priceDT"
+                    type="number"
+                    step="0.01"
+                    value={newProduct.price_dt}
+                    onChange={(e) => {
+                      const price = parseFloat(e.target.value) || 0
+                      setNewProduct({ ...newProduct, price_dt: price, price_em: price })
+                    }}
+                  />
                 </div>
               </div>
               <DialogFooter>
@@ -328,8 +319,7 @@ const NewQuote = () => {
     date: new Date().toISOString().split('T')[0],
     validUntil: "",
     notes: "",
-    status: "draft",
-    supplier: "EM" as "EM" | "DT"
+    status: "draft"
   })
 
   const [sections, setSections] = useState<QuoteSection[]>([
@@ -413,8 +403,7 @@ const NewQuote = () => {
         date: editQuote.date || new Date().toISOString().split('T')[0],
         validUntil: editQuote.validity_days ? new Date(new Date(editQuote.date).getTime() + editQuote.validity_days * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : "",
         notes: editQuote.notes || "",
-        status: editQuote.status || "draft",
-        supplier: "EM" // Default, potrebbe essere salvato nelle sections
+        status: editQuote.status || "draft"
       })
 
       if (editQuote.sections && Array.isArray(editQuote.sections) && editQuote.sections.length > 0) {
@@ -630,7 +619,7 @@ const NewQuote = () => {
   const selectProduct = (sectionId: string, itemId: string, productId: string) => {
     const selectedProduct = products.find(p => p.id === productId)
     if (selectedProduct) {
-      const price = quoteData.supplier === "EM" ? selectedProduct.price_em : selectedProduct.price_dt
+      const price = selectedProduct.price_dt  // Sempre DT
       setSections(sections.map(section => {
         if (section.id === sectionId) {
           return {
@@ -835,12 +824,12 @@ const NewQuote = () => {
         </div>
       </div>
 
-      {/* Dati Preventivo */}
+      {/* Informazioni Preventivo - Semplificato */}
       <Card>
         <CardHeader>
           <CardTitle>Informazioni Preventivo</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="quote-number">Numero Preventivo</Label>
             <Input
@@ -850,108 +839,12 @@ const NewQuote = () => {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="quote-date">Data</Label>
+            <Label htmlFor="client-name">Nome Cliente</Label>
             <Input
-              id="quote-date"
-              type="date"
-              value={quoteData.date}
-              onChange={(e) => setQuoteData({...quoteData, date: e.target.value})}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="valid-until">Valido Fino Al</Label>
-            <Input
-              id="valid-until"
-              type="date"
-              value={quoteData.validUntil}
-              onChange={(e) => setQuoteData({...quoteData, validUntil: e.target.value})}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="quote-status">Stato</Label>
-            <Select
-              value={quoteData.status}
-              onValueChange={(value) => setQuoteData({...quoteData, status: value})}
-            >
-              <SelectTrigger id="quote-status">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft">Bozza</SelectItem>
-                <SelectItem value="sent">Inviato</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="quote-supplier">Fornitore / Listino</Label>
-            <Select
-              value={quoteData.supplier}
-              onValueChange={(value: "EM" | "DT") => setQuoteData({...quoteData, supplier: value})}
-            >
-              <SelectTrigger id="quote-supplier">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="EM">EM</SelectItem>
-                <SelectItem value="DT">DT</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Dati Cliente */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Dati Cliente</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="client-name">Nome / Ragione Sociale</Label>
-              <Input
-                id="client-name"
-                value={clientData.name}
-                onChange={(e) => setClientData({...clientData, name: e.target.value})}
-                placeholder="Es. Mario Rossi"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="client-company">Azienda</Label>
-              <Input
-                id="client-company"
-                value={clientData.company}
-                onChange={(e) => setClientData({...clientData, company: e.target.value})}
-                placeholder="Es. Rossi S.r.l."
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="client-email">Email</Label>
-              <Input
-                id="client-email"
-                type="email"
-                value={clientData.email}
-                onChange={(e) => setClientData({...clientData, email: e.target.value})}
-                placeholder="mario.rossi@email.com"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="client-phone">Telefono</Label>
-              <Input
-                id="client-phone"
-                value={clientData.phone}
-                onChange={(e) => setClientData({...clientData, phone: e.target.value})}
-                placeholder="+39 123 456 7890"
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="client-address">Indirizzo</Label>
-            <Textarea
-              id="client-address"
-              value={clientData.address}
-              onChange={(e) => setClientData({...clientData, address: e.target.value})}
-              placeholder="Via Roma 123, 00100 Roma (RM)"
+              id="client-name"
+              value={clientData.name}
+              onChange={(e) => setClientData({...clientData, name: e.target.value})}
+              placeholder="Es. Mario Rossi"
             />
           </div>
         </CardContent>
@@ -959,16 +852,11 @@ const NewQuote = () => {
 
       {/* Sezioni del Preventivo */}
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">Progetti e Lavorazioni</h2>
-          <Button onClick={addSection} variant="outline" className="gap-2">
-            <FolderPlus className="h-4 w-4" />
-            Nuova Sezione
-          </Button>
-        </div>
+        <h2 className="text-2xl font-semibold">Progetti e Lavorazioni</h2>
 
-        {sections.map((section) => (
-          <Card key={section.id} className="border-l-4 border-l-primary">
+        {sections.map((section, sectionIndex) => (
+          <div key={section.id} className="space-y-4">
+            <Card className="border-l-4 border-l-primary">
             <CardHeader className="flex flex-row items-center justify-between">
               <div className="flex-1 space-y-2">
                 <Input
@@ -1227,6 +1115,19 @@ const NewQuote = () => {
               </div>
             </CardContent>
           </Card>
+          
+          {/* Pulsante Nuova Sezione dopo ogni sezione */}
+          <div className="flex justify-center">
+            <Button 
+              onClick={addSection} 
+              variant="ghost" 
+              className="gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <Plus className="h-4 w-4" />
+              Nuova Sezione
+            </Button>
+          </div>
+        </div>
         ))}
       </div>
 
