@@ -22,7 +22,7 @@ const Products = () => {
   const [editForm, setEditForm] = useState({
     name: "",
     description: "",
-    price_em: 0,
+    price_em: 0,  // Mantenuto per compatibilità DB
     price_dt: 0,
     category: "",
     unit: ""
@@ -143,11 +143,11 @@ const Products = () => {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Prezzo Medio EM</CardTitle>
+            <CardTitle className="text-sm font-medium">Prezzo Medio</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-success">
-              € {products.length > 0 ? (products.reduce((sum, p) => sum + p.price_em, 0) / products.length).toFixed(2) : '0.00'}
+              € {products.length > 0 ? (products.reduce((sum, p) => sum + p.price_dt, 0) / products.length).toFixed(2) : '0.00'}
             </div>
           </CardContent>
         </Card>
@@ -190,28 +190,19 @@ const Products = () => {
                 rows={3}
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="product-price-em">Prezzo EM (€)</Label>
+                <Label htmlFor="product-price">Prezzo (€)</Label>
                 <Input
-                  id="product-price-em"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={editForm.price_em}
-                  onChange={(e) => setEditForm({...editForm, price_em: parseFloat(e.target.value) || 0})}
-                  placeholder="0.00"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="product-price-dt">Prezzo DT (€)</Label>
-                <Input
-                  id="product-price-dt"
+                  id="product-price"
                   type="number"
                   step="0.01"
                   min="0"
                   value={editForm.price_dt}
-                  onChange={(e) => setEditForm({...editForm, price_dt: parseFloat(e.target.value) || 0})}
+                  onChange={(e) => {
+                    const price = parseFloat(e.target.value) || 0
+                    setEditForm({...editForm, price_dt: price, price_em: price})
+                  }}
                   placeholder="0.00"
                 />
               </div>
@@ -278,15 +269,9 @@ const Products = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 {product.description}
               </p>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Fornitore EM:</span>
-                  <span className="font-semibold text-success">€ {product.price_em.toFixed(2)} / {product.unit}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Fornitore DT:</span>
-                  <span className="font-semibold text-success">€ {product.price_dt.toFixed(2)} / {product.unit}</span>
-                </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Prezzo:</span>
+                <span className="font-semibold text-success">€ {product.price_dt.toFixed(2)} / {product.unit}</span>
               </div>
             </CardContent>
           </Card>
