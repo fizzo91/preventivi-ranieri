@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy, Loader2, Calculator } from "lucide-react"
+import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy, Loader2, Calculator, ImagePlus, X } from "lucide-react"
+import { supabase } from "@/integrations/supabase/client"
 import { StoneCalculator, StoneCalculatorResult } from "@/components/StoneCalculator"
 import { useToast } from "@/hooks/use-toast"
 import {
@@ -55,6 +56,7 @@ interface QuoteSection {
   id: string
   name: string
   description: string
+  chartImage?: string
   items: QuoteItem[]
   risks: Risk[]
   finitura: number
@@ -491,6 +493,69 @@ const NewQuote = () => {
   const removeSection = (sectionId: string) => {
     if (sections.length > 1) {
       setSections(sections.filter(section => section.id !== sectionId))
+    }
+  }
+
+  // Upload chart image for a section
+  const uploadSectionChart = async (sectionId: string, file: File) => {
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${sectionId}-${Date.now()}.${fileExt}`
+      const filePath = `${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('section-charts')
+        .upload(filePath, file)
+
+      if (uploadError) throw uploadError
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('section-charts')
+        .getPublicUrl(filePath)
+
+      setSections(sections.map(section =>
+        section.id === sectionId ? { ...section, chartImage: publicUrl } : section
+      ))
+
+      toast({
+        title: "Immagine caricata",
+        description: "Il grafico è stato caricato con successo."
+      })
+    } catch (error) {
+      console.error('Upload error:', error)
+      toast({
+        title: "Errore upload",
+        description: "Impossibile caricare l'immagine. Riprova.",
+        variant: "destructive"
+      })
+    }
+  }
+
+  // Remove chart image from a section
+  const removeSectionChart = async (sectionId: string, imageUrl: string) => {
+    try {
+      // Extract file path from URL
+      const urlParts = imageUrl.split('/section-charts/')
+      if (urlParts.length > 1) {
+        const filePath = urlParts[1]
+        await supabase.storage.from('section-charts').remove([filePath])
+      }
+
+      setSections(sections.map(section =>
+        section.id === sectionId ? { ...section, chartImage: undefined } : section
+      ))
+
+      toast({
+        title: "Immagine rimossa",
+        description: "Il grafico è stato rimosso con successo."
+      })
+    } catch (error) {
+      console.error('Remove error:', error)
+      toast({
+        title: "Errore",
+        description: "Impossibile rimuovere l'immagine.",
+        variant: "destructive"
+      })
     }
   }
 
@@ -965,6 +1030,56 @@ const NewQuote = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Chart Image Upload */}
+              <div className="border rounded-lg p-4 bg-muted/30">
+                {section.chartImage ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-muted-foreground">Grafico/Schema</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeSectionChart(section.id, section.chartImage!)}
+                        className="gap-2 text-destructive hover:text-destructive"
+                      >
+                        <X className="h-4 w-4" />
+                        Rimuovi
+                      </Button>
+                    </div>
+                    <img
+                      src={section.chartImage}
+                      alt={`Grafico ${section.name}`}
+                      className="max-w-full max-h-96 rounded-lg border object-contain mx-auto"
+                    />
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center gap-2 py-6 cursor-pointer hover:bg-muted/50 rounded-lg transition-colors">
+                    <ImagePlus className="h-8 w-8 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Carica Grafico/Immagine</span>
+                    <span className="text-xs text-muted-foreground">(JPG, PNG, WEBP - max 5MB)</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          if (file.size > 5 * 1024 * 1024) {
+                            toast({
+                              title: "File troppo grande",
+                              description: "L'immagine deve essere inferiore a 5MB.",
+                              variant: "destructive"
+                            })
+                            return
+                          }
+                          uploadSectionChart(section.id, file)
+                        }
+                      }}
+                    />
+                  </label>
+                )}
+              </div>
+
               {/* Items */}
               <div className="space-y-4">
                 <DndContext
