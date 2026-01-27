@@ -1,86 +1,127 @@
 
-## Piano: Campo Grafico per Ogni Sezione del Preventivo
+## Piano: Semplificazione Interfaccia
 
 ### Panoramica
-Aggiungeremo la possibilità di caricare un'immagine (grafico, disegno, schema) per ogni sezione del preventivo. L'immagine apparirà tra la descrizione della sezione e la tabella dei costi, sia nell'interfaccia che nel PDF generato.
+Quattro modifiche per semplificare l'interfaccia e renderla più pratica per l'uso interno:
 
-### Layout Finale della Sezione
+1. **Rimuovere doppio listino** - Solo prezzo DT
+2. **Pulsante "Nuova Sezione"** alla fine di ogni sezione
+3. **Semplificare area clienti** - Solo numero preventivo e nome cliente
+4. **Semplificare Dashboard** - Solo preventivi recenti
+
+---
+
+### 1. Rimozione Doppio Listino (Solo DT)
+
+**File coinvolti:**
+- `src/pages/NewQuote.tsx` - Rimuovere selettore fornitore, usare sempre `price_dt`
+- `src/pages/Products.tsx` - Rimuovere campi prezzo EM, mostrare solo DT
+- `src/hooks/useProducts.ts` - Mantenere struttura (compatibilità DB)
+
+**Modifiche NewQuote.tsx:**
+- Rimuovere campo `supplier` da `quoteData` 
+- Rimuovere selettore "Fornitore / Listino" dalla UI (linee 885-899)
+- In `selectProduct()` usare sempre `selectedProduct.price_dt`
+- Nel dialog "Aggiungi Prodotto Custom", rimuovere campo Prezzo EM
+
+**Modifiche Products.tsx:**
+- Form: Rimuovere campo "Prezzo EM", rinominare "Prezzo DT" in "Prezzo"
+- Lista prodotti: Mostrare solo un prezzo
+- Stats: Cambiare "Prezzo Medio EM" in "Prezzo Medio"
+
+---
+
+### 2. Pulsante "Nuova Sezione" alla Fine di Ogni Sezione
+
+**File:** `src/pages/NewQuote.tsx`
+
+Aggiungere un pulsante dopo ogni card sezione (dopo `</Card>`), prima della chiusura del map:
 
 ```text
 ┌─────────────────────────────────────────────────────────────────┐
-│  Nome Sezione                                    Totale: € XXX  │
+│  SEZIONE 1                                                      │
+│  ... contenuto sezione ...                                      │
+└─────────────────────────────────────────────────────────────────┘
+                              ▼
+              [+ Nuova Sezione]  ← Pulsante da aggiungere
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  SEZIONE 2                                                      │
+│  ... contenuto sezione ...                                      │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+- Rimuovere il pulsante "Nuova Sezione" dall'header (linea 964-967)
+- Aggiungere pulsante centrato tra le sezioni con stile discreto
+
+---
+
+### 3. Semplificare Area Clienti
+
+**File:** `src/pages/NewQuote.tsx`
+
+Attualmente mostra: numero preventivo, data, valido fino al, stato, fornitore, nome, azienda, email, telefono, indirizzo
+
+**Nuovo layout semplificato:**
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│  Informazioni Preventivo                                        │
 ├─────────────────────────────────────────────────────────────────┤
-│  Descrizione della sezione...                                   │
+│  Numero Preventivo: [____________]    Nome Cliente: [__________]│
+└─────────────────────────────────────────────────────────────────┘
+```
+
+- Rimuovere card "Dati Cliente" separata
+- Rimuovere: data, valido fino al, stato
+- Unire tutto in una sola riga con 2 campi
+
+---
+
+### 4. Semplificare Dashboard
+
+**File:** `src/pages/Dashboard.tsx`
+
+**Rimuovere:**
+- Stats Cards (Preventivi Totali, Valore Totale, Bozze, Inviati)
+- Grafico "Analisi per Categoria"
+- Quick Actions
+
+**Mantenere:**
+- Header con pulsante "Nuovo Preventivo"
+- Lista "Preventivi Recenti" (aumentare da 3 a 10)
+
+**Layout finale semplice:**
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│  Dashboard                           [+ Nuovo Preventivo]       │
 ├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────────────────────────────────┐                    │
-│  │                                         │                    │
-│  │         [IMMAGINE/GRAFICO]              │  [Rimuovi]         │
-│  │                                         │                    │
-│  └─────────────────────────────────────────┘                    │
-│                        oppure                                   │
-│  [+ Carica Grafico/Immagine]                                    │
-├─────────────────────────────────────────────────────────────────┤
-│  Tabella Prodotti/Costi                                         │
-│  ...                                                            │
+│  Preventivi Recenti                                             │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │ PREV-001 • Mario Rossi • € 1,500.00 • Bozza               │ │
+│  ├────────────────────────────────────────────────────────────┤ │
+│  │ PREV-002 • Luigi Verdi • € 2,300.00 • Inviato             │ │
+│  ├────────────────────────────────────────────────────────────┤ │
+│  │ ...altri preventivi...                                     │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                     [Vedi Tutti i Preventivi]                   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### Modifiche Tecniche
+### Riepilogo File da Modificare
 
-#### 1. Creazione Bucket Storage (Migrazione SQL)
-Creare un bucket `section-charts` per archiviare le immagini delle sezioni:
-- Bucket pubblico per facilitare la visualizzazione
-- Policy RLS per permettere solo agli utenti autenticati di caricare/eliminare le proprie immagini
-
-#### 2. Modifica Interfaccia QuoteSection
-Nel file `src/pages/NewQuote.tsx`, aggiungere il campo opzionale:
-```typescript
-interface QuoteSection {
-  id: string
-  name: string
-  description: string
-  chartImage?: string  // URL dell'immagine caricata
-  items: QuoteItem[]
-  risks: Risk[]
-  finitura: number
-  total: number
-}
-```
-
-#### 3. UI per Upload Immagine
-Nella card di ogni sezione (tra descrizione e tabella prodotti):
-- Pulsante "Carica Grafico" se nessuna immagine presente
-- Anteprima dell'immagine con pulsante "Rimuovi" se già caricata
-- Gestione upload tramite Supabase Storage
-- Formati supportati: JPG, PNG, WEBP
-
-#### 4. Funzioni di Gestione
-- `uploadSectionChart(sectionId, file)`: carica l'immagine e aggiorna lo stato
-- `removeSectionChart(sectionId)`: rimuove l'immagine dallo storage e dallo stato
-
-#### 5. Modifica PDF Generator
-Nel file `src/hooks/usePdfGenerator.ts`:
-- Dopo la descrizione della sezione, inserire l'immagine se presente
-- Usare `pdf.addImage()` di jsPDF per incorporare l'immagine
-- Ridimensionare proporzionalmente per adattarla alla larghezza del contenuto
-- Verificare page break prima di inserire l'immagine
+| File | Modifiche |
+|------|-----------|
+| `src/pages/NewQuote.tsx` | Rimuovere selettore fornitore, semplificare header, ridurre area cliente, pulsante nuova sezione |
+| `src/pages/Products.tsx` | Rimuovere campi/visualizzazione prezzo EM |
+| `src/pages/Dashboard.tsx` | Rimuovere stats, grafico, quick actions; mostrare solo lista preventivi |
 
 ---
 
-### File da Modificare/Creare
-
-| File | Azione |
-|------|--------|
-| Migrazione SQL | Creare bucket `section-charts` con policy RLS |
-| `src/pages/NewQuote.tsx` | Aggiungere campo `chartImage`, UI upload, funzioni gestione |
-| `src/hooks/usePdfGenerator.ts` | Aggiungere rendering immagine nel PDF |
-
----
-
-### Note Importanti
-- Le immagini vengono salvate in Lovable Cloud Storage, non nel database
-- Il campo `chartImage` nella sezione contiene solo l'URL pubblico dell'immagine
-- Il JSON delle sezioni salvato nel database conterrà questo URL
-- Limite dimensione file consigliato: 5MB per immagine
+### Note Tecniche
+- Il database mantiene entrambi i campi `price_em` e `price_dt` per retrocompatibilità
+- I preventivi esistenti non vengono modificati
+- La semplificazione migliora la velocità di utilizzo per calcoli interni
