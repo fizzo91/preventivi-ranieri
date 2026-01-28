@@ -1,127 +1,117 @@
 
-## Piano: Semplificazione Interfaccia
+
+## Piano: Galleria Multimediale Progetti
 
 ### Panoramica
-Quattro modifiche per semplificare l'interfaccia e renderla più pratica per l'uso interno:
-
-1. **Rimuovere doppio listino** - Solo prezzo DT
-2. **Pulsante "Nuova Sezione"** alla fine di ogni sezione
-3. **Semplificare area clienti** - Solo numero preventivo e nome cliente
-4. **Semplificare Dashboard** - Solo preventivi recenti
+Creare una nuova pagina "Galleria" che mostra tutte le immagini caricate nelle sezioni dei preventivi. Questo permette di consultare rapidamente se un progetto è già stato quotato, visualizzando le immagini associate e i relativi preventivi.
 
 ---
 
-### 1. Rimozione Doppio Listino (Solo DT)
-
-**File coinvolti:**
-- `src/pages/NewQuote.tsx` - Rimuovere selettore fornitore, usare sempre `price_dt`
-- `src/pages/Products.tsx` - Rimuovere campi prezzo EM, mostrare solo DT
-- `src/hooks/useProducts.ts` - Mantenere struttura (compatibilità DB)
-
-**Modifiche NewQuote.tsx:**
-- Rimuovere campo `supplier` da `quoteData` 
-- Rimuovere selettore "Fornitore / Listino" dalla UI (linee 885-899)
-- In `selectProduct()` usare sempre `selectedProduct.price_dt`
-- Nel dialog "Aggiungi Prodotto Custom", rimuovere campo Prezzo EM
-
-**Modifiche Products.tsx:**
-- Form: Rimuovere campo "Prezzo EM", rinominare "Prezzo DT" in "Prezzo"
-- Lista prodotti: Mostrare solo un prezzo
-- Stats: Cambiare "Prezzo Medio EM" in "Prezzo Medio"
-
----
-
-### 2. Pulsante "Nuova Sezione" alla Fine di Ogni Sezione
-
-**File:** `src/pages/NewQuote.tsx`
-
-Aggiungere un pulsante dopo ogni card sezione (dopo `</Card>`), prima della chiusura del map:
+### Layout della Galleria
 
 ```text
-┌─────────────────────────────────────────────────────────────────┐
-│  SEZIONE 1                                                      │
-│  ... contenuto sezione ...                                      │
-└─────────────────────────────────────────────────────────────────┘
-                              ▼
-              [+ Nuova Sezione]  ← Pulsante da aggiungere
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  SEZIONE 2                                                      │
-│  ... contenuto sezione ...                                      │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-- Rimuovere il pulsante "Nuova Sezione" dall'header (linea 964-967)
-- Aggiungere pulsante centrato tra le sezioni con stile discreto
-
----
-
-### 3. Semplificare Area Clienti
-
-**File:** `src/pages/NewQuote.tsx`
-
-Attualmente mostra: numero preventivo, data, valido fino al, stato, fornitore, nome, azienda, email, telefono, indirizzo
-
-**Nuovo layout semplificato:**
-
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│  Informazioni Preventivo                                        │
-├─────────────────────────────────────────────────────────────────┤
-│  Numero Preventivo: [____________]    Nome Cliente: [__________]│
-└─────────────────────────────────────────────────────────────────┘
-```
-
-- Rimuovere card "Dati Cliente" separata
-- Rimuovere: data, valido fino al, stato
-- Unire tutto in una sola riga con 2 campi
-
----
-
-### 4. Semplificare Dashboard
-
-**File:** `src/pages/Dashboard.tsx`
-
-**Rimuovere:**
-- Stats Cards (Preventivi Totali, Valore Totale, Bozze, Inviati)
-- Grafico "Analisi per Categoria"
-- Quick Actions
-
-**Mantenere:**
-- Header con pulsante "Nuovo Preventivo"
-- Lista "Preventivi Recenti" (aumentare da 3 a 10)
-
-**Layout finale semplice:**
-
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│  Dashboard                           [+ Nuovo Preventivo]       │
-├─────────────────────────────────────────────────────────────────┤
-│  Preventivi Recenti                                             │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │ PREV-001 • Mario Rossi • € 1,500.00 • Bozza               │ │
-│  ├────────────────────────────────────────────────────────────┤ │
-│  │ PREV-002 • Luigi Verdi • € 2,300.00 • Inviato             │ │
-│  ├────────────────────────────────────────────────────────────┤ │
-│  │ ...altri preventivi...                                     │ │
-│  └────────────────────────────────────────────────────────────┘ │
-│                     [Vedi Tutti i Preventivi]                   │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Galleria Progetti                                   [Cerca immagini...]    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
+│  │              │  │              │  │              │  │              │    │
+│  │  [IMMAGINE]  │  │  [IMMAGINE]  │  │  [IMMAGINE]  │  │  [IMMAGINE]  │    │
+│  │              │  │              │  │              │  │              │    │
+│  ├──────────────┤  ├──────────────┤  ├──────────────┤  ├──────────────┤    │
+│  │ PREV-001     │  │ SARTOGO      │  │ FAB 487/26   │  │ FRA 732/26   │    │
+│  │ Mario Rossi  │  │              │  │ Ferlin Int.  │  │ HUGO TORO    │    │
+│  │ € 1,500.00   │  │ € 536.81     │  │ € 3,224.99   │  │ € 1,016.00   │    │
+│  │ [Apri Prev.] │  │ [Apri Prev.] │  │ [Apri Prev.] │  │ [Apri Prev.] │    │
+│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘    │
+│                                                                             │
+│  ┌──────────────┐  ┌──────────────┐                                        │
+│  │              │  │              │                                        │
+│  │  [IMMAGINE]  │  │  [IMMAGINE]  │                                        │
+│  │              │  │              │                                        │
+│  └──────────────┘  └──────────────┘                                        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### Riepilogo File da Modificare
+### Funzionalità
 
-| File | Modifiche |
-|------|-----------|
-| `src/pages/NewQuote.tsx` | Rimuovere selettore fornitore, semplificare header, ridurre area cliente, pulsante nuova sezione |
-| `src/pages/Products.tsx` | Rimuovere campi/visualizzazione prezzo EM |
-| `src/pages/Dashboard.tsx` | Rimuovere stats, grafico, quick actions; mostrare solo lista preventivi |
+1. **Estrazione immagini**: Scansiona tutti i preventivi e raccoglie le immagini `chartImage` dalle sezioni
+2. **Griglia responsive**: Layout a griglia 4 colonne (desktop), 2 colonne (tablet), 1 colonna (mobile)
+3. **Card immagine**: Ogni card mostra:
+   - Immagine in anteprima (cliccabile per ingrandire)
+   - Numero preventivo
+   - Nome cliente
+   - Totale preventivo
+   - Pulsante per aprire/modificare il preventivo
+4. **Ricerca**: Campo di ricerca per filtrare per numero preventivo o nome cliente
+5. **Lightbox**: Click sull'immagine apre una modale con l'immagine a dimensione piena
+6. **Navigazione**: Nuova voce "Galleria" nel menu laterale
 
 ---
 
-### Note Tecniche
-- Il database mantiene entrambi i campi `price_em` e `price_dt` per retrocompatibilità
-- I preventivi esistenti non vengono modificati
-- La semplificazione migliora la velocità di utilizzo per calcoli interni
+### Modifiche Tecniche
+
+#### 1. Nuova Pagina `src/pages/Gallery.tsx`
+
+Componente che:
+- Usa l'hook `useQuotes()` esistente per recuperare tutti i preventivi
+- Estrae le immagini dalle sezioni (campo `chartImage`)
+- Renderizza una griglia di card con anteprime
+- Implementa ricerca e filtro
+- Include lightbox per visualizzazione ingrandita
+
+#### 2. Aggiornamento Menu Laterale `src/components/app-sidebar.tsx`
+
+Aggiungere nuova voce:
+```typescript
+{ title: "Galleria", url: "/gallery", icon: Image }
+```
+
+#### 3. Aggiornamento Router `src/App.tsx`
+
+Aggiungere nuova route:
+```typescript
+<Route path="/gallery" element={<Gallery />} />
+```
+
+---
+
+### Struttura Dati Immagini
+
+Per ogni immagine estratta, creiamo un oggetto con queste informazioni:
+
+```typescript
+interface GalleryImage {
+  imageUrl: string           // URL dell'immagine dal chartImage
+  sectionName: string        // Nome della sezione
+  sectionDescription: string // Descrizione della sezione
+  quoteId: string           // ID del preventivo
+  quoteNumber: string       // Numero preventivo
+  clientName: string        // Nome cliente
+  totalAmount: number       // Totale preventivo
+}
+```
+
+---
+
+### File da Creare/Modificare
+
+| File | Azione |
+|------|--------|
+| `src/pages/Gallery.tsx` | Creare nuova pagina galleria |
+| `src/components/app-sidebar.tsx` | Aggiungere voce menu "Galleria" |
+| `src/App.tsx` | Aggiungere route `/gallery` |
+
+---
+
+### Note Implementative
+
+- Utilizza componenti UI esistenti (Card, Dialog per lightbox)
+- Stile coerente con il resto dell'applicazione
+- Nessuna modifica al database necessaria (i dati esistono già)
+- Le immagini sono già pubbliche nel bucket `section-charts`
+- La ricerca filtra per numero preventivo e nome cliente
+
