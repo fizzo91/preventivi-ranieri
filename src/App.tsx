@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import NewQuote from "./pages/NewQuote";
 import Quotes from "./pages/Quotes";
 import Products from "./pages/Products";
+import Gallery from "./pages/Gallery";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -34,6 +35,7 @@ const App = () => (
                       <Route path="/" element={<Dashboard />} />
                       <Route path="/new-quote" element={<NewQuote />} />
                       <Route path="/quotes" element={<Quotes />} />
+                      <Route path="/gallery" element={<Gallery />} />
                       <Route path="/products" element={<Products />} />
                       <Route path="/settings" element={<Settings />} />
                       <Route path="*" element={<NotFound />} />
