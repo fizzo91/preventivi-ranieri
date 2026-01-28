@@ -124,10 +124,10 @@ const Gallery = () => {
               key={`${image.quoteId}-${index}`}
               className="overflow-hidden hover:shadow-lg transition-shadow"
             >
-              {/* Image Preview */}
+            {/* Image Preview */}
               <div
                 className="aspect-square bg-muted cursor-pointer overflow-hidden"
-                onClick={() => setSelectedImage(image)}
+                onClick={() => openQuote(image.quoteId)}
               >
                 <img
                   src={image.imageUrl}
