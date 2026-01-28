@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -39,7 +39,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useProducts, useCreateProduct } from "@/hooks/useProducts"
-import { useCreateQuote, useUpdateQuote } from "@/hooks/useQuotes"
+import { useCreateQuote, useUpdateQuote, useQuote } from "@/hooks/useQuotes"
 import { useRecentProductIds } from "@/hooks/useRecentProducts"
 
 interface Product {
@@ -298,7 +298,15 @@ const NewQuote = () => {
   const { toast } = useToast()
   const location = useLocation()
   const navigate = useNavigate()
-  const editQuote = location.state?.editQuote
+  const [searchParams] = useSearchParams()
+  const editIdFromUrl = searchParams.get("edit")
+  const editQuoteFromState = location.state?.editQuote
+  
+  // Carica il preventivo dal database se abbiamo l'ID nella URL
+  const { data: editQuoteFromDb } = useQuote(editIdFromUrl || "")
+  
+  // Usa il preventivo dallo state oppure dal database
+  const editQuote = editQuoteFromState || editQuoteFromDb
   
   const { data: products = [], isLoading: productsLoading } = useProducts()
   const recentProductIds = useRecentProductIds()
