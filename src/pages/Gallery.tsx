@@ -132,7 +132,7 @@ const Gallery = () => {
                 <img
                   src={image.imageUrl}
                   alt={image.sectionName}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = "/placeholder.svg";
                   }}
