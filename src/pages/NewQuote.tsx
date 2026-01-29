@@ -990,15 +990,17 @@ const NewQuote = () => {
                           canRemove={section.items.length > 1}
                           onAddProduct={addProductHandler}
                         />
-                        <Button 
-                          onClick={() => addItem(section.id)} 
-                          variant="ghost" 
-                          size="sm" 
-                          className="w-full gap-2 text-muted-foreground hover:text-foreground border border-dashed border-muted-foreground/30 hover:border-primary/50"
-                        >
-                          <Plus className="h-4 w-4" />
-                          Aggiungi voce
-                        </Button>
+                        {itemIndex === section.items.length - 1 && (
+                          <Button 
+                            onClick={() => addItem(section.id)} 
+                            variant="ghost" 
+                            size="sm" 
+                            className="w-full gap-2 text-muted-foreground hover:text-foreground border border-dashed border-muted-foreground/30 hover:border-primary/50"
+                          >
+                            <Plus className="h-4 w-4" />
+                            Aggiungi voce
+                          </Button>
+                        )}
                       </div>
                     ))}
                   </SortableContext>
