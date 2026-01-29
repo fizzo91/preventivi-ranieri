@@ -894,15 +894,6 @@ const NewQuote = () => {
                     <Calculator className="h-4 w-4" />
                     Calc. Pietra
                   </Button>
-                  <Button 
-                    onClick={() => addItem(section.id)} 
-                    size="sm" 
-                    variant="outline" 
-                    className="gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Aggiungi Voce
-                  </Button>
                   <Button
                     onClick={() => duplicateSection(section.id)}
                     size="sm"
@@ -987,18 +978,28 @@ const NewQuote = () => {
                     items={section.items.map(item => item.id)}
                     strategy={verticalListSortingStrategy}
                   >
-                    {section.items.map((item) => (
-                      <SortableItem
-                        key={item.id}
-                        item={item}
-                        products={products}
-                        recentProductIds={recentProductIds}
-                        onSelectProduct={(itemId, productId) => selectProduct(section.id, itemId, productId)}
-                        onUpdateItem={(itemId, field, value) => updateItem(section.id, itemId, field, value)}
-                        onRemoveItem={(itemId) => removeItem(section.id, itemId)}
-                        canRemove={section.items.length > 1}
-                        onAddProduct={addProductHandler}
-                      />
+                    {section.items.map((item, itemIndex) => (
+                      <div key={item.id} className="space-y-2">
+                        <SortableItem
+                          item={item}
+                          products={products}
+                          recentProductIds={recentProductIds}
+                          onSelectProduct={(itemId, productId) => selectProduct(section.id, itemId, productId)}
+                          onUpdateItem={(itemId, field, value) => updateItem(section.id, itemId, field, value)}
+                          onRemoveItem={(itemId) => removeItem(section.id, itemId)}
+                          canRemove={section.items.length > 1}
+                          onAddProduct={addProductHandler}
+                        />
+                        <Button 
+                          onClick={() => addItem(section.id)} 
+                          variant="ghost" 
+                          size="sm" 
+                          className="w-full gap-2 text-muted-foreground hover:text-foreground border border-dashed border-muted-foreground/30 hover:border-primary/50"
+                        >
+                          <Plus className="h-4 w-4" />
+                          Aggiungi voce
+                        </Button>
+                      </div>
                     ))}
                   </SortableContext>
                 </DndContext>
