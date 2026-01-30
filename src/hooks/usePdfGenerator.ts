@@ -22,10 +22,25 @@ export const usePdfGenerator = () => {
       const margin = 20
       const contentWidth = pageWidth - (margin * 2)
       let y = margin
+      let currentPage = 1
+
+      const addPageNumber = () => {
+        const totalPages = pdf.getNumberOfPages()
+        for (let i = 1; i <= totalPages; i++) {
+          pdf.setPage(i)
+          pdf.setFontSize(8)
+          pdf.setFont('helvetica', 'normal')
+          pdf.setTextColor(128, 128, 128)
+          pdf.text(`Pagina ${i} di ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' })
+          pdf.setTextColor(0, 0, 0)
+        }
+        pdf.setPage(totalPages)
+      }
 
       const checkPageBreak = (requiredSpace: number) => {
-        if (y + requiredSpace > pageHeight - margin) {
+        if (y + requiredSpace > pageHeight - margin - 15) { // Leave space for page number
           pdf.addPage()
+          currentPage++
           y = margin
           return true
         }
@@ -310,6 +325,15 @@ export const usePdfGenerator = () => {
         pdf.rect(margin, y, contentWidth, 8, 'F')
         pdf.setFontSize(10)
         pdf.setFont('helvetica', 'bold')
+        
+        // Add mq and €/mq if available
+        const mqTotali = section.mqTotali
+        if (mqTotali && mqTotali > 0) {
+          const euroPerMq = sectionTotal / mqTotali
+          pdf.text(`mq: ${mqTotali.toFixed(2)}`, margin + 2, y + 5)
+          pdf.text(`€/mq: ${euroPerMq.toFixed(2)}`, margin + 40, y + 5)
+        }
+        
         pdf.text(`Totale Sezione: € ${sectionTotal.toFixed(2)}`, margin + contentWidth - 2, y + 5, { align: 'right' })
         y += 15
       }
@@ -370,6 +394,9 @@ export const usePdfGenerator = () => {
       pdf.text(`Preventivo generato il ${new Date().toLocaleDateString('it-IT')}`, pageWidth / 2, y, { align: 'center' })
       y += 5
       pdf.text('Questo preventivo è valido per 30 giorni dalla data di emissione.', pageWidth / 2, y, { align: 'center' })
+
+      // Add page numbers to all pages
+      addPageNumber()
 
       pdf.save(`preventivo-${quoteData.quoteNumber}.pdf`)
       
