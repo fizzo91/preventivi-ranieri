@@ -295,21 +295,7 @@ const Quotes = () => {
                     {groupedQuotes[month].map((quote) => (
                       <div key={quote.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="space-y-1 flex-1">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium">{quote.quote_number}</p>
-                            <Select
-                              value={quote.status}
-                              onValueChange={(value) => handleUpdateQuoteStatus(quote.id, value)}
-                            >
-                              <SelectTrigger className="w-[120px] h-6">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="draft">Bozza</SelectItem>
-                                <SelectItem value="sent">Inviato</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
+                          <p className="font-medium">{quote.quote_number}</p>
                           <p className="text-sm text-muted-foreground">
                             {quote.client_name} {quote.client_company && `• ${quote.client_company}`}
                           </p>
