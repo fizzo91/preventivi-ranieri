@@ -61,6 +61,8 @@ interface QuoteSection {
   risks: Risk[]
   finitura: number
   total: number
+  mqTotali?: number
+  euroPerMq?: number
 }
 
 interface QuoteItem {
@@ -340,7 +342,9 @@ const NewQuote = () => {
       ],
       risks: [],
       finitura: 0,
-      total: 0
+      total: 0,
+      mqTotali: undefined,
+      euroPerMq: undefined
     }
   ])
 
@@ -470,7 +474,9 @@ const NewQuote = () => {
       ],
       risks: [],
       finitura: 0,
-      total: 0
+      total: 0,
+      mqTotali: undefined,
+      euroPerMq: undefined
     }
     setSections([...sections, newSection])
   }
@@ -880,9 +886,34 @@ const NewQuote = () => {
                   rows={2}
                 />
               </div>
-              <div className="flex items-center gap-4">
-                <div className="text-lg font-bold text-primary">
-                  Totale: € {section.total.toFixed(2)}
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="text-lg font-bold text-primary">
+                    Totale: € {section.total.toFixed(2)}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label className="text-xs text-muted-foreground whitespace-nowrap">mq:</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={section.mqTotali || ''}
+                      onChange={(e) => {
+                        const mq = parseFloat(e.target.value) || 0
+                        setSections(sections.map(s => 
+                          s.id === section.id 
+                            ? { ...s, mqTotali: mq > 0 ? mq : undefined, euroPerMq: mq > 0 ? s.total / mq : undefined }
+                            : s
+                        ))
+                      }}
+                      className="h-8 w-20"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  {section.mqTotali && section.mqTotali > 0 && (
+                    <div className="text-sm font-medium bg-muted px-2 py-1 rounded">
+                      €/mq: {(section.total / section.mqTotali).toFixed(2)}
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-2 flex-wrap">
                   <Button 
