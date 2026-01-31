@@ -59,6 +59,7 @@ interface QuoteSection {
   chartImage?: string
   items: QuoteItem[]
   risks: Risk[]
+  engobbio: number
   finitura: number
   total: number
   mqTotali?: number
@@ -341,6 +342,7 @@ const NewQuote = () => {
         { id: "1", productId: "", productName: "", category: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
       ],
       risks: [],
+      engobbio: 0,
       finitura: 0,
       total: 0,
       mqTotali: undefined,
@@ -430,7 +432,7 @@ const NewQuote = () => {
   // Ricalcola totali delle sezioni quando cambia il contenuto degli items o risks
   useEffect(() => {
     const depsKey = sections.map(s => 
-      `${s.id}:${s.items.map(i => `${i.id}-${i.total}`).join(',')}:${s.risks.map(r => `${r.id}-${r.percentage}-${r.appliedToItemId}`).join(',')}:${s.finitura}`
+      `${s.id}:${s.items.map(i => `${i.id}-${i.total}`).join(',')}:${s.risks.map(r => `${r.id}-${r.percentage}-${r.appliedToItemId}`).join(',')}:${s.engobbio}:${s.finitura}`
     ).join('|')
     
     setSections(prevSections => {
@@ -447,7 +449,7 @@ const NewQuote = () => {
           }
         }, 0)
         
-        const newTotal = itemsTotal + risksTotal + section.finitura
+        const newTotal = itemsTotal + risksTotal + (section.engobbio || 0) + section.finitura
         if (Math.abs(newTotal - section.total) > 0.001) {
           hasChanges = true
           return { ...section, total: newTotal }
@@ -461,6 +463,7 @@ const NewQuote = () => {
     id: s.id, 
     items: s.items.map(i => ({ id: i.id, total: i.total })), 
     risks: s.risks.map(r => ({ id: r.id, percentage: r.percentage, appliedToItemId: r.appliedToItemId })),
+    engobbio: s.engobbio,
     finitura: s.finitura 
   })))])
 
@@ -473,6 +476,7 @@ const NewQuote = () => {
         { id: Date.now().toString() + "-item", productId: "", productName: "", category: "", description: "", quantity: 1, price: 0, unit: "", total: 0 }
       ],
       risks: [],
+      engobbio: 0,
       finitura: 0,
       total: 0,
       mqTotali: undefined,
@@ -579,6 +583,7 @@ const NewQuote = () => {
         ...risk,
         id: `${timestamp}-risk-${index}`
       })),
+      engobbio: sectionToDuplicate.engobbio || 0,
       finitura: sectionToDuplicate.finitura,
       total: sectionToDuplicate.total
     }
@@ -1131,8 +1136,31 @@ const NewQuote = () => {
                 )}
               </div>
 
-              {/* Finitura */}
+              {/* Engobbio e Finitura */}
               <div className="space-y-2 pt-4 border-t">
+                {/* Engobbio */}
+                <div className="flex items-center justify-between bg-muted/50 p-4 rounded-lg">
+                  <div>
+                    <h4 className="font-semibold text-sm">Engobbio</h4>
+                    <p className="text-xs text-muted-foreground italic">vedere preventivo allegato</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">€</span>
+                    <Input
+                      type="number"
+                      value={section.engobbio || 0}
+                      onChange={(e) => {
+                        const newEngobbio = parseFloat(e.target.value) || 0
+                        setSections(sections.map(s => 
+                          s.id === section.id ? { ...s, engobbio: newEngobbio } : s
+                        ))
+                      }}
+                      className="w-32 text-right"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+                {/* Finitura */}
                 <div className="flex items-center justify-between bg-muted/50 p-4 rounded-lg">
                   <div>
                     <h4 className="font-semibold text-sm">Finitura</h4>
