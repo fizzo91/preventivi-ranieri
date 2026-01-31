@@ -1,117 +1,70 @@
 
+# Piano: Aggiunta del campo "Engobbio" nei Preventivi
 
-## Piano: Galleria Multimediale Progetti
+## Panoramica
+Aggiungeremo un nuovo campo "Engobbio" che apparirà **prima** di "Finitura" nelle sezioni dei preventivi. Questo campo funzionerà esattamente come "Finitura": un importo in euro che viene sommato al totale della sezione e stampato nel PDF.
 
-### Panoramica
-Creare una nuova pagina "Galleria" che mostra tutte le immagini caricate nelle sezioni dei preventivi. Questo permette di consultare rapidamente se un progetto è già stato quotato, visualizzando le immagini associate e i relativi preventivi.
+## Modifiche previste
 
----
+### 1. Interfaccia e Stato (NewQuote.tsx)
 
-### Layout della Galleria
+**Aggiornamento dell'interfaccia QuoteSection** (riga 55-66):
+- Aggiungere la proprietà `engobbio: number`
 
-```text
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  Galleria Progetti                                   [Cerca immagini...]    │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
-│  │              │  │              │  │              │  │              │    │
-│  │  [IMMAGINE]  │  │  [IMMAGINE]  │  │  [IMMAGINE]  │  │  [IMMAGINE]  │    │
-│  │              │  │              │  │              │  │              │    │
-│  ├──────────────┤  ├──────────────┤  ├──────────────┤  ├──────────────┤    │
-│  │ PREV-001     │  │ SARTOGO      │  │ FAB 487/26   │  │ FRA 732/26   │    │
-│  │ Mario Rossi  │  │              │  │ Ferlin Int.  │  │ HUGO TORO    │    │
-│  │ € 1,500.00   │  │ € 536.81     │  │ € 3,224.99   │  │ € 1,016.00   │    │
-│  │ [Apri Prev.] │  │ [Apri Prev.] │  │ [Apri Prev.] │  │ [Apri Prev.] │    │
-│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘    │
-│                                                                             │
-│  ┌──────────────┐  ┌──────────────┐                                        │
-│  │              │  │              │                                        │
-│  │  [IMMAGINE]  │  │  [IMMAGINE]  │                                        │
-│  │              │  │              │                                        │
-│  └──────────────┘  └──────────────┘                                        │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+**Inizializzazione dello stato** (righe 335-349):
+- Aggiungere `engobbio: 0` alla sezione iniziale
+
+**Funzione addSection** (righe 467-482):
+- Aggiungere `engobbio: 0` quando si crea una nuova sezione
+
+**Duplicazione sezione** (righe 571-584):
+- Copiare anche il valore `engobbio` nella sezione duplicata
+
+### 2. Calcolo del Totale
+
+**useEffect per i totali** (righe 430-465):
+- Includere `engobbio` nella chiave di dipendenza
+- Aggiornare il calcolo: `newTotal = itemsTotal + risksTotal + finitura + engobbio`
+
+### 3. Interfaccia Utente
+
+**Nuovo blocco UI** (prima della riga 1134):
+Aggiungere un blocco identico a "Finitura" ma con etichetta "Engobbio":
+
+```
+┌─────────────────────────────────────────┐
+│ Engobbio                          € [___]│
+│ vedere preventivo allegato               │
+├─────────────────────────────────────────┤
+│ Finitura                          € [___]│
+│ vedere preventivo allegato               │
+└─────────────────────────────────────────┘
 ```
 
----
+### 4. Generazione PDF (usePdfGenerator.ts)
 
-### Funzionalità
+**Stampa Engobbio** (prima della riga 297):
+- Aggiungere la stampa di "Engobbio" con lo stesso formato di "Finitura"
+- Mostrare solo se il valore è maggiore di 0
 
-1. **Estrazione immagini**: Scansiona tutti i preventivi e raccoglie le immagini `chartImage` dalle sezioni
-2. **Griglia responsive**: Layout a griglia 4 colonne (desktop), 2 colonne (tablet), 1 colonna (mobile)
-3. **Card immagine**: Ogni card mostra:
-   - Immagine in anteprima (cliccabile per ingrandire)
-   - Numero preventivo
-   - Nome cliente
-   - Totale preventivo
-   - Pulsante per aprire/modificare il preventivo
-4. **Ricerca**: Campo di ricerca per filtrare per numero preventivo o nome cliente
-5. **Lightbox**: Click sull'immagine apre una modale con l'immagine a dimensione piena
-6. **Navigazione**: Nuova voce "Galleria" nel menu laterale
+**Calcolo totale sezione** (riga 322):
+- Aggiornare: `sectionTotal = sectionItemsTotal + sectionRisksTotal + engobbio + finitura`
 
----
+**Riepilogo finale** (righe 360-375):
+- Includere `engobbio` nel calcolo del totale per il riepilogo
 
-### Modifiche Tecniche
+## Dettagli tecnici
 
-#### 1. Nuova Pagina `src/pages/Gallery.tsx`
+### File da modificare
 
-Componente che:
-- Usa l'hook `useQuotes()` esistente per recuperare tutti i preventivi
-- Estrae le immagini dalle sezioni (campo `chartImage`)
-- Renderizza una griglia di card con anteprime
-- Implementa ricerca e filtro
-- Include lightbox per visualizzazione ingrandita
+| File | Modifiche |
+|------|-----------|
+| `src/pages/NewQuote.tsx` | Interfaccia, stato, calcoli, UI |
+| `src/hooks/usePdfGenerator.ts` | Stampa PDF e calcoli |
 
-#### 2. Aggiornamento Menu Laterale `src/components/app-sidebar.tsx`
+### Ordine di visualizzazione
 
-Aggiungere nuova voce:
-```typescript
-{ title: "Galleria", url: "/gallery", icon: Image }
-```
-
-#### 3. Aggiornamento Router `src/App.tsx`
-
-Aggiungere nuova route:
-```typescript
-<Route path="/gallery" element={<Gallery />} />
-```
-
----
-
-### Struttura Dati Immagini
-
-Per ogni immagine estratta, creiamo un oggetto con queste informazioni:
-
-```typescript
-interface GalleryImage {
-  imageUrl: string           // URL dell'immagine dal chartImage
-  sectionName: string        // Nome della sezione
-  sectionDescription: string // Descrizione della sezione
-  quoteId: string           // ID del preventivo
-  quoteNumber: string       // Numero preventivo
-  clientName: string        // Nome cliente
-  totalAmount: number       // Totale preventivo
-}
-```
-
----
-
-### File da Creare/Modificare
-
-| File | Azione |
-|------|--------|
-| `src/pages/Gallery.tsx` | Creare nuova pagina galleria |
-| `src/components/app-sidebar.tsx` | Aggiungere voce menu "Galleria" |
-| `src/App.tsx` | Aggiungere route `/gallery` |
-
----
-
-### Note Implementative
-
-- Utilizza componenti UI esistenti (Card, Dialog per lightbox)
-- Stile coerente con il resto dell'applicazione
-- Nessuna modifica al database necessaria (i dati esistono già)
-- Le immagini sono già pubbliche nel bucket `section-charts`
-- La ricerca filtra per numero preventivo e nome cliente
-
+1. Rischi della sezione
+2. **Engobbio** (nuovo)
+3. Finitura
+4. Totale sezione (con mq e €/mq)
