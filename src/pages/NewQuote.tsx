@@ -11,6 +11,7 @@ import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy, Loader2, Calcu
 import { supabase } from "@/integrations/supabase/client"
 import { StoneCalculator, StoneCalculatorResult } from "@/components/StoneCalculator"
 import { useToast } from "@/hooks/use-toast"
+import { validateImageFile, getContentTypeForExtension } from "@/lib/fileValidation"
 import {
   Dialog,
   DialogContent,
@@ -503,22 +504,36 @@ const NewQuote = () => {
     }
   }
 
-  // Upload chart image for a section
+  // Upload chart image for a section with secure validation
   const uploadSectionChart = async (sectionId: string, file: File) => {
     try {
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${sectionId}-${Date.now()}.${fileExt}`
-      const filePath = `${fileName}`
+      // Validate file securely
+      const validation = await validateImageFile(file)
+      if (!validation.valid) {
+        toast({
+          title: "File non valido",
+          description: validation.error,
+          variant: "destructive"
+        })
+        return
+      }
+
+      const fileName = `${sectionId}-${validation.sanitizedFilename}`
+      const extension = fileName.split('.').pop() || 'jpg'
+      const contentType = getContentTypeForExtension(extension)
 
       const { error: uploadError } = await supabase.storage
         .from('section-charts')
-        .upload(filePath, file)
+        .upload(fileName, file, {
+          contentType,
+          upsert: false
+        })
 
       if (uploadError) throw uploadError
 
       const { data: { publicUrl } } = supabase.storage
         .from('section-charts')
-        .getPublicUrl(filePath)
+        .getPublicUrl(fileName)
 
       setSections(sections.map(section =>
         section.id === sectionId ? { ...section, chartImage: publicUrl } : section
@@ -987,14 +1002,7 @@ const NewQuote = () => {
                       onChange={(e) => {
                         const file = e.target.files?.[0]
                         if (file) {
-                          if (file.size > 5 * 1024 * 1024) {
-                            toast({
-                              title: "File troppo grande",
-                              description: "L'immagine deve essere inferiore a 5MB.",
-                              variant: "destructive"
-                            })
-                            return
-                          }
+                          // Validation is now handled in uploadSectionChart
                           uploadSectionChart(section.id, file)
                         }
                       }}
