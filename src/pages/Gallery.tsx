@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuotes } from "@/hooks/useQuotes";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { Search, ExternalLink, Image as ImageIcon } from "lucide-react";
 
 interface GalleryImage {
   imageUrl: string;
+  imagePath?: string;
   sectionName: string;
   sectionDescription: string;
   quoteId: string;
@@ -27,6 +29,7 @@ const Gallery = () => {
   const { data: quotes, isLoading } = useQuotes();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+  const [imagesWithUrls, setImagesWithUrls] = useState<GalleryImage[]>([]);
 
   // Extract all images from quotes sections
   const galleryImages = useMemo(() => {
@@ -39,9 +42,10 @@ const Gallery = () => {
       if (!sections || !Array.isArray(sections)) return;
 
       sections.forEach((section) => {
-        if (section.chartImage) {
+        if (section.chartImage || section.chartImagePath) {
           images.push({
-            imageUrl: section.chartImage,
+            imageUrl: section.chartImage || "",
+            imagePath: section.chartImagePath,
             sectionName: section.name || "Sezione",
             sectionDescription: section.description || "",
             quoteId: quote.id,
@@ -56,19 +60,50 @@ const Gallery = () => {
     return images;
   }, [quotes]);
 
+  // Regenerate signed URLs for images with chartImagePath
+  useEffect(() => {
+    const regenerateUrls = async () => {
+      const updatedImages = await Promise.all(
+        galleryImages.map(async (img) => {
+          if (img.imagePath) {
+            try {
+              const { data, error } = await supabase.storage
+                .from('section-charts')
+                .createSignedUrl(img.imagePath, 60 * 60 * 24 * 365);
+              
+              if (!error && data?.signedUrl) {
+                return { ...img, imageUrl: data.signedUrl };
+              }
+            } catch (e) {
+              console.error('Error regenerating signed URL:', e);
+            }
+          }
+          return img;
+        })
+      );
+      setImagesWithUrls(updatedImages);
+    };
+
+    if (galleryImages.length > 0) {
+      regenerateUrls();
+    } else {
+      setImagesWithUrls([]);
+    }
+  }, [galleryImages]);
+
   // Filter images based on search term
   const filteredImages = useMemo(() => {
-    if (!searchTerm.trim()) return galleryImages;
+    if (!searchTerm.trim()) return imagesWithUrls;
 
     const term = searchTerm.toLowerCase();
-    return galleryImages.filter(
+    return imagesWithUrls.filter(
       (img) =>
         img.quoteNumber.toLowerCase().includes(term) ||
         img.clientName.toLowerCase().includes(term) ||
         img.sectionName.toLowerCase().includes(term) ||
         img.sectionDescription.toLowerCase().includes(term)
     );
-  }, [galleryImages, searchTerm]);
+  }, [imagesWithUrls, searchTerm]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("it-IT", {
