@@ -42,6 +42,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { useProducts, useCreateProduct } from "@/hooks/useProducts"
 import { useCreateQuote, useUpdateQuote, useQuote } from "@/hooks/useQuotes"
 import { useRecentProductIds } from "@/hooks/useRecentProducts"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface Product {
   id: string
@@ -58,6 +59,7 @@ interface QuoteSection {
   name: string
   description: string
   chartImage?: string
+  chartImagePath?: string
   items: QuoteItem[]
   risks: Risk[]
   engobbio: number
@@ -300,6 +302,7 @@ function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpd
 
 const NewQuote = () => {
   const { toast } = useToast()
+  const { user } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -506,6 +509,15 @@ const NewQuote = () => {
 
   // Upload chart image for a section with secure validation
   const uploadSectionChart = async (sectionId: string, file: File) => {
+    if (!user) {
+      toast({
+        title: "Errore",
+        description: "Devi essere autenticato per caricare immagini.",
+        variant: "destructive"
+      })
+      return
+    }
+
     try {
       // Validate file securely
       const validation = await validateImageFile(file)
@@ -518,7 +530,8 @@ const NewQuote = () => {
         return
       }
 
-      const fileName = `${sectionId}-${validation.sanitizedFilename}`
+      // Include user_id in path for RLS policy compliance
+      const fileName = `${user.id}/${sectionId}-${validation.sanitizedFilename}`
       const extension = fileName.split('.').pop() || 'jpg'
       const contentType = getContentTypeForExtension(extension)
 
@@ -531,12 +544,19 @@ const NewQuote = () => {
 
       if (uploadError) throw uploadError
 
-      const { data: { publicUrl } } = supabase.storage
+      // Use signed URL for private bucket access
+      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
         .from('section-charts')
-        .getPublicUrl(fileName)
+        .createSignedUrl(fileName, 60 * 60 * 24 * 365) // 1 year expiry
+
+      if (signedUrlError) throw signedUrlError
 
       setSections(sections.map(section =>
-        section.id === sectionId ? { ...section, chartImage: publicUrl } : section
+        section.id === sectionId ? { 
+          ...section, 
+          chartImage: signedUrlData.signedUrl,
+          chartImagePath: fileName // Store path for deletion
+        } : section
       ))
 
       toast({
@@ -554,31 +574,38 @@ const NewQuote = () => {
   }
 
   // Remove chart image from a section
-  const removeSectionChart = async (sectionId: string, imageUrl: string) => {
-    try {
-      // Extract file path from URL
-      const urlParts = imageUrl.split('/section-charts/')
-      if (urlParts.length > 1) {
-        const filePath = urlParts[1]
-        await supabase.storage.from('section-charts').remove([filePath])
+  const removeSectionChart = async (sectionId: string) => {
+    const section = sections.find(s => s.id === sectionId)
+    if (!section?.chartImagePath) {
+      // Fallback: try to extract from signed URL
+      if (section?.chartImage) {
+        const urlParts = section.chartImage.split('/section-charts/')
+        if (urlParts.length > 1) {
+          const pathWithParams = urlParts[1]
+          const filePath = pathWithParams.split('?')[0] // Remove query params
+          try {
+            await supabase.storage.from('section-charts').remove([filePath])
+          } catch (error) {
+            console.error('Remove error:', error)
+          }
+        }
       }
-
-      setSections(sections.map(section =>
-        section.id === sectionId ? { ...section, chartImage: undefined } : section
-      ))
-
-      toast({
-        title: "Immagine rimossa",
-        description: "Il grafico è stato rimosso con successo."
-      })
-    } catch (error) {
-      console.error('Remove error:', error)
-      toast({
-        title: "Errore",
-        description: "Impossibile rimuovere l'immagine.",
-        variant: "destructive"
-      })
+    } else {
+      try {
+        await supabase.storage.from('section-charts').remove([section.chartImagePath])
+      } catch (error) {
+        console.error('Remove error:', error)
+      }
     }
+
+    setSections(sections.map(s =>
+      s.id === sectionId ? { ...s, chartImage: undefined, chartImagePath: undefined } : s
+    ))
+
+    toast({
+      title: "Immagine rimossa",
+      description: "Il grafico è stato rimosso con successo."
+    })
   }
 
   const duplicateSection = (sectionId: string) => {
@@ -977,7 +1004,7 @@ const NewQuote = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => removeSectionChart(section.id, section.chartImage!)}
+                        onClick={() => removeSectionChart(section.id)}
                         className="gap-2 text-destructive hover:text-destructive"
                       >
                         <X className="h-4 w-4" />
