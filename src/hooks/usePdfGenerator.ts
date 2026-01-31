@@ -294,6 +294,21 @@ export const usePdfGenerator = () => {
           y += 5
         }
 
+        // Engobbio
+        const engobbio = section.engobbio || 0
+        if (engobbio > 0) {
+          checkPageBreak(10)
+          
+          pdf.setFontSize(9)
+          pdf.setFont('helvetica', 'bold')
+          pdf.text('Engobbio', margin + 2, y + 4)
+          pdf.text(`€ ${engobbio.toFixed(2)}`, margin + contentWidth - 30, y + 4)
+          pdf.setFont('helvetica', 'italic')
+          pdf.setFontSize(8)
+          pdf.text('vedere preventivo allegato', margin + 2, y + 8)
+          y += 12
+        }
+
         // Finitura
         const finitura = section.finitura || 0
         if (finitura > 0) {
@@ -319,7 +334,7 @@ export const usePdfGenerator = () => {
           }
         }, 0)
         
-        const sectionTotal = sectionItemsTotal + sectionRisksTotal + finitura
+        const sectionTotal = sectionItemsTotal + sectionRisksTotal + engobbio + finitura
         
         pdf.setFillColor(248, 249, 250)
         pdf.rect(margin, y, contentWidth, 8, 'F')
@@ -364,8 +379,9 @@ export const usePdfGenerator = () => {
             return sum + (targetItem ? (targetItem.quantity * targetItem.price) * (risk.percentage / 100) : 0)
           }
         }, 0)
+        const engobbio = section.engobbio || 0
         const finitura = section.finitura || 0
-        const sectionTotal = sectionItemsTotal + sectionRisksTotal + finitura
+        const sectionTotal = sectionItemsTotal + sectionRisksTotal + engobbio + finitura
         
         pdf.setFontSize(9)
         pdf.text(section.name, margin + 2, y)
