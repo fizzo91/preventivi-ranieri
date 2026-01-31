@@ -405,32 +405,61 @@ const NewQuote = () => {
     })
   )
 
+  // Regenerate signed URLs for sections with chartImagePath
+  const regenerateSignedUrls = async (sections: QuoteSection[]): Promise<QuoteSection[]> => {
+    const updatedSections = await Promise.all(
+      sections.map(async (section) => {
+        if (section.chartImagePath) {
+          try {
+            const { data, error } = await supabase.storage
+              .from('section-charts')
+              .createSignedUrl(section.chartImagePath, 60 * 60 * 24 * 365) // 1 year
+            
+            if (!error && data?.signedUrl) {
+              return { ...section, chartImage: data.signedUrl }
+            }
+          } catch (e) {
+            console.error('Error regenerating signed URL:', e)
+          }
+        }
+        return section
+      })
+    )
+    return updatedSections
+  }
+
   // Pre-popola i dati quando si modifica un preventivo esistente
   useEffect(() => {
-    if (editQuote) {
-      setClientData({
-        name: editQuote.client_name || "",
-        email: editQuote.client_email || "",
-        phone: editQuote.client_phone || "",
-        address: editQuote.client_address || "",
-        company: editQuote.client_company || ""
-      })
-      
-      setQuoteData({
-        number: editQuote.quote_number || `PREV-${Date.now()}`,
-        date: editQuote.date || new Date().toISOString().split('T')[0],
-        validUntil: editQuote.validity_days ? new Date(new Date(editQuote.date).getTime() + editQuote.validity_days * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : "",
-        notes: editQuote.notes || "",
-        status: editQuote.status || "draft"
-      })
+    const loadEditQuote = async () => {
+      if (editQuote) {
+        setClientData({
+          name: editQuote.client_name || "",
+          email: editQuote.client_email || "",
+          phone: editQuote.client_phone || "",
+          address: editQuote.client_address || "",
+          company: editQuote.client_company || ""
+        })
+        
+        setQuoteData({
+          number: editQuote.quote_number || `PREV-${Date.now()}`,
+          date: editQuote.date || new Date().toISOString().split('T')[0],
+          validUntil: editQuote.validity_days ? new Date(new Date(editQuote.date).getTime() + editQuote.validity_days * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : "",
+          notes: editQuote.notes || "",
+          status: editQuote.status || "draft"
+        })
 
-      if (editQuote.sections && Array.isArray(editQuote.sections) && editQuote.sections.length > 0) {
-        setSections(editQuote.sections.map((section: any) => ({
-          ...section,
-          risks: section.risks || []
-        })))
+        if (editQuote.sections && Array.isArray(editQuote.sections) && editQuote.sections.length > 0) {
+          const sectionsWithRisks = editQuote.sections.map((section: any) => ({
+            ...section,
+            risks: section.risks || []
+          }))
+          // Regenerate signed URLs for images
+          const sectionsWithUrls = await regenerateSignedUrls(sectionsWithRisks)
+          setSections(sectionsWithUrls)
+        }
       }
     }
+    loadEditQuote()
   }, [editQuote])
 
   // Ricalcola totali delle sezioni quando cambia il contenuto degli items o risks
