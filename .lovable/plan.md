@@ -1,70 +1,94 @@
 
-# Piano: Aggiunta del campo "Engobbio" nei Preventivi
+# Piano: Sistema di Suggerimenti Lavorazioni Basato sulla Memoria
 
 ## Panoramica
-Aggiungeremo un nuovo campo "Engobbio" che apparirà **prima** di "Finitura" nelle sezioni dei preventivi. Questo campo funzionerà esattamente come "Finitura": un importo in euro che viene sommato al totale della sezione e stampato nel PDF.
+Quando aggiungi un prodotto (specialmente una "PIETRA"), il sistema analizzerà i preventivi passati e suggerirà automaticamente le lavorazioni che hai usato più frequentemente insieme a quel prodotto.
 
-## Modifiche previste
+## Come Funzionerà
 
-### 1. Interfaccia e Stato (NewQuote.tsx)
-
-**Aggiornamento dell'interfaccia QuoteSection** (riga 55-66):
-- Aggiungere la proprietà `engobbio: number`
-
-**Inizializzazione dello stato** (righe 335-349):
-- Aggiungere `engobbio: 0` alla sezione iniziale
-
-**Funzione addSection** (righe 467-482):
-- Aggiungere `engobbio: 0` quando si crea una nuova sezione
-
-**Duplicazione sezione** (righe 571-584):
-- Copiare anche il valore `engobbio` nella sezione duplicata
-
-### 2. Calcolo del Totale
-
-**useEffect per i totali** (righe 430-465):
-- Includere `engobbio` nella chiave di dipendenza
-- Aggiornare il calcolo: `newTotal = itemsTotal + risksTotal + finitura + engobbio`
-
-### 3. Interfaccia Utente
-
-**Nuovo blocco UI** (prima della riga 1134):
-Aggiungere un blocco identico a "Finitura" ma con etichetta "Engobbio":
+Quando selezioni un prodotto, apparirà un pannello con i suggerimenti:
 
 ```
-┌─────────────────────────────────────────┐
-│ Engobbio                          € [___]│
-│ vedere preventivo allegato               │
-├─────────────────────────────────────────┤
-│ Finitura                          € [___]│
-│ vedere preventivo allegato               │
-└─────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│ 💡 Lavorazioni suggerite per "Pietra Liscia Sp. 50 mm"      │
+├─────────────────────────────────────────────────────────────┤
+│ ☐ 2° taglio su 5 cm           (usato 12 volte)  [+ Aggiungi]│
+│ ☐ R2-R5 s/s su 5 cm           (usato 10 volte)  [+ Aggiungi]│
+│ ☐ sagomatura su 5 cm          (usato 8 volte)   [+ Aggiungi]│
+│ ☐ TORO su 5 cm                (usato 5 volte)   [+ Aggiungi]│
+├─────────────────────────────────────────────────────────────┤
+│ [Aggiungi selezionati] [Ignora]                             │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### 4. Generazione PDF (usePdfGenerator.ts)
+## Modifiche Tecniche
 
-**Stampa Engobbio** (prima della riga 297):
-- Aggiungere la stampa di "Engobbio" con lo stesso formato di "Finitura"
-- Mostrare solo se il valore è maggiore di 0
+### 1. Nuovo Hook: `useProductSuggestions.ts`
 
-**Calcolo totale sezione** (riga 322):
-- Aggiornare: `sectionTotal = sectionItemsTotal + sectionRisksTotal + engobbio + finitura`
+Creeremo un nuovo hook che analizza i preventivi storici per trovare associazioni tra prodotti:
 
-**Riepilogo finale** (righe 360-375):
-- Includere `engobbio` nel calcolo del totale per il riepilogo
+- Scansiona tutti i preventivi dell'utente
+- Per ogni sezione, identifica quali prodotti appaiono insieme
+- Calcola la frequenza di co-occorrenza
+- Restituisce le lavorazioni più frequentemente associate a un dato prodotto
 
-## Dettagli tecnici
+La logica principale:
+- Quando un prodotto è nella stessa sezione di altri prodotti, crea un'associazione
+- Prioritizza le lavorazioni (categoria "LAVORAZIONE" o "LAVORAZIONI") rispetto ad altri tipi
+- Ordina per frequenza di utilizzo
 
-### File da modificare
+### 2. Nuovo Componente: `ProductSuggestions.tsx`
 
-| File | Modifiche |
-|------|-----------|
-| `src/pages/NewQuote.tsx` | Interfaccia, stato, calcoli, UI |
-| `src/hooks/usePdfGenerator.ts` | Stampa PDF e calcoli |
+Un componente UI che mostra i suggerimenti quando un prodotto viene selezionato:
 
-### Ordine di visualizzazione
+- Appare sotto l'item appena selezionato
+- Mostra le lavorazioni suggerite con checkbox
+- Permette di aggiungere singolarmente o in batch
+- Si nasconde dopo 5 secondi di inattività o quando l'utente clicca "Ignora"
 
-1. Rischi della sezione
-2. **Engobbio** (nuovo)
-3. Finitura
-4. Totale sezione (con mq e €/mq)
+### 3. Modifiche a `NewQuote.tsx`
+
+- Integrare il componente suggerimenti nel flusso di selezione prodotto
+- Aggiungere stato per tracciare quale item ha suggerimenti attivi
+- Implementare funzione per aggiungere rapidamente le lavorazioni suggerite
+
+## File da Creare/Modificare
+
+| File | Azione | Descrizione |
+|------|--------|-------------|
+| `src/hooks/useProductSuggestions.ts` | Nuovo | Hook per calcolare le associazioni prodotto-lavorazioni |
+| `src/components/ProductSuggestions.tsx` | Nuovo | Componente UI per mostrare i suggerimenti |
+| `src/pages/NewQuote.tsx` | Modifica | Integrare il sistema di suggerimenti |
+
+## Logica di Analisi
+
+Il sistema analizzerà i preventivi così:
+
+1. Per ogni preventivo, per ogni sezione:
+   - Estrae tutti i prodotti presenti
+   - Per ogni prodotto, registra quali altri prodotti appaiono nella stessa sezione
+   
+2. Crea una mappa di associazioni:
+   - Chiave: ID prodotto principale
+   - Valore: Lista di prodotti associati con frequenza
+
+3. Filtra per mostrare solo lavorazioni:
+   - Categoria contiene "LAVORAZIONE" o "LAVORAZIONI"
+   - Ordina per frequenza decrescente
+   - Mostra massimo 5-6 suggerimenti
+
+## Esempio di Output
+
+Se selezioni "Pietra Liscia Sp. 50 mm" e nei preventivi passati l'hai usata:
+- 12 volte con "2° taglio su 5 cm"
+- 10 volte con "R2-R5 s/s su 5 cm"
+- 8 volte con "sagomatura su 5 cm"
+
+Il sistema mostrerà questi suggerimenti in ordine di frequenza.
+
+## Vantaggi
+
+- Risparmio di tempo nella creazione preventivi
+- Riduzione errori (non dimentichi lavorazioni comuni)
+- Apprendimento automatico dalle tue abitudini
+- Interfaccia non invasiva (suggerimenti opzionali)
