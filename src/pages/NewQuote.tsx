@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy, Loader2, Calculator, ImagePlus, X } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { StoneCalculator, StoneCalculatorResult } from "@/components/StoneCalculator"
+import { ProductSuggestions } from "@/components/ProductSuggestions"
 import { useToast } from "@/hooks/use-toast"
 import { validateImageFile, getContentTypeForExtension } from "@/lib/fileValidation"
 import {
@@ -42,6 +43,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { useProducts, useCreateProduct } from "@/hooks/useProducts"
 import { useCreateQuote, useUpdateQuote, useQuote } from "@/hooks/useQuotes"
 import { useRecentProductIds } from "@/hooks/useRecentProducts"
+import { useProductSuggestions } from "@/hooks/useProductSuggestions"
 import { useAuth } from "@/contexts/AuthContext"
 
 interface Product {
@@ -356,6 +358,17 @@ const NewQuote = () => {
 
   const [stoneCalculatorOpen, setStoneCalculatorOpen] = useState(false)
   const [stoneCalculatorSectionId, setStoneCalculatorSectionId] = useState<string | null>(null)
+  
+  // State for product suggestions
+  const [activeSuggestion, setActiveSuggestion] = useState<{
+    sectionId: string;
+    itemId: string;
+    productId: string;
+    productName: string;
+  } | null>(null)
+  
+  // Hook for product suggestions
+  const suggestions = useProductSuggestions(activeSuggestion?.productId || null)
 
   const openStoneCalculator = (sectionId: string) => {
     setStoneCalculatorSectionId(sectionId)
@@ -733,8 +746,53 @@ const NewQuote = () => {
         }
         return section
       }))
+      
+      // Activate suggestions for this product
+      setActiveSuggestion({
+        sectionId,
+        itemId,
+        productId,
+        productName: selectedProduct.name
+      })
     }
   }
+  
+  // Handler to add suggested products
+  const handleAddSuggestions = useCallback((productIds: string[]) => {
+    if (!activeSuggestion) return
+    
+    const newItems: QuoteItem[] = productIds.map((productId, index) => {
+      const product = products.find(p => p.id === productId)
+      if (!product) return null
+      return {
+        id: `${Date.now()}-${index}`,
+        productId: product.id,
+        productName: product.name,
+        category: product.category,
+        description: product.description || "",
+        quantity: 1,
+        price: product.price_dt,
+        unit: product.unit,
+        total: product.price_dt
+      }
+    }).filter((item): item is QuoteItem => item !== null)
+    
+    setSections(sections.map(section => {
+      if (section.id === activeSuggestion.sectionId) {
+        return {
+          ...section,
+          items: [...section.items, ...newItems]
+        }
+      }
+      return section
+    }))
+    
+    setActiveSuggestion(null)
+  }, [activeSuggestion, products, sections])
+  
+  const dismissSuggestions = useCallback(() => {
+    setActiveSuggestion(null)
+  }, [])
 
   const updateItem = (sectionId: string, itemId: string, field: keyof QuoteItem, value: any) => {
     setSections(sections.map(section => {
@@ -1090,6 +1148,17 @@ const NewQuote = () => {
                           canRemove={section.items.length > 1}
                           onAddProduct={addProductHandler}
                         />
+                        {/* Product Suggestions Panel */}
+                        {activeSuggestion?.sectionId === section.id && 
+                         activeSuggestion?.itemId === item.id && 
+                         suggestions.length > 0 && (
+                          <ProductSuggestions
+                            suggestions={suggestions}
+                            productName={activeSuggestion.productName}
+                            onAddSuggestions={handleAddSuggestions}
+                            onDismiss={dismissSuggestions}
+                          />
+                        )}
                         {itemIndex === section.items.length - 1 && (
                           <Button 
                             onClick={() => addItem(section.id)} 
