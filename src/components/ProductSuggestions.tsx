@@ -30,11 +30,11 @@ export const ProductSuggestions = ({
 }: ProductSuggestionsProps) => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  // Auto-dismiss after 10 seconds of inactivity
+  // Auto-dismiss after 2 seconds of inactivity
   useEffect(() => {
     const timer = setTimeout(() => {
       onDismiss();
-    }, 10000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [onDismiss, selectedIds]);
