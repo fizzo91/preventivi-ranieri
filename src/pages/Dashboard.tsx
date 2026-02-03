@@ -6,6 +6,14 @@ import { useMemo } from "react"
 import { useQuotes } from "@/hooks/useQuotes"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
+interface ThicknessCost {
+  thickness: number;
+  label: string;
+  averageCostPerMq: number;
+  sectionCount: number;
+  totalMq: number;
+}
+
 const Dashboard = () => {
   const { data: quotes = [], isLoading } = useQuotes()
 
@@ -24,7 +32,6 @@ const Dashboard = () => {
     quotes.forEach(quote => {
       const date = new Date(quote.date)
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-      const monthLabel = date.toLocaleDateString('it-IT', { month: 'short', year: '2-digit' })
       
       if (!monthMap[monthKey]) {
         monthMap[monthKey] = 0
@@ -32,18 +39,76 @@ const Dashboard = () => {
       monthMap[monthKey] += quote.total_amount || 0
     })
 
-    // Ordina per data e converti in array
     return Object.entries(monthMap)
       .sort(([a], [b]) => a.localeCompare(b))
-      .slice(-12) // Ultimi 12 mesi
-      .map(([key, value]) => {
+      .slice(-12)
+      .map(([key]) => {
         const [year, month] = key.split('-')
         const date = new Date(parseInt(year), parseInt(month) - 1)
         return {
           month: date.toLocaleDateString('it-IT', { month: 'short', year: '2-digit' }),
-          valore: Math.round(value)
+          valore: Math.round(monthMap[key])
         }
       })
+  }, [quotes])
+
+  // Calcola i costi medi per spessore
+  const thicknessCosts = useMemo(() => {
+    const thicknessMap: { [key: number]: { totalCost: number; totalMq: number; count: number } } = {}
+
+    quotes.forEach(quote => {
+      const sections = quote.sections as any[]
+      if (!Array.isArray(sections)) return
+
+      sections.forEach(section => {
+        const items = section.items as any[]
+        if (!Array.isArray(items)) return
+
+        // Trova il prodotto PIETRA
+        const pietra = items.find(item => item.category === "PIETRA")
+        if (!pietra) return
+
+        // Estrai spessore dal nome della pietra
+        const spMatch = pietra.productName?.match(/Sp\.\s*(\d+)\s*mm/i)
+        const spessore = spMatch ? parseInt(spMatch[1]) : null
+        if (!spessore) return
+
+        // Cerca la voce "2° taglio"
+        const secondoTaglio = items.find(item => 
+          item.productName?.toLowerCase().includes("2° taglio") || 
+          item.productName?.toLowerCase().includes("2° taglio")
+        )
+
+        // mq reali = 2° taglio se presente, altrimenti pietra
+        const mqReali = secondoTaglio?.quantity ?? pietra?.quantity ?? 0
+        if (mqReali <= 0) return
+
+        // Calcola il totale della sezione
+        const sectionTotal = section.total || 0
+        if (sectionTotal <= 0) return
+
+        // Aggiungi ai dati raggruppati
+        if (!thicknessMap[spessore]) {
+          thicknessMap[spessore] = { totalCost: 0, totalMq: 0, count: 0 }
+        }
+        thicknessMap[spessore].totalCost += sectionTotal
+        thicknessMap[spessore].totalMq += mqReali
+        thicknessMap[spessore].count += 1
+      })
+    })
+
+    // Converti in array e calcola medie
+    const result: ThicknessCost[] = Object.entries(thicknessMap)
+      .map(([thickness, data]) => ({
+        thickness: parseInt(thickness),
+        label: `${thickness} mm`,
+        averageCostPerMq: data.totalMq > 0 ? data.totalCost / data.totalMq : 0,
+        sectionCount: data.count,
+        totalMq: data.totalMq
+      }))
+      .sort((a, b) => a.thickness - b.thickness)
+
+    return result
   }, [quotes])
 
   if (isLoading) {
@@ -107,6 +172,66 @@ const Dashboard = () => {
           ) : (
             <div className="text-center py-8 text-muted-foreground">
               Nessun dato disponibile per il grafico
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Thickness Costs Chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Costo Medio per Spessore (€/mq)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {thicknessCosts.length > 0 ? (
+            <ResponsiveContainer width="100%" height={Math.max(200, thicknessCosts.length * 50)}>
+              <BarChart 
+                data={thicknessCosts} 
+                layout="vertical"
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis 
+                  type="number"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  tickLine={{ stroke: 'hsl(var(--muted-foreground))' }}
+                  tickFormatter={(value) => `€${value.toLocaleString('it-IT')}`}
+                />
+                <YAxis 
+                  type="category"
+                  dataKey="label"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  tickLine={{ stroke: 'hsl(var(--muted-foreground))' }}
+                  width={60}
+                />
+                <Tooltip 
+                  formatter={(value: number) => [`€ ${value.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 'Costo medio/mq']}
+                  labelFormatter={(label) => `Spessore: ${label}`}
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload as ThicknessCost
+                      return (
+                        <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+                          <p className="font-semibold">{label}</p>
+                          <p className="text-primary">€ {data.averageCostPerMq.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mq</p>
+                          <p className="text-sm text-muted-foreground">{data.sectionCount} sezioni</p>
+                          <p className="text-sm text-muted-foreground">{data.totalMq.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} mq totali</p>
+                        </div>
+                      )
+                    }
+                    return null
+                  }}
+                />
+                <Bar 
+                  dataKey="averageCostPerMq" 
+                  fill="hsl(var(--primary))" 
+                  radius={[0, 4, 4, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              Nessun dato disponibile. Crea preventivi con prodotti PIETRA per vedere le statistiche.
             </div>
           )}
         </CardContent>
