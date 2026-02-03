@@ -1,94 +1,102 @@
 
-# Piano: Sistema di Suggerimenti Lavorazioni Basato sulla Memoria
+# Piano: Costi Medi per Spessore nella Dashboard
 
 ## Panoramica
-Quando aggiungi un prodotto (specialmente una "PIETRA"), il sistema analizzerà i preventivi passati e suggerirà automaticamente le lavorazioni che hai usato più frequentemente insieme a quel prodotto.
+Aggiungeremo una nuova card nella Dashboard che mostra i costi medi per metro quadro raggruppati per spessore della pietra. Il sistema calcolerà correttamente i mq reali usando la logica che hai descritto.
 
-## Come Funzionerà
+## Logica di Calcolo dei mq Reali
 
-Quando selezioni un prodotto, apparirà un pannello con i suggerimenti:
+Per ogni sezione:
+1. **Cerca la voce "2° taglio"** - se presente, usa la sua quantità come mq reali
+2. **Se non c'è 2° taglio** - usa la quantità della voce PIETRA
+
+```
+Sezione con 2° taglio:
+- Pietra Liscia Sp. 50 mm: 6.94 mq
+- 2° taglio su 5 cm: 6.94 mq  ← USA QUESTO (mq reali)
+- sagomatura su 5 cm: 1 ml
+→ mq reali = 6.94
+
+Sezione senza 2° taglio:
+- Pietra Liscia Sp. 50 mm: 4.4 mq ← USA QUESTO
+- sagomatura su 5 cm: 2 ml
+→ mq reali = 4.4
+```
+
+## Risultato Visualizzato
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ 💡 Lavorazioni suggerite per "Pietra Liscia Sp. 50 mm"      │
+│ Costo Medio per Spessore (€/mq)                             │
 ├─────────────────────────────────────────────────────────────┤
-│ ☐ 2° taglio su 5 cm           (usato 12 volte)  [+ Aggiungi]│
-│ ☐ R2-R5 s/s su 5 cm           (usato 10 volte)  [+ Aggiungi]│
-│ ☐ sagomatura su 5 cm          (usato 8 volte)   [+ Aggiungi]│
-│ ☐ TORO su 5 cm                (usato 5 volte)   [+ Aggiungi]│
-├─────────────────────────────────────────────────────────────┤
-│ [Aggiungi selezionati] [Ignora]                             │
+│ 20 mm   ████████████████  € 450/mq   (12 sezioni, 45 mq)   │
+│ 30 mm   ██████████████████████  € 520/mq   (8 sezioni)     │
+│ 50 mm   ██████████████████████████████  € 850/mq  (15 sez) │
+│ 70 mm   ██████████████████████████████████████  € 1.100/mq │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ## Modifiche Tecniche
 
-### 1. Nuovo Hook: `useProductSuggestions.ts`
+### File: `src/pages/Dashboard.tsx`
 
-Creeremo un nuovo hook che analizza i preventivi storici per trovare associazioni tra prodotti:
+1. **Nuovo `useMemo` per calcolare i costi per spessore**:
+   - Scansiona tutte le sezioni di tutti i preventivi
+   - Per ogni sezione:
+     - Trova il prodotto PIETRA (categoria = "PIETRA")
+     - Estrae lo spessore dal nome con regex: `/Sp\.\s*(\d+)\s*mm/i`
+     - Cerca la voce "2° taglio" (nome contiene "2° taglio" o "2° taglio")
+     - Se trovata, usa `quantity` del 2° taglio come mq reali
+     - Altrimenti usa `quantity` della PIETRA
+     - Calcola €/mq = totale sezione / mq reali
+   - Raggruppa per spessore e calcola media ponderata
 
-- Scansiona tutti i preventivi dell'utente
-- Per ogni sezione, identifica quali prodotti appaiono insieme
-- Calcola la frequenza di co-occorrenza
-- Restituisce le lavorazioni più frequentemente associate a un dato prodotto
+2. **Nuova Card con grafico a barre orizzontali**:
+   - Asse Y: Spessori (20mm, 30mm, 50mm, ecc.)
+   - Asse X: Costo medio €/mq
+   - Tooltip con dettagli (numero sezioni, totale mq lavorati)
 
-La logica principale:
-- Quando un prodotto è nella stessa sezione di altri prodotti, crea un'associazione
-- Prioritizza le lavorazioni (categoria "LAVORAZIONE" o "LAVORAZIONI") rispetto ad altri tipi
-- Ordina per frequenza di utilizzo
+### Struttura Dati
 
-### 2. Nuovo Componente: `ProductSuggestions.tsx`
+```typescript
+interface ThicknessCost {
+  thickness: number;      // Spessore in mm
+  label: string;          // "20 mm", "50 mm", ecc.
+  averageCostPerMq: number;
+  sectionCount: number;
+  totalMq: number;
+}
+```
 
-Un componente UI che mostra i suggerimenti quando un prodotto viene selezionato:
+### Logica Dettagliata
 
-- Appare sotto l'item appena selezionato
-- Mostra le lavorazioni suggerite con checkbox
-- Permette di aggiungere singolarmente o in batch
-- Si nasconde dopo 5 secondi di inattività o quando l'utente clicca "Ignora"
+```typescript
+// Per ogni sezione
+const pietra = section.items.find(i => i.category === "PIETRA");
+const secondoTaglio = section.items.find(i => 
+  i.productName.toLowerCase().includes("2° taglio") || 
+  i.productName.toLowerCase().includes("2° taglio")
+);
 
-### 3. Modifiche a `NewQuote.tsx`
+// Estrai spessore dal nome della pietra
+const spMatch = pietra?.productName.match(/Sp\.\s*(\d+)\s*mm/i);
+const spessore = spMatch ? parseInt(spMatch[1]) : null;
 
-- Integrare il componente suggerimenti nel flusso di selezione prodotto
-- Aggiungere stato per tracciare quale item ha suggerimenti attivi
-- Implementare funzione per aggiungere rapidamente le lavorazioni suggerite
+// mq reali = 2° taglio se presente, altrimenti pietra
+const mqReali = secondoTaglio?.quantity ?? pietra?.quantity ?? 0;
 
-## File da Creare/Modificare
+// €/mq = totale sezione / mq reali
+const euroPerMq = mqReali > 0 ? section.total / mqReali : 0;
+```
+
+## File da Modificare
 
 | File | Azione | Descrizione |
 |------|--------|-------------|
-| `src/hooks/useProductSuggestions.ts` | Nuovo | Hook per calcolare le associazioni prodotto-lavorazioni |
-| `src/components/ProductSuggestions.tsx` | Nuovo | Componente UI per mostrare i suggerimenti |
-| `src/pages/NewQuote.tsx` | Modifica | Integrare il sistema di suggerimenti |
-
-## Logica di Analisi
-
-Il sistema analizzerà i preventivi così:
-
-1. Per ogni preventivo, per ogni sezione:
-   - Estrae tutti i prodotti presenti
-   - Per ogni prodotto, registra quali altri prodotti appaiono nella stessa sezione
-   
-2. Crea una mappa di associazioni:
-   - Chiave: ID prodotto principale
-   - Valore: Lista di prodotti associati con frequenza
-
-3. Filtra per mostrare solo lavorazioni:
-   - Categoria contiene "LAVORAZIONE" o "LAVORAZIONI"
-   - Ordina per frequenza decrescente
-   - Mostra massimo 5-6 suggerimenti
-
-## Esempio di Output
-
-Se selezioni "Pietra Liscia Sp. 50 mm" e nei preventivi passati l'hai usata:
-- 12 volte con "2° taglio su 5 cm"
-- 10 volte con "R2-R5 s/s su 5 cm"
-- 8 volte con "sagomatura su 5 cm"
-
-Il sistema mostrerà questi suggerimenti in ordine di frequenza.
+| `src/pages/Dashboard.tsx` | Modifica | Aggiungere logica di calcolo e nuova card con grafico |
 
 ## Vantaggi
 
-- Risparmio di tempo nella creazione preventivi
-- Riduzione errori (non dimentichi lavorazioni comuni)
-- Apprendimento automatico dalle tue abitudini
-- Interfaccia non invasiva (suggerimenti opzionali)
+- Visione immediata dei costi medi per ogni spessore
+- Calcolo corretto dei mq reali (2° taglio quando disponibile)
+- Utile per quotazioni future e analisi dei prezzi
