@@ -703,6 +703,22 @@ const NewQuote = () => {
       unit: "",
       total: 0
     }
+    
+    // Find the last product in this section to trigger suggestions
+    const section = sections.find(s => s.id === sectionId)
+    const lastProductWithId = section?.items
+      .filter(item => item.productId)
+      .slice(-1)[0]
+    
+    if (lastProductWithId) {
+      setActiveSuggestion({
+        sectionId,
+        itemId: newItem.id,
+        productId: lastProductWithId.productId,
+        productName: lastProductWithId.productName
+      })
+    }
+    
     setSections(sections.map(section => 
       section.id === sectionId 
         ? { ...section, items: [...section.items, newItem] }
@@ -747,13 +763,6 @@ const NewQuote = () => {
         return section
       }))
       
-      // Activate suggestions for this product
-      setActiveSuggestion({
-        sectionId,
-        itemId,
-        productId,
-        productName: selectedProduct.name
-      })
     }
   }
   
