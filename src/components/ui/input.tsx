@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, onKeyDown, ...props }, ref) => {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      // Only convert dot to comma for number-like inputs
-      if (e.key === '.' && type !== 'email' && type !== 'password' && type !== 'url') {
+      // Only convert dot to comma for number inputs
+      if (e.key === '.' && type === 'number') {
         e.preventDefault();
         const input = e.currentTarget;
         const start = input.selectionStart || 0;
