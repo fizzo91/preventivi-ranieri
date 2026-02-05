@@ -223,6 +223,45 @@ export type Database = {
           },
         ]
       }
+      section_templates: {
+        Row: {
+          complexity: number | null
+          created_at: string | null
+          description: string | null
+          id: string
+          items: Json
+          name: string
+          risk: number | null
+          tags: string[] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          complexity?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          items?: Json
+          name: string
+          risk?: number | null
+          tags?: string[] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          complexity?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          items?: Json
+          name?: string
+          risk?: number | null
+          tags?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null

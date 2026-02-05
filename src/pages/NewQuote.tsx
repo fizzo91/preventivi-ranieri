@@ -45,6 +45,11 @@ import { useCreateQuote, useUpdateQuote, useQuote } from "@/hooks/useQuotes"
 import { useRecentProductIds } from "@/hooks/useRecentProducts"
 import { useProductSuggestions } from "@/hooks/useProductSuggestions"
 import { useAuth } from "@/contexts/AuthContext"
+ import { TagInput } from "@/components/TagInput"
+ import { ComplexityRiskIndicator } from "@/components/ComplexityRiskIndicator"
+ import { SaveTemplateDialog, LoadTemplateDialog } from "@/components/SectionTemplateDialog"
+ import { SectionTemplate } from "@/hooks/useSectionTemplates"
+ import { Badge } from "@/components/ui/badge"
 
 interface Product {
   id: string
@@ -69,6 +74,9 @@ interface QuoteSection {
   total: number
   mqTotali?: number
   euroPerMq?: number
+   tags?: string[]
+   complexity?: number
+   risk?: number
 }
 
 interface QuoteItem {
@@ -352,7 +360,10 @@ const NewQuote = () => {
       finitura: 0,
       total: 0,
       mqTotali: undefined,
-      euroPerMq: undefined
+       euroPerMq: undefined,
+       tags: [],
+       complexity: undefined,
+       risk: undefined
     }
   ])
 
@@ -526,7 +537,10 @@ const NewQuote = () => {
       finitura: 0,
       total: 0,
       mqTotali: undefined,
-      euroPerMq: undefined
+       euroPerMq: undefined,
+       tags: [],
+       complexity: undefined,
+       risk: undefined
     }
     setSections([...sections, newSection])
   }
@@ -679,6 +693,51 @@ const NewQuote = () => {
     })
   }
 
+   const updateSectionTags = (sectionId: string, tags: string[]) => {
+     setSections(sections.map(section =>
+       section.id === sectionId ? { ...section, tags } : section
+     ))
+   }
+ 
+   const updateSectionComplexity = (sectionId: string, complexity: number) => {
+     setSections(sections.map(section =>
+       section.id === sectionId ? { ...section, complexity } : section
+     ))
+   }
+ 
+   const updateSectionRisk = (sectionId: string, risk: number) => {
+     setSections(sections.map(section =>
+       section.id === sectionId ? { ...section, risk } : section
+     ))
+   }
+ 
+   const loadFromTemplate = (template: SectionTemplate) => {
+     const timestamp = Date.now()
+     const newSection: QuoteSection = {
+       id: timestamp.toString(),
+       name: template.name,
+       description: template.description || "",
+       items: template.items.map((item: any, index: number) => ({
+         ...item,
+         id: `${timestamp}-item-${index}`
+       })),
+       risks: [],
+       engobbio: 0,
+       finitura: 0,
+       total: 0,
+       mqTotali: undefined,
+       euroPerMq: undefined,
+       tags: template.tags || [],
+       complexity: template.complexity || undefined,
+       risk: template.risk || undefined
+     }
+     setSections([...sections, newSection])
+     toast({
+       title: "Template caricato",
+       description: `Sezione "${template.name}" creata dal template`
+     })
+   }
+ 
   const duplicateQuote = () => {
     const timestamp = Date.now()
     setQuoteData({
@@ -1016,11 +1075,33 @@ const NewQuote = () => {
             <Card className="border-l-4 border-l-primary">
             <CardHeader className="flex flex-row items-center justify-between">
               <div className="flex-1 space-y-2">
-                <Input
-                  value={section.name}
-                  onChange={(e) => updateSectionName(section.id, e.target.value)}
-                  className="text-lg font-semibold border-none p-0 h-auto bg-transparent"
-                />
+                <div className="flex items-center gap-3">
+                  <Input
+                    value={section.name}
+                    onChange={(e) => updateSectionName(section.id, e.target.value)}
+                    className="text-lg font-semibold border-none p-0 h-auto bg-transparent flex-1"
+                  />
+                  <ComplexityRiskIndicator
+                    type="C"
+                    value={section.complexity}
+                    onChange={(v) => updateSectionComplexity(section.id, v)}
+                  />
+                  <ComplexityRiskIndicator
+                    type="R"
+                    value={section.risk}
+                    onChange={(v) => updateSectionRisk(section.id, v)}
+                  />
+                </div>
+                {/* Tags display */}
+                {section.tags && section.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {section.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
                 <Textarea
                   value={section.description}
                   onChange={(e) => updateSectionDescription(section.id, e.target.value)}
@@ -1068,6 +1149,13 @@ const NewQuote = () => {
                     <Calculator className="h-4 w-4" />
                     Calc. Pietra
                   </Button>
+                  <SaveTemplateDialog
+                    sectionName={section.name}
+                    items={section.items}
+                    tags={section.tags}
+                    complexity={section.complexity}
+                    risk={section.risk}
+                  />
                   <Button
                     onClick={() => duplicateSection(section.id)}
                     size="sm"
@@ -1120,7 +1208,7 @@ const NewQuote = () => {
                     <span className="text-xs text-muted-foreground">(JPG, PNG, WEBP - max 5MB)</span>
                     <input
                       type="file"
-                      accept="image/jpeg,image/png,image/webp"
+                      accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                       className="hidden"
                       onChange={(e) => {
                         const file = e.target.files?.[0]
@@ -1134,6 +1222,15 @@ const NewQuote = () => {
                 )}
               </div>
 
+              {/* Tag Input */}
+              <div className="border-b pb-4">
+                <Label className="text-sm text-muted-foreground mb-2 block">Tags/Etichette</Label>
+                <TagInput
+                  tags={section.tags || []}
+                  onChange={(tags) => updateSectionTags(section.id, tags)}
+                />
+              </div>
+ 
               {/* Items */}
               <div className="space-y-4">
                 <DndContext
@@ -1330,14 +1427,17 @@ const NewQuote = () => {
           
           {/* Pulsante Nuova Sezione dopo ogni sezione */}
           <div className="flex justify-center">
-            <Button 
-              onClick={addSection} 
-              variant="ghost" 
-              className="gap-2 text-muted-foreground hover:text-foreground"
-            >
-              <Plus className="h-4 w-4" />
-              Nuova Sezione
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={addSection} 
+                variant="ghost" 
+                className="gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <Plus className="h-4 w-4" />
+                Nuova Sezione
+              </Button>
+              <LoadTemplateDialog onLoad={loadFromTemplate} />
+            </div>
           </div>
         </div>
         ))}
