@@ -93,7 +93,9 @@ export const usePdfGenerator = () => {
         pdf.rect(margin, y - 5, contentWidth, 10, 'F')
         pdf.setFontSize(11)
         pdf.setFont('helvetica', 'bold')
-        pdf.text(section.name, margin + 2, y)
+       const sectionQty = section.quantity || 1
+       const sectionLabel = sectionQty > 1 ? `${section.name} (x${sectionQty})` : section.name
+       pdf.text(sectionLabel, margin + 2, y)
         y += 10
 
         if (section.description) {
@@ -335,6 +337,7 @@ export const usePdfGenerator = () => {
         }, 0)
         
         const sectionTotal = sectionItemsTotal + sectionRisksTotal + engobbio + finitura
+       const sectionTotalWithQty = sectionTotal * (section.quantity || 1)
         
         pdf.setFillColor(248, 249, 250)
         pdf.rect(margin, y, contentWidth, 8, 'F')
@@ -349,7 +352,11 @@ export const usePdfGenerator = () => {
           pdf.text(`€/mq: ${euroPerMq.toFixed(2)}`, margin + 40, y + 5)
         }
         
-        pdf.text(`Totale Sezione: € ${sectionTotal.toFixed(2)}`, margin + contentWidth - 2, y + 5, { align: 'right' })
+       if ((section.quantity || 1) > 1) {
+         pdf.text(`Totale Sezione: € ${sectionTotal.toFixed(2)} x${section.quantity} = € ${sectionTotalWithQty.toFixed(2)}`, margin + contentWidth - 2, y + 5, { align: 'right' })
+       } else {
+         pdf.text(`Totale Sezione: € ${sectionTotal.toFixed(2)}`, margin + contentWidth - 2, y + 5, { align: 'right' })
+       }
         y += 15
       }
 
@@ -382,10 +389,13 @@ export const usePdfGenerator = () => {
         const engobbio = section.engobbio || 0
         const finitura = section.finitura || 0
         const sectionTotal = sectionItemsTotal + sectionRisksTotal + engobbio + finitura
+       const sectionQty = section.quantity || 1
+       const sectionTotalWithQty = sectionTotal * sectionQty
         
         pdf.setFontSize(9)
-        pdf.text(section.name, margin + 2, y)
-        pdf.text(`€ ${sectionTotal.toFixed(2)}`, margin + contentWidth - 2, y, { align: 'right' })
+       const sectionNameLabel = sectionQty > 1 ? `${section.name} (x${sectionQty})` : section.name
+       pdf.text(sectionNameLabel, margin + 2, y)
+       pdf.text(`€ ${sectionTotalWithQty.toFixed(2)}`, margin + contentWidth - 2, y, { align: 'right' })
         y += 6
       }
       
