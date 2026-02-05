@@ -5,6 +5,7 @@ import { Link } from "react-router-dom"
 import { useMemo } from "react"
 import { useQuotes } from "@/hooks/useQuotes"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+ import { Badge } from "@/components/ui/badge"
 
 interface ThicknessCost {
   thickness: number;
@@ -14,6 +15,12 @@ interface ThicknessCost {
   totalMq: number;
 }
 
+ interface TagStats {
+   tag: string;
+   count: number;
+   totalValue: number;
+ }
+ 
 const Dashboard = () => {
   const { data: quotes = [], isLoading } = useQuotes()
 
@@ -111,6 +118,42 @@ const Dashboard = () => {
     return result
   }, [quotes])
 
+   // Calcola statistiche per tag
+   const tagStats = useMemo(() => {
+     const tagMap: { [key: string]: { count: number; totalValue: number } } = {}
+ 
+     quotes.forEach(quote => {
+       const sections = quote.sections as any[]
+       if (!Array.isArray(sections)) return
+ 
+       sections.forEach(section => {
+         const tags = section.tags as string[]
+         if (!Array.isArray(tags)) return
+ 
+         const sectionTotal = section.total || 0
+ 
+         tags.forEach(tag => {
+           if (!tagMap[tag]) {
+             tagMap[tag] = { count: 0, totalValue: 0 }
+           }
+           tagMap[tag].count += 1
+           tagMap[tag].totalValue += sectionTotal
+         })
+       })
+     })
+ 
+     // Converti in array e ordina per conteggio
+     const result: TagStats[] = Object.entries(tagMap)
+       .map(([tag, data]) => ({
+         tag,
+         count: data.count,
+         totalValue: data.totalValue
+       }))
+       .sort((a, b) => b.count - a.count)
+ 
+     return result
+   }, [quotes])
+ 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -237,6 +280,43 @@ const Dashboard = () => {
         </CardContent>
       </Card>
 
+       {/* Tag Statistics */}
+       <Card>
+         <CardHeader>
+           <CardTitle>Statistiche per Tag</CardTitle>
+         </CardHeader>
+         <CardContent>
+           {tagStats.length > 0 ? (
+             <div className="space-y-4">
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                 {tagStats.slice(0, 9).map((stat) => (
+                   <div key={stat.tag} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
+                     <div className="flex items-center gap-2">
+                       <Badge variant="secondary">{stat.tag}</Badge>
+                       <span className="text-sm text-muted-foreground">
+                         {stat.count} {stat.count === 1 ? 'sezione' : 'sezioni'}
+                       </span>
+                     </div>
+                     <span className="font-semibold text-primary">
+                       € {stat.totalValue.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                     </span>
+                   </div>
+                 ))}
+               </div>
+               {tagStats.length > 9 && (
+                 <p className="text-sm text-muted-foreground text-center">
+                   +{tagStats.length - 9} altri tag
+                 </p>
+               )}
+             </div>
+           ) : (
+             <div className="text-center py-8 text-muted-foreground">
+               Nessun tag trovato. Aggiungi tag alle sezioni dei preventivi per vedere le statistiche.
+             </div>
+           )}
+         </CardContent>
+       </Card>
+ 
       {/* Recent Quotes */}
       <Card>
         <CardHeader>
