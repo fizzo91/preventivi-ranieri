@@ -98,9 +98,10 @@ const Dashboard = () => {
         if (!thicknessMap[spessore]) {
           thicknessMap[spessore] = { totalCost: 0, totalMq: 0, count: 0 }
         }
-        thicknessMap[spessore].totalCost += sectionTotal
-        thicknessMap[spessore].totalMq += mqReali
-        thicknessMap[spessore].count += 1
+       const sectionQty = section.quantity || 1
+       thicknessMap[spessore].totalCost += sectionTotal * sectionQty
+       thicknessMap[spessore].totalMq += mqReali * sectionQty
+       thicknessMap[spessore].count += sectionQty
       })
     })
 
@@ -136,8 +137,9 @@ const Dashboard = () => {
            if (!tagMap[tag]) {
              tagMap[tag] = { count: 0, totalValue: 0 }
            }
-           tagMap[tag].count += 1
-           tagMap[tag].totalValue += sectionTotal
+          const sectionQty = section.quantity || 1
+          tagMap[tag].count += sectionQty
+          tagMap[tag].totalValue += sectionTotal * sectionQty
          })
        })
      })

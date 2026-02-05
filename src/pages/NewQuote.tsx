@@ -77,6 +77,7 @@ interface QuoteSection {
    tags?: string[]
    complexity?: number
    risk?: number
+   quantity?: number
 }
 
 interface QuoteItem {
@@ -363,7 +364,8 @@ const NewQuote = () => {
        euroPerMq: undefined,
        tags: [],
        complexity: undefined,
-       risk: undefined
+       risk: undefined,
+       quantity: 1
     }
   ])
 
@@ -540,7 +542,8 @@ const NewQuote = () => {
        euroPerMq: undefined,
        tags: [],
        complexity: undefined,
-       risk: undefined
+       risk: undefined,
+       quantity: 1
     }
     setSections([...sections, newSection])
   }
@@ -730,6 +733,8 @@ const NewQuote = () => {
        tags: template.tags || [],
        complexity: template.complexity || undefined,
        risk: template.risk || undefined
+     ,
+     quantity: 1
      }
      setSections([...sections, newSection])
      toast({
@@ -908,7 +913,7 @@ const NewQuote = () => {
     }
   }
 
-  const totalAmount = sections.reduce((sum, section) => sum + section.total, 0)
+  const totalAmount = sections.reduce((sum, section) => sum + (section.total * (section.quantity || 1)), 0)
 
   const addRisk = (sectionId: string) => {
     const newRisk: Risk = {
@@ -1136,6 +1141,29 @@ const NewQuote = () => {
                   {section.mqTotali && section.mqTotali > 0 && (
                     <div className="text-sm font-medium bg-muted px-2 py-1 rounded">
                       €/mq: {(section.total / section.mqTotali).toFixed(2)}
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <Label className="text-xs text-muted-foreground whitespace-nowrap">Qtà:</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={section.quantity || 1}
+                      onChange={(e) => {
+                        const qty = parseInt(e.target.value) || 1
+                        setSections(sections.map(s => 
+                          s.id === section.id 
+                            ? { ...s, quantity: Math.max(1, qty) }
+                            : s
+                        ))
+                      }}
+                      className="h-8 w-16"
+                    />
+                  </div>
+                  {(section.quantity || 1) > 1 && (
+                    <div className="text-sm font-bold bg-primary/10 text-primary px-2 py-1 rounded">
+                      Tot x{section.quantity}: € {(section.total * (section.quantity || 1)).toFixed(2)}
                     </div>
                   )}
                 </div>
@@ -1453,8 +1481,8 @@ const NewQuote = () => {
             <h3 className="font-semibold">Totali per Sezione:</h3>
             {sections.map((section) => (
               <div key={section.id} className="flex justify-between text-sm">
-                <span>{section.name}:</span>
-                <span>€ {section.total.toFixed(2)}</span>
+                <span>{section.name}{(section.quantity || 1) > 1 ? ` (x${section.quantity})` : ''}:</span>
+                <span>€ {(section.total * (section.quantity || 1)).toFixed(2)}</span>
               </div>
             ))}
           </div>
