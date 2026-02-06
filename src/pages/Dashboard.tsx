@@ -10,6 +10,9 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 interface ThicknessCost {
   thickness: number;
   label: string;
+  avgPietraPerMq: number;
+  avgRischioPerMq: number;
+  avgFinituraPerMq: number;
   averageCostPerMq: number;
   sectionCount: number;
   totalMq: number;
@@ -61,7 +64,7 @@ const Dashboard = () => {
 
   // Calcola i costi medi per spessore
   const thicknessCosts = useMemo(() => {
-    const thicknessMap: { [key: number]: { totalCost: number; totalMq: number; count: number } } = {}
+    const thicknessMap: { [key: number]: { totalPietra: number; totalRischio: number; totalFinitura: number; totalMq: number; count: number } } = {}
 
     quotes.forEach(quote => {
       const sections = quote.sections as any[]
@@ -80,37 +83,62 @@ const Dashboard = () => {
         const spessore = spMatch ? parseInt(spMatch[1]) : null
         if (!spessore) return
 
-        // Cerca la voce "2° taglio"
-        const secondoTaglio = items.find(item => 
-          item.productName?.toLowerCase().includes("2° taglio") || 
-          item.productName?.toLowerCase().includes("2° taglio")
-        )
-
-        // mq reali = 2° taglio se presente, altrimenti pietra
-        const mqReali = secondoTaglio?.quantity ?? pietra?.quantity ?? 0
-        if (mqReali <= 0) return
-
-        // Calcola il totale della sezione
-        const sectionTotal = section.total || 0
-        if (sectionTotal <= 0) return
-
-        // Aggiungi ai dati raggruppati
-        if (!thicknessMap[spessore]) {
-          thicknessMap[spessore] = { totalCost: 0, totalMq: 0, count: 0 }
+        // Fallback mq: mqTotali > 2° taglio > pietra
+        let mqReali = section.mqTotali as number | undefined
+        if (!mqReali || mqReali <= 0) {
+          const secondoTaglio = items.find(item =>
+            item.productName?.toLowerCase().includes("2° taglio") ||
+            item.productName?.toLowerCase().includes("2° taglio")
+          )
+          mqReali = secondoTaglio?.quantity ?? pietra?.quantity ?? 0
         }
-       const sectionQty = section.quantity || 1
-       thicknessMap[spessore].totalCost += sectionTotal * sectionQty
-       thicknessMap[spessore].totalMq += mqReali * sectionQty
-       thicknessMap[spessore].count += sectionQty
+        if (!mqReali || mqReali <= 0) return
+
+        // Pietra e Lavorazioni = somma di tutti item.total
+        const pietraLavorazioni = items.reduce((sum: number, item: any) => sum + (item.total || 0), 0)
+
+        // Rischio = somma costi dai risks
+        const risks = section.risks as any[]
+        const itemsTotal = pietraLavorazioni
+        let rischio = 0
+        if (Array.isArray(risks)) {
+          risks.forEach((risk: any) => {
+            const percentage = risk.percentage || 0
+            if (risk.appliedToItemId === 'SECTION_TOTAL') {
+              rischio += (itemsTotal * percentage) / 100
+            } else {
+              const targetItem = items.find((item: any) => item.id === risk.appliedToItemId)
+              if (targetItem) {
+                rischio += ((targetItem.total || 0) * percentage) / 100
+              }
+            }
+          })
+        }
+
+        // Finitura = engobbio + finitura
+        const finitura = (section.engobbio || 0) + (section.finitura || 0)
+
+        const sectionQty = section.quantity || 1
+
+        if (!thicknessMap[spessore]) {
+          thicknessMap[spessore] = { totalPietra: 0, totalRischio: 0, totalFinitura: 0, totalMq: 0, count: 0 }
+        }
+        thicknessMap[spessore].totalPietra += pietraLavorazioni * sectionQty
+        thicknessMap[spessore].totalRischio += rischio * sectionQty
+        thicknessMap[spessore].totalFinitura += finitura * sectionQty
+        thicknessMap[spessore].totalMq += mqReali * sectionQty
+        thicknessMap[spessore].count += sectionQty
       })
     })
 
-    // Converti in array e calcola medie
     const result: ThicknessCost[] = Object.entries(thicknessMap)
       .map(([thickness, data]) => ({
         thickness: parseInt(thickness),
         label: `${thickness} mm`,
-        averageCostPerMq: data.totalMq > 0 ? data.totalCost / data.totalMq : 0,
+        avgPietraPerMq: data.totalMq > 0 ? data.totalPietra / data.totalMq : 0,
+        avgRischioPerMq: data.totalMq > 0 ? data.totalRischio / data.totalMq : 0,
+        avgFinituraPerMq: data.totalMq > 0 ? data.totalFinitura / data.totalMq : 0,
+        averageCostPerMq: data.totalMq > 0 ? (data.totalPietra + data.totalRischio + data.totalFinitura) / data.totalMq : 0,
         sectionCount: data.count,
         totalMq: data.totalMq
       }))
@@ -250,28 +278,27 @@ const Dashboard = () => {
                   width={60}
                 />
                 <Tooltip 
-                  formatter={(value: number) => [`€ ${value.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 'Costo medio/mq']}
-                  labelFormatter={(label) => `Spessore: ${label}`}
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload as ThicknessCost
+                      const fmt = (v: number) => `€ ${v.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                       return (
-                        <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+                        <div className="bg-background border border-border rounded-lg p-3 shadow-lg space-y-1">
                           <p className="font-semibold">{label}</p>
-                          <p className="text-primary">€ {data.averageCostPerMq.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mq</p>
-                          <p className="text-sm text-muted-foreground">{data.sectionCount} sezioni</p>
-                          <p className="text-sm text-muted-foreground">{data.totalMq.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} mq totali</p>
+                          <p style={{ color: 'hsl(var(--primary))' }}>Pietra e Lavorazioni: {fmt(data.avgPietraPerMq)}/mq</p>
+                          <p style={{ color: '#f97316' }}>Rischio: {fmt(data.avgRischioPerMq)}/mq</p>
+                          <p style={{ color: '#22c55e' }}>Finitura: {fmt(data.avgFinituraPerMq)}/mq</p>
+                          <p className="font-semibold border-t pt-1 mt-1">Totale: {fmt(data.averageCostPerMq)}/mq</p>
+                          <p className="text-sm text-muted-foreground">{data.sectionCount} sezioni, {data.totalMq.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} mq</p>
                         </div>
                       )
                     }
                     return null
                   }}
                 />
-                <Bar 
-                  dataKey="averageCostPerMq" 
-                  fill="hsl(var(--primary))" 
-                  radius={[0, 4, 4, 0]}
-                />
+                <Bar dataKey="avgPietraPerMq" stackId="cost" fill="hsl(var(--primary))" name="Pietra e Lavorazioni" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="avgRischioPerMq" stackId="cost" fill="#f97316" name="Rischio" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="avgFinituraPerMq" stackId="cost" fill="#22c55e" name="Finitura" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
