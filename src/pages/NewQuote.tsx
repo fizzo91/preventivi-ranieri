@@ -1078,132 +1078,136 @@ const NewQuote = () => {
         {sections.map((section, sectionIndex) => (
           <div key={section.id} className="space-y-4">
             <Card className="border-l-4 border-l-primary">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div className="flex-1 space-y-2">
-                <div className="flex items-center gap-3">
-                  <Input
-                    value={section.name}
-                    onChange={(e) => updateSectionName(section.id, e.target.value)}
-                    className="text-lg font-semibold border-none p-0 h-auto bg-transparent flex-1"
-                  />
-                  <ComplexityRiskIndicator
-                    type="C"
-                    value={section.complexity}
-                    onChange={(v) => updateSectionComplexity(section.id, v)}
-                  />
-                  <ComplexityRiskIndicator
-                    type="R"
-                    value={section.risk}
-                    onChange={(v) => updateSectionRisk(section.id, v)}
-                  />
-                </div>
-                {/* Tags display */}
-                {section.tags && section.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {section.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-                <Textarea
-                  value={section.description}
-                  onChange={(e) => updateSectionDescription(section.id, e.target.value)}
-                  placeholder="Descrizione sezione (opzionale)..."
-                  className="text-sm border-none p-0 h-auto bg-transparent resize-none min-h-[40px]"
-                  rows={2}
+            <CardHeader className="space-y-3">
+              {/* Riga 1: Nome sezione + indicatori C/R */}
+              <div className="flex items-center gap-3">
+                <Input
+                  value={section.name}
+                  onChange={(e) => updateSectionName(section.id, e.target.value)}
+                  className="text-lg font-semibold border-none p-0 h-auto bg-transparent flex-1 min-w-0"
+                />
+                <ComplexityRiskIndicator
+                  type="C"
+                  value={section.complexity}
+                  onChange={(v) => updateSectionComplexity(section.id, v)}
+                />
+                <ComplexityRiskIndicator
+                  type="R"
+                  value={section.risk}
+                  onChange={(v) => updateSectionRisk(section.id, v)}
                 />
               </div>
-              <div className="flex items-center gap-4 flex-wrap">
-                <div className="flex items-center gap-3">
-                  <div className="text-lg font-bold text-primary">
-                    Totale: € {section.total.toFixed(2)}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Label className="text-xs text-muted-foreground whitespace-nowrap">mq:</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={section.mqTotali || ''}
-                      onChange={(e) => {
-                        const mq = parseFloat(e.target.value) || 0
-                        setSections(sections.map(s => 
-                          s.id === section.id 
-                            ? { ...s, mqTotali: mq > 0 ? mq : undefined, euroPerMq: mq > 0 ? s.total / mq : undefined }
-                            : s
-                        ))
-                      }}
-                      className="h-8 w-20"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  {section.mqTotali && section.mqTotali > 0 && (
-                    <div className="text-sm font-medium bg-muted px-2 py-1 rounded">
-                      €/mq: {(section.total / section.mqTotali).toFixed(2)}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <Label className="text-xs text-muted-foreground whitespace-nowrap">Qtà:</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      step="1"
-                      value={section.quantity || 1}
-                      onChange={(e) => {
-                        const qty = parseInt(e.target.value) || 1
-                        setSections(sections.map(s => 
-                          s.id === section.id 
-                            ? { ...s, quantity: Math.max(1, qty) }
-                            : s
-                        ))
-                      }}
-                      className="h-8 w-16"
-                    />
-                  </div>
-                  {(section.quantity || 1) > 1 && (
-                    <div className="text-sm font-bold bg-primary/10 text-primary px-2 py-1 rounded">
-                      Tot x{section.quantity}: € {(section.total * (section.quantity || 1)).toFixed(2)}
-                    </div>
-                  )}
+
+              {/* Riga 2: Tags */}
+              {section.tags && section.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {section.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
                 </div>
-                <div className="flex gap-2 flex-wrap">
-                  <Button 
-                    onClick={() => openStoneCalculator(section.id)} 
-                    size="sm" 
-                    variant="outline" 
-                    className="gap-2"
-                  >
-                    <Calculator className="h-4 w-4" />
-                    Calc. Pietra
-                  </Button>
-                  <SaveTemplateDialog
-                    sectionName={section.name}
-                    items={section.items}
-                    tags={section.tags}
-                    complexity={section.complexity}
-                    risk={section.risk}
+              )}
+
+              {/* Riga 3: Descrizione */}
+              <Textarea
+                value={section.description}
+                onChange={(e) => updateSectionDescription(section.id, e.target.value)}
+                placeholder="Descrizione sezione (opzionale)..."
+                className="text-sm border-none p-0 h-auto bg-transparent resize-none min-h-[40px]"
+                rows={2}
+              />
+
+              {/* Riga 4: Statistiche (totale, mq, €/mq, qtà) */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-muted/40 rounded-lg px-3 py-2">
+                <div className="text-lg font-bold text-primary whitespace-nowrap">
+                  Totale: € {section.total.toFixed(2)}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Label className="text-xs text-muted-foreground whitespace-nowrap">mq:</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={section.mqTotali || ''}
+                    onChange={(e) => {
+                      const mq = parseFloat(e.target.value) || 0
+                      setSections(sections.map(s => 
+                        s.id === section.id 
+                          ? { ...s, mqTotali: mq > 0 ? mq : undefined, euroPerMq: mq > 0 ? s.total / mq : undefined }
+                          : s
+                      ))
+                    }}
+                    className="h-8 w-20"
+                    placeholder="0.00"
                   />
+                </div>
+                {section.mqTotali && section.mqTotali > 0 && (
+                  <div className="text-sm font-medium bg-background px-2 py-1 rounded whitespace-nowrap">
+                    €/mq: {(section.total / section.mqTotali).toFixed(2)}
+                  </div>
+                )}
+                <div className="flex items-center gap-1.5">
+                  <Label className="text-xs text-muted-foreground whitespace-nowrap">Qtà:</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={section.quantity || 1}
+                    onChange={(e) => {
+                      const qty = parseInt(e.target.value) || 1
+                      setSections(sections.map(s => 
+                        s.id === section.id 
+                          ? { ...s, quantity: Math.max(1, qty) }
+                          : s
+                      ))
+                    }}
+                    className="h-8 w-16"
+                  />
+                </div>
+                {(section.quantity || 1) > 1 && (
+                  <div className="text-sm font-bold bg-primary/10 text-primary px-2 py-1 rounded whitespace-nowrap">
+                    Tot x{section.quantity}: € {(section.total * (section.quantity || 1)).toFixed(2)}
+                  </div>
+                )}
+              </div>
+
+              {/* Riga 5: Azioni */}
+              <div className="flex flex-wrap gap-2">
+                <Button 
+                  onClick={() => openStoneCalculator(section.id)} 
+                  size="sm" 
+                  variant="outline" 
+                  className="gap-1.5"
+                >
+                  <Calculator className="h-4 w-4" />
+                  Calc. Pietra
+                </Button>
+                <SaveTemplateDialog
+                  sectionName={section.name}
+                  items={section.items}
+                  tags={section.tags}
+                  complexity={section.complexity}
+                  risk={section.risk}
+                />
+                <Button
+                  onClick={() => duplicateSection(section.id)}
+                  size="sm"
+                  variant="outline"
+                  className="gap-1.5"
+                >
+                  <Copy className="h-4 w-4" />
+                  Duplica
+                </Button>
+                {sections.length > 1 && (
                   <Button
-                    onClick={() => duplicateSection(section.id)}
+                    onClick={() => removeSection(section.id)}
                     size="sm"
                     variant="outline"
-                    className="gap-2"
+                    className="gap-1.5 text-destructive"
                   >
-                    <Copy className="h-4 w-4" />
-                    Duplica
+                    <Trash2 className="h-4 w-4" />
                   </Button>
-                  {sections.length > 1 && (
-                    <Button
-                      onClick={() => removeSection(section.id)}
-                      size="sm"
-                      variant="outline"
-                      className="gap-2 text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
+                )}
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
