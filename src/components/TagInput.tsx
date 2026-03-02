@@ -1,11 +1,10 @@
- import { useState } from "react"
- import { X, Plus } from "lucide-react"
- import { Badge } from "@/components/ui/badge"
- import { Input } from "@/components/ui/input"
- import { Button } from "@/components/ui/button"
- import { cn } from "@/lib/utils"
- 
- const SUGGESTED_TAGS = ["Cucina", "Bagno", "Esterno", "Top", "Rivestimento", "Interno", "Premium"]
+import { useState } from "react"
+import { X, Plus } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { getSuggestedTags } from "@/hooks/useTags"
  
  interface TagInputProps {
    tags: string[]
@@ -39,11 +38,11 @@
      }
    }
  
-   const filteredSuggestions = SUGGESTED_TAGS.filter(
-     suggestion => 
-       !tags.includes(suggestion) && 
-       suggestion.toLowerCase().includes(inputValue.toLowerCase())
-   )
+    const filteredSuggestions = getSuggestedTags().filter(
+      suggestion => 
+        !tags.includes(suggestion) && 
+        suggestion.toLowerCase().includes(inputValue.toLowerCase())
+    )
  
    return (
      <div className={cn("space-y-2", className)}>

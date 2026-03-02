@@ -4,7 +4,7 @@ import { Plus, Loader2 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { useMemo } from "react"
 import { useQuotes } from "@/hooks/useQuotes"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts"
  import { Badge } from "@/components/ui/badge"
 
 interface ThicknessCost {
@@ -24,6 +24,11 @@ interface ThicknessCost {
    totalValue: number;
  }
  
+const TAG_COLORS = [
+  'hsl(var(--primary))', '#f97316', '#22c55e', '#8b5cf6', '#ec4899',
+  '#06b6d4', '#eab308', '#ef4444', '#14b8a6', '#6366f1'
+]
+
 const Dashboard = () => {
   const { data: quotes = [], isLoading } = useQuotes()
 
@@ -309,34 +314,59 @@ const Dashboard = () => {
         </CardContent>
       </Card>
 
-       {/* Tag Statistics */}
+       {/* Tag Statistics - Pie Chart */}
        <Card>
          <CardHeader>
-           <CardTitle>Statistiche per Tag</CardTitle>
+           <CardTitle>Distribuzione per Tag</CardTitle>
          </CardHeader>
          <CardContent>
            {tagStats.length > 0 ? (
-             <div className="space-y-4">
-               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                 {tagStats.slice(0, 9).map((stat) => (
-                   <div key={stat.tag} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <ResponsiveContainer width="100%" height={300}>
+                 <PieChart>
+                   <Pie
+                     data={tagStats}
+                     dataKey="count"
+                     nameKey="tag"
+                     cx="50%"
+                     cy="50%"
+                     outerRadius={100}
+                     label={({ tag, percent }) => `${tag} ${(percent * 100).toFixed(0)}%`}
+                     labelLine={false}
+                   >
+                     {tagStats.map((_, index) => (
+                       <Cell key={`cell-${index}`} fill={TAG_COLORS[index % TAG_COLORS.length]} />
+                     ))}
+                   </Pie>
+                   <Tooltip
+                     formatter={(value: number, name: string) => [`${value} sezioni`, name]}
+                     contentStyle={{
+                       backgroundColor: 'hsl(var(--background))',
+                       border: '1px solid hsl(var(--border))',
+                       borderRadius: '8px'
+                     }}
+                   />
+                 </PieChart>
+               </ResponsiveContainer>
+               <div className="space-y-3 flex flex-col justify-center">
+                 {tagStats.map((stat, index) => (
+                   <div key={stat.tag} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30">
                      <div className="flex items-center gap-2">
-                       <Badge variant="secondary">{stat.tag}</Badge>
-                       <span className="text-sm text-muted-foreground">
-                         {stat.count} {stat.count === 1 ? 'sezione' : 'sezioni'}
+                       <div
+                         className="h-3 w-3 rounded-full shrink-0"
+                         style={{ backgroundColor: TAG_COLORS[index % TAG_COLORS.length] }}
+                       />
+                       <span className="text-sm font-medium">{stat.tag}</span>
+                       <span className="text-xs text-muted-foreground">
+                         ({stat.count} {stat.count === 1 ? 'sez.' : 'sez.'})
                        </span>
                      </div>
-                     <span className="font-semibold text-primary">
+                     <span className="font-semibold text-sm">
                        € {stat.totalValue.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                      </span>
                    </div>
                  ))}
                </div>
-               {tagStats.length > 9 && (
-                 <p className="text-sm text-muted-foreground text-center">
-                   +{tagStats.length - 9} altri tag
-                 </p>
-               )}
              </div>
            ) : (
              <div className="text-center py-8 text-muted-foreground">

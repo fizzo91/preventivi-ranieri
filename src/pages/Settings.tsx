@@ -5,12 +5,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
-import { Save, Loader2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Save, Loader2, X, Plus, RotateCcw } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/contexts/AuthContext"
 import { useQuotes } from "@/hooks/useQuotes"
 import { useProducts } from "@/hooks/useProducts"
 import { useClients } from "@/hooks/useClients"
+import { useTags } from "@/hooks/useTags"
 
 const Settings = () => {
   const { toast } = useToast()
@@ -18,7 +20,8 @@ const Settings = () => {
   const { data: quotes = [] } = useQuotes()
   const { data: products = [] } = useProducts()
   const { data: clients = [] } = useClients()
-  
+  const { tags: suggestedTags, addTag, removeTag: removeTagFromList, resetToDefaults } = useTags()
+  const [newTag, setNewTag] = useState("")
   const [settings, setSettings] = useState({
     company_name: "",
     address: "",
@@ -173,6 +176,69 @@ const Settings = () => {
             <Save className="h-4 w-4" />
             Salva Impostazioni
           </Button>
+        </CardContent>
+      </Card>
+
+      <Separator />
+
+      {/* Tag Management */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Gestione Tag</CardTitle>
+            <Button variant="ghost" size="sm" onClick={resetToDefaults} className="gap-1 text-xs">
+              <RotateCcw className="h-3 w-3" />
+              Ripristina default
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {suggestedTags.map((tag) => (
+              <Badge key={tag} variant="secondary" className="gap-1 text-sm py-1 px-3">
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => removeTagFromList(tag)}
+                  className="hover:bg-muted rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <Input
+              value={newTag}
+              onChange={(e) => setNewTag(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault()
+                  if (newTag.trim()) {
+                    addTag(newTag)
+                    setNewTag("")
+                  }
+                }
+              }}
+              placeholder="Aggiungi nuovo tag..."
+              className="max-w-xs"
+            />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => {
+                if (newTag.trim()) {
+                  addTag(newTag)
+                  setNewTag("")
+                }
+              }}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Questi tag saranno disponibili come suggerimenti quando crei le sezioni dei preventivi.
+          </p>
         </CardContent>
       </Card>
 
