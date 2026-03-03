@@ -4,7 +4,7 @@ import { Plus, Loader2 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { useMemo } from "react"
 import { useQuotes } from "@/hooks/useQuotes"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LabelList } from "recharts"
  import { Badge } from "@/components/ui/badge"
 
 interface ThicknessCost {
@@ -42,27 +42,29 @@ const Dashboard = () => {
 
   // Raggruppa preventivi per mese per il grafico
   const monthlyData = useMemo(() => {
-    const monthMap: { [key: string]: number } = {}
+    const monthMap: { [key: string]: { value: number; count: number } } = {}
     
     quotes.forEach(quote => {
       const date = new Date(quote.date)
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
       
       if (!monthMap[monthKey]) {
-        monthMap[monthKey] = 0
+        monthMap[monthKey] = { value: 0, count: 0 }
       }
-      monthMap[monthKey] += quote.total_amount || 0
+      monthMap[monthKey].value += quote.total_amount || 0
+      monthMap[monthKey].count += 1
     })
 
     return Object.entries(monthMap)
       .sort(([a], [b]) => a.localeCompare(b))
       .slice(-12)
-      .map(([key]) => {
+      .map(([key, data]) => {
         const [year, month] = key.split('-')
         const date = new Date(parseInt(year), parseInt(month) - 1)
         return {
           month: date.toLocaleDateString('it-IT', { month: 'short', year: '2-digit' }),
-          valore: Math.round(monthMap[key])
+          valore: Math.round(data.value),
+          count: data.count
         }
       })
   }, [quotes])
@@ -152,6 +154,49 @@ const Dashboard = () => {
     return result
   }, [quotes])
 
+   // Top 5 spessori e lavorazioni
+   const topThicknessesAndWorks = useMemo(() => {
+     const thicknessCount: { [key: string]: number } = {}
+     const workCount: { [key: string]: number } = {}
+
+     quotes.forEach(quote => {
+       const sections = quote.sections as any[]
+       if (!Array.isArray(sections)) return
+
+       sections.forEach(section => {
+         const items = section.items as any[]
+         if (!Array.isArray(items)) return
+         const sectionQty = section.quantity || 1
+
+         items.forEach((item: any) => {
+           // Spessori: cerca pattern "Sp. XX mm" o "SP. XX"
+           const spMatch = item.productName?.match(/Sp\.?\s*(\d+)\s*(?:mm)?/i)
+           if (spMatch) {
+             const key = `${spMatch[1]} mm`
+             thicknessCount[key] = (thicknessCount[key] || 0) + sectionQty
+           }
+
+           // Lavorazioni: tutti i prodotti non-pietra con categoria diversa da "Calcolatore Pietra"
+           if (item.productName && item.category !== "Calcolatore Pietra" && !item.productName.match(/^PIETRA/i)) {
+             workCount[item.productName] = (workCount[item.productName] || 0) + sectionQty
+           }
+         })
+       })
+     })
+
+     const topThicknesses = Object.entries(thicknessCount)
+       .sort(([, a], [, b]) => b - a)
+       .slice(0, 5)
+       .map(([name, count]) => ({ name, count }))
+
+     const topWorks = Object.entries(workCount)
+       .sort(([, a], [, b]) => b - a)
+       .slice(0, 5)
+       .map(([name, count]) => ({ name, count }))
+
+     return { topThicknesses, topWorks }
+   }, [quotes])
+
    // Calcola statistiche per tag
    const tagStats = useMemo(() => {
      const tagMap: { [key: string]: { count: number; totalValue: number } } = {}
@@ -233,7 +278,10 @@ const Dashboard = () => {
                   tickFormatter={(value) => `€${value.toLocaleString('it-IT')}`}
                 />
                 <Tooltip 
-                  formatter={(value: number) => [`€ ${value.toLocaleString('it-IT')}`, 'Valore']}
+                  formatter={(value: number, name: string) => {
+                    if (name === 'valore') return [`€ ${value.toLocaleString('it-IT')}`, 'Valore']
+                    return [value, 'Preventivi']
+                  }}
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--background))', 
                     border: '1px solid hsl(var(--border))',
@@ -244,7 +292,15 @@ const Dashboard = () => {
                   dataKey="valore" 
                   fill="hsl(var(--primary))" 
                   radius={[4, 4, 0, 0]}
-                />
+                >
+                  <LabelList 
+                    dataKey="count" 
+                    position="top" 
+                    fill="hsl(var(--muted-foreground))"
+                    fontSize={12}
+                    formatter={(v: number) => `${v} prev.`}
+                  />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -314,7 +370,79 @@ const Dashboard = () => {
         </CardContent>
       </Card>
 
-       {/* Tag Statistics - Pie Chart */}
+      {/* Top 5 Spessori e Lavorazioni */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Top 5 Spessori</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {topThicknessesAndWorks.topThicknesses.length > 0 ? (
+              <div className="space-y-3">
+                {topThicknessesAndWorks.topThicknesses.map((item, index) => {
+                  const maxCount = topThicknessesAndWorks.topThicknesses[0].count
+                  const percentage = (item.count / maxCount) * 100
+                  return (
+                    <div key={item.name} className="space-y-1">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-muted-foreground w-5">{index + 1}.</span>
+                          <span className="font-medium">{item.name}</span>
+                        </div>
+                        <span className="text-muted-foreground">{item.count} sezioni</span>
+                      </div>
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-primary rounded-full transition-all"
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <p className="text-center py-6 text-sm text-muted-foreground">Nessun dato disponibile.</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Top 5 Lavorazioni</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {topThicknessesAndWorks.topWorks.length > 0 ? (
+              <div className="space-y-3">
+                {topThicknessesAndWorks.topWorks.map((item, index) => {
+                  const maxCount = topThicknessesAndWorks.topWorks[0].count
+                  const percentage = (item.count / maxCount) * 100
+                  return (
+                    <div key={item.name} className="space-y-1">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-muted-foreground w-5">{index + 1}.</span>
+                          <span className="font-medium truncate max-w-[200px]">{item.name}</span>
+                        </div>
+                        <span className="text-muted-foreground whitespace-nowrap">{item.count} sezioni</span>
+                      </div>
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-secondary rounded-full transition-all"
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <p className="text-center py-6 text-sm text-muted-foreground">Nessun dato disponibile.</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
        <Card>
          <CardHeader>
            <CardTitle>Distribuzione per Tag</CardTitle>
