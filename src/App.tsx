@@ -12,6 +12,7 @@ import Quotes from "./pages/Quotes";
 import Products from "./pages/Products";
 import Gallery from "./pages/Gallery";
 import Settings from "./pages/Settings";
+import Tools from "./pages/Tools";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -37,6 +38,7 @@ const App = () => (
                       <Route path="/quotes" element={<Quotes />} />
                       <Route path="/gallery" element={<Gallery />} />
                       <Route path="/products" element={<Products />} />
+                      <Route path="/tools" element={<Tools />} />
                       <Route path="/settings" element={<Settings />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
