@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy, Loader2, Calculator, ImagePlus, X } from "lucide-react"
+import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy, Loader2, Calculator, ImagePlus, X, AlertTriangle } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { StoneCalculator, StoneCalculatorResult } from "@/components/StoneCalculator"
 import { ProductSuggestions } from "@/components/ProductSuggestions"
@@ -50,6 +50,13 @@ import { useAuth } from "@/contexts/AuthContext"
  import { SaveTemplateDialog, LoadTemplateDialog } from "@/components/SectionTemplateDialog"
  import { SectionTemplate } from "@/hooks/useSectionTemplates"
  import { Badge } from "@/components/ui/badge"
+ import { useThicknessAverages } from "@/hooks/useThicknessAverages"
+ import {
+   Tooltip,
+   TooltipContent,
+   TooltipProvider,
+   TooltipTrigger,
+ } from "@/components/ui/tooltip"
 
 interface Product {
   id: string
@@ -331,6 +338,37 @@ const NewQuote = () => {
   const createProduct = useCreateProduct()
   const createQuote = useCreateQuote()
   const updateQuote = useUpdateQuote()
+  const thicknessAverages = useThicknessAverages()
+
+  // Helper: check if section price exceeds 15% of average for its thickness
+  const getSectionPriceWarning = (section: QuoteSection) => {
+    const items = section.items
+    const pietra = items.find(item => item.productName?.match(/^PIETRA/i))
+    if (!pietra) return null
+
+    const spMatch = pietra.productName?.match(/Sp\.?\s*(\d+)\s*(?:mm)?/i)
+    const spessore = spMatch ? parseInt(spMatch[1]) : null
+    if (!spessore) return null
+
+    const mq = section.mqTotali
+    if (!mq || mq <= 0) return null
+
+    const avg = thicknessAverages[spessore]
+    if (!avg || avg.avgCostPerMq <= 0) return null
+
+    const sectionCostPerMq = section.total / mq
+    const threshold = avg.avgCostPerMq * 1.15
+    if (sectionCostPerMq > threshold) {
+      const pctOver = ((sectionCostPerMq / avg.avgCostPerMq - 1) * 100).toFixed(0)
+      return {
+        sectionCostPerMq,
+        avgCostPerMq: avg.avgCostPerMq,
+        pctOver,
+        thickness: spessore
+      }
+    }
+    return null
+  }
   
   const [clientData, setClientData] = useState({
     name: "",
@@ -1119,10 +1157,31 @@ const NewQuote = () => {
               />
 
               {/* Riga 4: Statistiche (totale, mq, €/mq, qtà) */}
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-muted/40 rounded-lg px-3 py-2">
+              {(() => {
+                const warning = getSectionPriceWarning(section)
+                return (
+              <div className={`flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg px-3 py-2 ${warning ? 'bg-destructive/10 border border-destructive/30' : 'bg-muted/40'}`}>
                 <div className="text-lg font-bold text-primary whitespace-nowrap">
                   Totale: € {section.total.toFixed(2)}
                 </div>
+                {warning && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center gap-1 text-destructive">
+                          <AlertTriangle className="h-5 w-5" />
+                          <span className="text-xs font-medium">+{warning.pctOver}%</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="font-medium">Prezzo sopra la media per {warning.thickness} mm</p>
+                        <p className="text-xs mt-1">
+                          €/mq sezione: € {warning.sectionCostPerMq.toFixed(2)} — Media: € {warning.avgCostPerMq.toFixed(2)}/mq (+{warning.pctOver}%)
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
                 <div className="flex items-center gap-1.5">
                   <Label className="text-xs text-muted-foreground whitespace-nowrap">mq:</Label>
                   <Input
@@ -1170,6 +1229,8 @@ const NewQuote = () => {
                   </div>
                 )}
               </div>
+                )
+              })()}
 
               {/* Riga 5: Azioni */}
               <div className="flex flex-wrap gap-2">
