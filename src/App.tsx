@@ -13,6 +13,7 @@ import Products from "./pages/Products";
 import Gallery from "./pages/Gallery";
 import Settings from "./pages/Settings";
 import Tools from "./pages/Tools";
+import ToolPage from "./pages/ToolPage";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -39,6 +40,7 @@ const App = () => (
                       <Route path="/gallery" element={<Gallery />} />
                       <Route path="/products" element={<Products />} />
                       <Route path="/tools" element={<Tools />} />
+                      <Route path="/tool/:toolId" element={<ToolPage />} />
                       <Route path="/settings" element={<Settings />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
