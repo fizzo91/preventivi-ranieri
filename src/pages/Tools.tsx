@@ -44,7 +44,14 @@ const Tools = () => {
   const navigate = useNavigate()
 
   const handleToolClick = (toolId: string) => {
-    window.open(`/tool/${toolId}`, '_blank')
+    const w = 480, h = 600
+    const left = (screen.width - w) / 2
+    const top = (screen.height - h) / 2
+    window.open(
+      `/tool/${toolId}`,
+      `tool-${toolId}`,
+      `width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no`
+    )
   }
 
   return (
