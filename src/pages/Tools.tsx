@@ -1,12 +1,5 @@
-import { useState } from "react"
 import { Calculator, Ruler, Scale, ArrowRightLeft } from "lucide-react"
-import { ImperialConverter } from "@/components/ImperialConverter"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { useNavigate } from "react-router-dom"
 
 const tools = [
   {
@@ -48,14 +41,18 @@ const tools = [
 ]
 
 const Tools = () => {
-  const [openTool, setOpenTool] = useState<string | null>(null)
+  const navigate = useNavigate()
+
+  const handleToolClick = (toolId: string) => {
+    window.open(`/tool/${toolId}`, '_blank')
+  }
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Strumenti</h1>
         <p className="text-muted-foreground mt-1">
-          Tocca uno strumento per aprirlo.
+          Tocca uno strumento per aprirlo in una nuova finestra.
         </p>
       </div>
 
@@ -64,7 +61,7 @@ const Tools = () => {
           <button
             key={tool.id}
             disabled={!tool.available}
-            onClick={() => tool.available && setOpenTool(tool.id)}
+            onClick={() => tool.available && handleToolClick(tool.id)}
             className="group flex flex-col items-center gap-3 p-4 rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:pointer-events-none focus:outline-none"
           >
             <div
@@ -88,16 +85,6 @@ const Tools = () => {
           </button>
         ))}
       </div>
-
-      {/* Imperial Converter Dialog */}
-      <Dialog open={openTool === "imperial"} onOpenChange={(open) => !open && setOpenTool(null)}>
-        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Convertitore Pollici/Piedi → mm</DialogTitle>
-          </DialogHeader>
-          <ImperialConverter />
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
