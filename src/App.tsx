@@ -28,6 +28,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/tool/:toolId" element={<ToolPage />} />
             <Route
               path="/*"
               element={
@@ -40,7 +41,6 @@ const App = () => (
                       <Route path="/gallery" element={<Gallery />} />
                       <Route path="/products" element={<Products />} />
                       <Route path="/tools" element={<Tools />} />
-                      <Route path="/tool/:toolId" element={<ToolPage />} />
                       <Route path="/settings" element={<Settings />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
