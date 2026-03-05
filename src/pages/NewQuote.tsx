@@ -340,7 +340,7 @@ const NewQuote = () => {
   const updateQuote = useUpdateQuote()
   const thicknessAverages = useThicknessAverages()
 
-  // Helper: check if section price exceeds 15% of average for its thickness
+  // Helper: check if section price deviates >15% from average for its thickness
   const getSectionPriceWarning = (section: QuoteSection) => {
     const items = section.items
     const pietra = items.find(item => item.productName?.match(/^PIETRA/i))
@@ -357,13 +357,23 @@ const NewQuote = () => {
     if (!avg || avg.avgCostPerMq <= 0) return null
 
     const sectionCostPerMq = section.total / mq
-    const threshold = avg.avgCostPerMq * 1.15
-    if (sectionCostPerMq > threshold) {
-      const pctOver = ((sectionCostPerMq / avg.avgCostPerMq - 1) * 100).toFixed(0)
+    const pctDiff = ((sectionCostPerMq / avg.avgCostPerMq - 1) * 100)
+
+    if (pctDiff > 15) {
       return {
+        type: 'above' as const,
         sectionCostPerMq,
         avgCostPerMq: avg.avgCostPerMq,
-        pctOver,
+        pctDiff: pctDiff.toFixed(0),
+        thickness: spessore
+      }
+    }
+    if (pctDiff < -15) {
+      return {
+        type: 'below' as const,
+        sectionCostPerMq,
+        avgCostPerMq: avg.avgCostPerMq,
+        pctDiff: Math.abs(pctDiff).toFixed(0),
         thickness: spessore
       }
     }
