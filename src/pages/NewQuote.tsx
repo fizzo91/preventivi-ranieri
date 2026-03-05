@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy, Loader2, Calculator, ImagePlus, X, AlertTriangle } from "lucide-react"
+import { Plus, Trash2, Save, Eye, GripVertical, FolderPlus, Copy, Loader2, Calculator, ImagePlus, X, AlertTriangle, TrendingDown } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { StoneCalculator, StoneCalculatorResult } from "@/components/StoneCalculator"
 import { ProductSuggestions } from "@/components/ProductSuggestions"
@@ -340,7 +340,7 @@ const NewQuote = () => {
   const updateQuote = useUpdateQuote()
   const thicknessAverages = useThicknessAverages()
 
-  // Helper: check if section price exceeds 15% of average for its thickness
+  // Helper: check if section price deviates >15% from average for its thickness
   const getSectionPriceWarning = (section: QuoteSection) => {
     const items = section.items
     const pietra = items.find(item => item.productName?.match(/^PIETRA/i))
@@ -357,13 +357,23 @@ const NewQuote = () => {
     if (!avg || avg.avgCostPerMq <= 0) return null
 
     const sectionCostPerMq = section.total / mq
-    const threshold = avg.avgCostPerMq * 1.15
-    if (sectionCostPerMq > threshold) {
-      const pctOver = ((sectionCostPerMq / avg.avgCostPerMq - 1) * 100).toFixed(0)
+    const pctDiff = ((sectionCostPerMq / avg.avgCostPerMq - 1) * 100)
+
+    if (pctDiff > 15) {
       return {
+        type: 'above' as const,
         sectionCostPerMq,
         avgCostPerMq: avg.avgCostPerMq,
-        pctOver,
+        pctDiff: pctDiff.toFixed(0),
+        thickness: spessore
+      }
+    }
+    if (pctDiff < -15) {
+      return {
+        type: 'below' as const,
+        sectionCostPerMq,
+        avgCostPerMq: avg.avgCostPerMq,
+        pctDiff: Math.abs(pctDiff).toFixed(0),
         thickness: spessore
       }
     }
@@ -1160,7 +1170,7 @@ const NewQuote = () => {
               {(() => {
                 const warning = getSectionPriceWarning(section)
                 return (
-              <div className={`flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg px-3 py-2 ${warning ? 'bg-destructive/10 border border-destructive/30' : 'bg-muted/40'}`}>
+              <div className={`flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg px-3 py-2 ${warning?.type === 'above' ? 'bg-destructive/10 border border-destructive/30' : warning?.type === 'below' ? 'bg-sky-500/10 border border-sky-500/30' : 'bg-muted/40'}`}>
                 <div className="text-lg font-bold text-primary whitespace-nowrap">
                   Totale: € {section.total.toFixed(2)}
                 </div>
@@ -1168,15 +1178,15 @@ const NewQuote = () => {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="flex items-center gap-1 text-destructive">
-                          <AlertTriangle className="h-5 w-5" />
-                          <span className="text-xs font-medium">+{warning.pctOver}%</span>
+                        <div className={`flex items-center gap-1 ${warning.type === 'above' ? 'text-destructive' : 'text-sky-500'}`}>
+                          {warning.type === 'above' ? <AlertTriangle className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+                          <span className="text-xs font-medium">{warning.type === 'above' ? '+' : '-'}{warning.pctDiff}%</span>
                         </div>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
-                        <p className="font-medium">Prezzo sopra la media per {warning.thickness} mm</p>
+                        <p className="font-medium">Prezzo {warning.type === 'above' ? 'sopra' : 'sotto'} la media per {warning.thickness} mm</p>
                         <p className="text-xs mt-1">
-                          €/mq sezione: € {warning.sectionCostPerMq.toFixed(2)} — Media: € {warning.avgCostPerMq.toFixed(2)}/mq (+{warning.pctOver}%)
+                          €/mq sezione: € {warning.sectionCostPerMq.toFixed(2)} — Media: € {warning.avgCostPerMq.toFixed(2)}/mq ({warning.type === 'above' ? '+' : '-'}{warning.pctDiff}%)
                         </p>
                       </TooltipContent>
                     </Tooltip>
