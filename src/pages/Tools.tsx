@@ -12,13 +12,22 @@ const tools = [
     shadow: "shadow-blue-500/25",
   },
   {
+    id: "finish",
+    title: "Finitura",
+    subtitle: "Calcolo costi",
+    icon: Calculator,
+    available: true,
+    gradient: "from-amber-500 to-orange-400",
+    shadow: "shadow-amber-500/25",
+  },
+  {
     id: "weight",
     title: "Peso",
     subtitle: "Calcolatore",
     icon: Scale,
     available: false,
-    gradient: "from-amber-500 to-orange-400",
-    shadow: "shadow-amber-500/25",
+    gradient: "from-emerald-500 to-green-400",
+    shadow: "shadow-emerald-500/25",
   },
   {
     id: "dimensions",
@@ -44,7 +53,11 @@ const Tools = () => {
   const navigate = useNavigate()
 
   const handleToolClick = (toolId: string) => {
-    const w = 480, h = 600
+    const sizes: Record<string, [number, number]> = {
+      imperial: [480, 600],
+      finish: [560, 750],
+    }
+    const [w, h] = sizes[toolId] || [480, 600]
     const left = (screen.width - w) / 2
     const top = (screen.height - h) / 2
     window.open(
