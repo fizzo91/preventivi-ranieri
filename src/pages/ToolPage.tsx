@@ -18,6 +18,8 @@ const ToolPage = () => {
     switch (toolId) {
       case "imperial":
         return <ImperialConverter />
+      case "finish":
+        return <FinishCalculator />
       default:
         return null
     }
