@@ -1,9 +1,10 @@
 import { useParams, Navigate } from "react-router-dom"
 import { ImperialConverter } from "@/components/ImperialConverter"
-import { ArrowLeft } from "lucide-react"
+import { FinishCalculator } from "@/components/FinishCalculator"
 
 const toolMeta: Record<string, { title: string }> = {
   imperial: { title: "Convertitore Pollici/Piedi → mm" },
+  finish: { title: "Calcolo Finitura" },
 }
 
 const ToolPage = () => {
