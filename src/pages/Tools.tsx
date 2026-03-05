@@ -53,7 +53,11 @@ const Tools = () => {
   const navigate = useNavigate()
 
   const handleToolClick = (toolId: string) => {
-    const w = 480, h = 600
+    const sizes: Record<string, [number, number]> = {
+      imperial: [480, 600],
+      finish: [560, 750],
+    }
+    const [w, h] = sizes[toolId] || [480, 600]
     const left = (screen.width - w) / 2
     const top = (screen.height - h) / 2
     window.open(
