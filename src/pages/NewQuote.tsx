@@ -1170,7 +1170,7 @@ const NewQuote = () => {
               {(() => {
                 const warning = getSectionPriceWarning(section)
                 return (
-              <div className={`flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg px-3 py-2 ${warning ? 'bg-destructive/10 border border-destructive/30' : 'bg-muted/40'}`}>
+              <div className={`flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg px-3 py-2 ${warning?.type === 'above' ? 'bg-destructive/10 border border-destructive/30' : warning?.type === 'below' ? 'bg-sky-500/10 border border-sky-500/30' : 'bg-muted/40'}`}>
                 <div className="text-lg font-bold text-primary whitespace-nowrap">
                   Totale: € {section.total.toFixed(2)}
                 </div>
@@ -1178,15 +1178,15 @@ const NewQuote = () => {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="flex items-center gap-1 text-destructive">
-                          <AlertTriangle className="h-5 w-5" />
-                          <span className="text-xs font-medium">+{warning.pctOver}%</span>
+                        <div className={`flex items-center gap-1 ${warning.type === 'above' ? 'text-destructive' : 'text-sky-500'}`}>
+                          {warning.type === 'above' ? <AlertTriangle className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+                          <span className="text-xs font-medium">{warning.type === 'above' ? '+' : '-'}{warning.pctDiff}%</span>
                         </div>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
-                        <p className="font-medium">Prezzo sopra la media per {warning.thickness} mm</p>
+                        <p className="font-medium">Prezzo {warning.type === 'above' ? 'sopra' : 'sotto'} la media per {warning.thickness} mm</p>
                         <p className="text-xs mt-1">
-                          €/mq sezione: € {warning.sectionCostPerMq.toFixed(2)} — Media: € {warning.avgCostPerMq.toFixed(2)}/mq (+{warning.pctOver}%)
+                          €/mq sezione: € {warning.sectionCostPerMq.toFixed(2)} — Media: € {warning.avgCostPerMq.toFixed(2)}/mq ({warning.type === 'above' ? '+' : '-'}{warning.pctDiff}%)
                         </p>
                       </TooltipContent>
                     </Tooltip>
