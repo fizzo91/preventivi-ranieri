@@ -58,9 +58,8 @@ export function ImperialConverter() {
           <Input
             type="number"
             min={0}
-            max={11}
             value={inches}
-            onChange={(e) => setInches(Math.max(0, Math.min(11, parseInt(e.target.value) || 0)))}
+            onChange={(e) => setInches(Math.max(0, parseInt(e.target.value) || 0))}
             placeholder="0"
           />
         </div>
