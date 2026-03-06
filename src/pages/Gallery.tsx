@@ -77,17 +77,8 @@ const Gallery = () => {
       const updatedImages = await Promise.all(
         galleryImages.map(async (img) => {
           if (img.imagePath) {
-            try {
-              const { data, error } = await supabase.storage
-                .from('section-charts')
-                .createSignedUrl(img.imagePath, 60 * 60 * 24 * 365);
-              
-              if (!error && data?.signedUrl) {
-                return { ...img, imageUrl: data.signedUrl };
-              }
-            } catch (e) {
-              console.error('Error regenerating signed URL:', e);
-            }
+            const url = await regenerateSignedUrl(img.imagePath);
+            if (url) return { ...img, imageUrl: url };
           }
           return img;
         })
