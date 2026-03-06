@@ -30,6 +30,8 @@ const Gallery = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [imagesWithUrls, setImagesWithUrls] = useState<GalleryImage[]>([]);
+  const [loadingUrls, setLoadingUrls] = useState(true);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   // Extract all images from quotes sections
   const galleryImages = useMemo(() => {
@@ -69,6 +71,8 @@ const Gallery = () => {
   // Regenerate signed URLs for images with chartImagePath
   useEffect(() => {
     const regenerateUrls = async () => {
+      setLoadingUrls(true);
+      setFailedImages(new Set());
       const updatedImages = await Promise.all(
         galleryImages.map(async (img) => {
           if (img.imagePath) {
@@ -88,12 +92,14 @@ const Gallery = () => {
         })
       );
       setImagesWithUrls(updatedImages);
+      setLoadingUrls(false);
     };
 
     if (galleryImages.length > 0) {
       regenerateUrls();
     } else {
       setImagesWithUrls([]);
+      setLoadingUrls(false);
     }
   }, [galleryImages]);
 
@@ -122,7 +128,7 @@ const Gallery = () => {
     navigate(`/new-quote?edit=${quoteId}`);
   };
 
-  if (isLoading) {
+  if (isLoading || loadingUrls) {
     return (
       <div className="p-4 md:p-6">
         <div className="flex items-center justify-center h-64">
@@ -170,25 +176,21 @@ const Gallery = () => {
                 className="aspect-square bg-muted cursor-pointer overflow-hidden relative group"
                 onClick={() => openQuote(image.quoteId)}
               >
-                {image.imageUrl ? (
+                {image.imageUrl && !failedImages.has(`${image.quoteId}-${index}`) ? (
                   <img
                     src={image.imageUrl}
                     alt={image.sectionName}
                     className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = "none";
-                      const fallback = target.nextElementSibling as HTMLElement;
-                      if (fallback) fallback.style.display = "flex";
+                    onError={() => {
+                      setFailedImages(prev => new Set(prev).add(`${image.quoteId}-${index}`));
                     }}
                   />
-                ) : null}
-                <div
-                  className={`absolute inset-0 flex-col items-center justify-center gap-2 text-muted-foreground ${image.imageUrl ? "hidden" : "flex"}`}
-                >
-                  <ImageIcon className="h-10 w-10 opacity-40" />
-                  <span className="text-xs">Immagine non disponibile</span>
-                </div>
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                    <ImageIcon className="h-10 w-10 opacity-40" />
+                    <span className="text-xs">Immagine non disponibile</span>
+                  </div>
+                )}
               </div>
 
               {/* Card Info */}
