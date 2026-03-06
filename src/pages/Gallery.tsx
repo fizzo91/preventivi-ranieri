@@ -167,17 +167,28 @@ const Gallery = () => {
             >
             {/* Image Preview */}
               <div
-                className="aspect-square bg-muted cursor-pointer overflow-hidden"
+                className="aspect-square bg-muted cursor-pointer overflow-hidden relative group"
                 onClick={() => openQuote(image.quoteId)}
               >
-                <img
-                  src={image.imageUrl}
-                  alt={image.sectionName}
-                  className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/placeholder.svg";
-                  }}
-                />
+                {image.imageUrl ? (
+                  <img
+                    src={image.imageUrl}
+                    alt={image.sectionName}
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = "none";
+                      const fallback = target.nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = "flex";
+                    }}
+                  />
+                ) : null}
+                <div
+                  className={`absolute inset-0 flex-col items-center justify-center gap-2 text-muted-foreground ${image.imageUrl ? "hidden" : "flex"}`}
+                >
+                  <ImageIcon className="h-10 w-10 opacity-40" />
+                  <span className="text-xs">Immagine non disponibile</span>
+                </div>
               </div>
 
               {/* Card Info */}
