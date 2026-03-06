@@ -109,12 +109,7 @@ const Gallery = () => {
     );
   }, [imagesWithUrls, searchTerm]);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("it-IT", {
-      style: "currency",
-      currency: "EUR",
-    }).format(amount);
-  };
+  const formatAmount = (amount: number) => formatCurrency(amount);
 
   const openQuote = (quoteId: string) => {
     navigate(`/new-quote?edit=${quoteId}`);
