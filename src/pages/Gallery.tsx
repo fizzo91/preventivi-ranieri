@@ -71,6 +71,8 @@ const Gallery = () => {
   // Regenerate signed URLs for images with chartImagePath
   useEffect(() => {
     const regenerateUrls = async () => {
+      setLoadingUrls(true);
+      setFailedImages(new Set());
       const updatedImages = await Promise.all(
         galleryImages.map(async (img) => {
           if (img.imagePath) {
@@ -90,12 +92,14 @@ const Gallery = () => {
         })
       );
       setImagesWithUrls(updatedImages);
+      setLoadingUrls(false);
     };
 
     if (galleryImages.length > 0) {
       regenerateUrls();
     } else {
       setImagesWithUrls([]);
+      setLoadingUrls(false);
     }
   }, [galleryImages]);
 
