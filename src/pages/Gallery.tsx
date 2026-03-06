@@ -43,9 +43,15 @@ const Gallery = () => {
 
       sections.forEach((section) => {
         if (section.chartImage || section.chartImagePath) {
+          // Try to extract path from signed URL if chartImagePath is missing
+          let imagePath = section.chartImagePath;
+          if (!imagePath && section.chartImage) {
+            const match = section.chartImage.match(/section-charts\/(.+?)\?/);
+            if (match) imagePath = match[1];
+          }
           images.push({
             imageUrl: section.chartImage || "",
-            imagePath: section.chartImagePath,
+            imagePath: imagePath,
             sectionName: section.name || "Sezione",
             sectionDescription: section.description || "",
             quoteId: quote.id,
