@@ -128,7 +128,7 @@ const Gallery = () => {
     navigate(`/new-quote?edit=${quoteId}`);
   };
 
-  if (isLoading) {
+  if (isLoading || loadingUrls) {
     return (
       <div className="p-4 md:p-6">
         <div className="flex items-center justify-center h-64">
