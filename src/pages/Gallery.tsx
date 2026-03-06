@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuotes } from "@/hooks/useQuotes";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client"
+import { extractPathFromSignedUrl, regenerateSignedUrl } from "@/services/storageService"
+import { formatCurrency } from "@/utils/formatting"
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -48,8 +50,7 @@ const Gallery = () => {
           // Try to extract path from signed URL if chartImagePath is missing
           let imagePath = section.chartImagePath;
           if (!imagePath && section.chartImage) {
-            const match = section.chartImage.match(/section-charts\/(.+?)\?/);
-            if (match) imagePath = match[1];
+            imagePath = extractPathFromSignedUrl(section.chartImage);
           }
           images.push({
             imageUrl: section.chartImage || "",
@@ -76,17 +77,8 @@ const Gallery = () => {
       const updatedImages = await Promise.all(
         galleryImages.map(async (img) => {
           if (img.imagePath) {
-            try {
-              const { data, error } = await supabase.storage
-                .from('section-charts')
-                .createSignedUrl(img.imagePath, 60 * 60 * 24 * 365);
-              
-              if (!error && data?.signedUrl) {
-                return { ...img, imageUrl: data.signedUrl };
-              }
-            } catch (e) {
-              console.error('Error regenerating signed URL:', e);
-            }
+            const url = await regenerateSignedUrl(img.imagePath);
+            if (url) return { ...img, imageUrl: url };
           }
           return img;
         })
@@ -117,12 +109,7 @@ const Gallery = () => {
     );
   }, [imagesWithUrls, searchTerm]);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("it-IT", {
-      style: "currency",
-      currency: "EUR",
-    }).format(amount);
-  };
+  const formatAmount = (amount: number) => formatCurrency(amount);
 
   const openQuote = (quoteId: string) => {
     navigate(`/new-quote?edit=${quoteId}`);
@@ -204,7 +191,7 @@ const Gallery = () => {
                   </div>
                 )}
                 <div className="text-sm font-medium text-primary">
-                  {formatCurrency(image.totalAmount)}
+                  {formatAmount(image.totalAmount)}
                 </div>
                 <Button
                   variant="outline"
