@@ -176,25 +176,21 @@ const Gallery = () => {
                 className="aspect-square bg-muted cursor-pointer overflow-hidden relative group"
                 onClick={() => openQuote(image.quoteId)}
               >
-                {image.imageUrl ? (
+                {image.imageUrl && !failedImages.has(`${image.quoteId}-${index}`) ? (
                   <img
                     src={image.imageUrl}
                     alt={image.sectionName}
                     className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = "none";
-                      const fallback = target.nextElementSibling as HTMLElement;
-                      if (fallback) fallback.style.display = "flex";
+                    onError={() => {
+                      setFailedImages(prev => new Set(prev).add(`${image.quoteId}-${index}`));
                     }}
                   />
-                ) : null}
-                <div
-                  className={`absolute inset-0 flex-col items-center justify-center gap-2 text-muted-foreground ${image.imageUrl ? "hidden" : "flex"}`}
-                >
-                  <ImageIcon className="h-10 w-10 opacity-40" />
-                  <span className="text-xs">Immagine non disponibile</span>
-                </div>
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                    <ImageIcon className="h-10 w-10 opacity-40" />
+                    <span className="text-xs">Immagine non disponibile</span>
+                  </div>
+                )}
               </div>
 
               {/* Card Info */}
