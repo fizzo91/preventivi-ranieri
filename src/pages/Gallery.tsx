@@ -191,7 +191,7 @@ const Gallery = () => {
                   </div>
                 )}
                 <div className="text-sm font-medium text-primary">
-                  {formatCurrency(image.totalAmount)}
+                  {formatAmount(image.totalAmount)}
                 </div>
                 <Button
                   variant="outline"
