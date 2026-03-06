@@ -50,8 +50,7 @@ const Gallery = () => {
           // Try to extract path from signed URL if chartImagePath is missing
           let imagePath = section.chartImagePath;
           if (!imagePath && section.chartImage) {
-            const match = section.chartImage.match(/section-charts\/(.+?)\?/);
-            if (match) imagePath = match[1];
+            imagePath = extractPathFromSignedUrl(section.chartImage);
           }
           images.push({
             imageUrl: section.chartImage || "",
