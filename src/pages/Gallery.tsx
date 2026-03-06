@@ -30,6 +30,8 @@ const Gallery = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [imagesWithUrls, setImagesWithUrls] = useState<GalleryImage[]>([]);
+  const [loadingUrls, setLoadingUrls] = useState(true);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   // Extract all images from quotes sections
   const galleryImages = useMemo(() => {
