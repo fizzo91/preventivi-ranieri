@@ -15,3 +15,13 @@ export function downloadJson(data: unknown, filename: string): void {
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
 }
+
+/** Export a single quote as JSON */
+export function exportQuoteJson(quote: any): void {
+  downloadJson(quote, `preventivo-${quote.quote_number}.json`)
+}
+
+/** Export all quotes as JSON */
+export function exportAllQuotesJson(quotes: any[]): void {
+  downloadJson(quotes, `preventivi-${new Date().toISOString().split('T')[0]}.json`)
+}
