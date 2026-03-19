@@ -257,8 +257,18 @@ const NewQuote = () => {
         const sectionsWithUrls = await regenerateSignedUrls(sectionsWithRisks)
         setSections(sectionsWithUrls)
       }
-      if (editQuote.enamel_data && Array.isArray(editQuote.enamel_data)) {
-        setEnamelData(editQuote.enamel_data as EnamelPieceRow[])
+      if (editQuote.enamel_data) {
+        // Handle both old flat array format and new per-section map format
+        const raw = editQuote.enamel_data
+        if (Array.isArray(raw)) {
+          // Legacy: flat array — assign to first section
+          const firstSectionId = editQuote.sections?.[0]?.id
+          if (firstSectionId && raw.length > 0) {
+            setEnamelDataMap({ [firstSectionId]: raw as EnamelPieceRow[] })
+          }
+        } else if (typeof raw === 'object' && raw !== null) {
+          setEnamelDataMap(raw as Record<string, EnamelPieceRow[]>)
+        }
       }
     }
     loadEditQuote()
