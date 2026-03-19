@@ -7,41 +7,6 @@ import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { supabase } from "@/integrations/supabase/client"
 
-const TEMPLATES: { category: string; templates: string[] }[] = [
-  {
-    category: "Fornitura e posa",
-    templates: [
-      "Fornitura e posa in opera di rivestimento in {materiale} {finitura}, spessore {spessore} cm, compreso taglio, lavorazione bordi e sigillatura giunti.",
-      "Fornitura e posa in opera di pavimentazione in {materiale} {finitura} formato {formato}, posato a colla su massetto, compresa stuccatura e pulizia finale.",
-      "Fornitura e posa in opera di top cucina in {materiale} {finitura}, spessore {spessore} cm, completo di foro lavello, foro rubinetto e bisellatura bordi a vista.",
-    ],
-  },
-  {
-    category: "Lavorazioni speciali",
-    templates: [
-      "Lavorazione di taglio a misura, fresatura profilo {profilo} sui bordi a vista e lucidatura/levigatura delle superfici lavorate.",
-      "Esecuzione di fori, scansi e sagomature per alloggiamento apparecchiature, compresi sfridi e lavorazioni accessorie.",
-      "Incollaggio e rinforzo di lastre per formazione spessore maggiorato da {spessore_da} a {spessore_a} cm, con rete in fibra di vetro.",
-    ],
-  },
-  {
-    category: "Trattamenti",
-    templates: [
-      "Trattamento protettivo idro-oleorepellente su tutte le superfici in pietra naturale, applicato in due mani a rullo/pennello.",
-      "Stuccatura e resinatura di fessurazioni e porosità naturali con resina epossidica bicomponente in tinta.",
-      "Levigatura e rilucidatura in opera di pavimentazione esistente in {materiale}, con abrasivi diamantati a grana progressiva.",
-    ],
-  },
-  {
-    category: "Elementi architettonici",
-    templates: [
-      "Fornitura e posa di soglie/davanzali in {materiale} {finitura}, spessore {spessore} cm, con gocciolatoio fresato e bordi lavorati.",
-      "Fornitura e posa di zoccolini/battiscopa in {materiale} {finitura}, altezza {altezza} cm, con bordo superiore arrotondato.",
-      "Fornitura e posa di scalini in {materiale} {finitura} formato pedata + alzata, con bordo antiscivolo e profilo toro.",
-    ],
-  },
-]
-
 export function DescriptionAssistant() {
   const [sectionName, setSectionName] = useState("")
   const [result, setResult] = useState("")
