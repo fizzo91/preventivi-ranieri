@@ -11,6 +11,7 @@ import NewQuote from "./pages/NewQuote";
 import Quotes from "./pages/Quotes";
 import Products from "./pages/Products";
 import Gallery from "./pages/Gallery";
+import Descriptions from "./pages/Descriptions";
 import Settings from "./pages/Settings";
 import Tools from "./pages/Tools";
 import ToolPage from "./pages/ToolPage";
