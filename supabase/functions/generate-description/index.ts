@@ -22,23 +22,23 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemPrompt = `Sei un assistente esperto nella redazione di preventivi per lavorazione di pietra naturale, pietra lavica smaltata, marmo, granito e materiali lapidei.
-Il tuo compito è generare una descrizione professionale per una sezione di un preventivo.
+    const systemPrompt = `You are an expert assistant in drafting quotes for natural stone, enamelled lava stone, marble, granite and stone materials processing.
+Your task is to generate a professional description for a section of a quote.
 
-Regole:
-- Scrivi in italiano tecnico ma comprensibile
-- La descrizione deve essere dettagliata e specifica per il tipo di lavorazione
-- Includi dettagli su materiali, finiture, spessori e lavorazioni quando pertinenti
-- Usa un tono professionale e formale, tipico dei capitolati d'appalto
-- La descrizione deve essere di 2-4 frasi
-- Mantieni lo stesso stile e formato delle descrizioni di esempio fornite sotto
+Rules:
+- Always write in English, professional and technical but understandable
+- The description must be detailed and specific for the type of processing
+- Include details about materials, finishes, thicknesses and processing when relevant
+- Use a professional and formal tone, typical of specifications and tender documents
+- The description should be 2-4 sentences
+- Maintain the same style and format as the example descriptions provided below
 
-Ecco un archivio di descrizioni reali da usare come riferimento stilistico e di formato:
+Here is an archive of real descriptions to use as stylistic and format reference:
 ${trainingExamples}`;
 
-    let userPrompt = `Genera una descrizione professionale per la sezione "${sectionName}" di un preventivo.`;
+    let userPrompt = `Generate a professional description for the section "${sectionName}" of a quote.`;
     if (existingDescriptions) {
-      userPrompt += `\n\nDescrizioni delle altre sezioni di questo preventivo (mantieni coerenza):\n${existingDescriptions}`;
+      userPrompt += `\n\nDescriptions of other sections in this quote (maintain consistency):\n${existingDescriptions}`;
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
