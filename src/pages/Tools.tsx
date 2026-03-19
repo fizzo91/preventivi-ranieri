@@ -12,15 +12,6 @@ const tools = [
     shadow: "shadow-blue-500/25",
   },
   {
-    id: "finish",
-    title: "Finitura",
-    subtitle: "Calcolo costi",
-    icon: Calculator,
-    available: true,
-    gradient: "from-amber-500 to-orange-400",
-    shadow: "shadow-amber-500/25",
-  },
-  {
     id: "circle",
     title: "Cerchi",
     subtitle: "Area e Circ.",
@@ -28,15 +19,6 @@ const tools = [
     available: true,
     gradient: "from-violet-500 to-purple-400",
     shadow: "shadow-violet-500/25",
-  },
-  {
-    id: "enamel",
-    title: "Smalto",
-    subtitle: "Costi ceramica",
-    icon: Palette,
-    available: true,
-    gradient: "from-rose-500 to-pink-400",
-    shadow: "shadow-rose-500/25",
   },
   {
     id: "weight",
