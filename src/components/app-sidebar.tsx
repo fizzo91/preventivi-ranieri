@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, FileText, Plus, Settings, Calculator, Image, Wrench } from "lucide-react"
+import { Home, FileText, Plus, Settings, Calculator, Image, Wrench, AlignLeft } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
 import {
