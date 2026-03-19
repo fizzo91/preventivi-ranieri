@@ -45,7 +45,6 @@ const ToolPage = () => {
       {renderTool()}
     </div>
   )
-  )
 }
 
 export default ToolPage
