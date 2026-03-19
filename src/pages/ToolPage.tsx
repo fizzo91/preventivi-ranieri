@@ -1,18 +1,17 @@
+import { useState } from "react"
 import { useParams, Navigate } from "react-router-dom"
 import { ImperialConverter } from "@/components/ImperialConverter"
-import { FinishCalculator } from "@/components/FinishCalculator"
 import { CircleCalculator } from "@/components/CircleCalculator"
-import { EnamelCostCalculator } from "@/components/EnamelCostCalculator"
+import { MacWindowBar } from "@/components/MacWindowBar"
 
 const toolMeta: Record<string, { title: string }> = {
   imperial: { title: "Convertitore Pollici/Piedi → mm" },
-  finish: { title: "Calcolo Finitura" },
   circle: { title: "Calcolo Cerchi" },
-  enamel: { title: "Calcolatore Costi Smalto" },
 }
 
 const ToolPage = () => {
   const { toolId } = useParams<{ toolId: string }>()
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   if (!toolId || !toolMeta[toolId]) {
     return <Navigate to="/tools" replace />
@@ -22,27 +21,36 @@ const ToolPage = () => {
     switch (toolId) {
       case "imperial":
         return <ImperialConverter />
-      case "finish":
-        return <FinishCalculator />
       case "circle":
         return <CircleCalculator />
-      case "enamel":
-        return <EnamelCostCalculator />
       default:
         return null
     }
   }
 
-  const isWide = toolId === "enamel"
-
   return (
-    <div className={`min-h-screen bg-background ${isWide ? "" : "p-6 max-w-lg mx-auto space-y-6"}`}>
-      {!isWide && (
-        <div>
-          <h1 className="text-xl font-bold text-foreground">{toolMeta[toolId].title}</h1>
-        </div>
-      )}
-      {renderTool()}
+    <div className={`min-h-screen bg-background flex flex-col ${isFullscreen ? "" : ""}`}>
+      <MacWindowBar
+        title={toolMeta[toolId].title}
+        onClose={() => window.close()}
+        onMinimize={() => {
+          // Browser popup minimize isn't reliable, but we can try
+          window.resizeTo(300, 40)
+        }}
+        onFullscreen={() => {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen()
+            setIsFullscreen(true)
+          } else {
+            document.exitFullscreen()
+            setIsFullscreen(false)
+          }
+        }}
+        isFullscreen={isFullscreen}
+      />
+      <div className="flex-1 p-6 max-w-lg mx-auto w-full space-y-6">
+        {renderTool()}
+      </div>
     </div>
   )
 }
