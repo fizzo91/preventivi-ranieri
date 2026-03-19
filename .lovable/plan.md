@@ -1,72 +1,58 @@
 
-# Barra a 3 segmenti con fallback mq
 
-## Cosa cambia
+## Plan: Assistente Descrizioni + Glossario
 
-Il grafico "Costo Medio per Spessore" passera' da una singola barra blu a **3 segmenti colorati sovrapposti**, con la logica di fallback per i mq.
+### 1. Assistente Descrizioni Sezioni
 
-### Visualizzazione
+Strumento ibrido: template predefiniti + generazione AI per descrizioni coerenti.
 
-```text
-50 mm  |████████████████░░░░░░░▓▓▓▓|
-        Pietra+Lavoraz.  Rischio Finitura
+**Componente `src/components/DescriptionAssistant.tsx`**:
+- Lista di template di descrizione predefiniti per categorie comuni (es. "Fornitura e posa", "Lavorazione pietra", "Trattamento superfici", ecc.)
+- Pulsante "Genera con AI" che analizza le descrizioni delle sezioni esistenti (passate come contesto) e genera una descrizione coerente con lo stile
+- Textarea per editing manuale del risultato
+- Pulsante "Copia" per copiare la descrizione generata
 
-30 mm  |████████░░░▓▓|
-```
+**Edge function `supabase/functions/generate-description/index.ts`**:
+- Riceve le descrizioni esistenti delle sezioni + nome sezione corrente
+- Usa Lovable AI (google/gemini-3-flash-preview) per generare una descrizione coerente
+- Prompt di sistema: "Sei un assistente per preventivi di lavorazione pietra. Genera descrizioni professionali e coerenti con lo stile delle descrizioni esistenti."
 
-| Segmento | Contenuto | Colore |
-|----------|-----------|--------|
-| Pietra e Lavorazioni | Somma di tutti gli `item.total` | Blu (primary) |
-| Rischio | Somma dei costi calcolati dai `risks` | Arancione |
-| Finitura | `engobbio` + `finitura` | Verde |
+**Integrazione**:
+- Aggiunta alla pagina Tools con icona `FileText`, gradient arancione
+- Si apre come popup standalone con MacWindowBar
+- Registrato in `ToolPage.tsx`
 
-### Logica mq (fallback a 3 livelli)
+### 2. Glossario
 
-1. `section.mqTotali` -- se compilato e > 0
-2. Quantita' della voce "2 taglio" -- se presente
-3. Quantita' della voce PIETRA -- ultima risorsa
+Componente statico con terminologia del settore, non modificabile.
 
-Se nessuno e' disponibile o > 0, la sezione viene saltata.
+**Componente `src/components/Glossary.tsx`**:
+- Lista di termini con definizioni organizzati per categoria (Materiali, Lavorazioni, Finiture, Misure)
+- Barra di ricerca per filtrare i termini
+- Layout a accordion per le categorie
+- I termini sono hardcoded nel componente (array costante)
 
-### Tooltip
+**Integrazione**:
+- Aggiunta alla pagina Tools con icona `BookOpen`, gradient ambra/oro
+- Si apre come popup standalone con MacWindowBar
+- Registrato in `ToolPage.tsx`
 
-Al passaggio del mouse:
-- Spessore
-- Pietra e Lavorazioni: X euro/mq
-- Rischio: X euro/mq
-- Finitura: X euro/mq
-- Totale: X euro/mq
-- N sezioni, N mq totali
+### 3. Pagina Tools
 
-## Dettagli tecnici
+Aggiunta delle due nuove card:
+- "Descrizioni" / "Assistente AI" — gradient arancione, icona FileText
+- "Glossario" / "Terminologia" — gradient ambra, icona BookOpen
 
-### File: `src/pages/Dashboard.tsx`
+Aggiunta dimensioni popup nel `sizes` map.
 
-**1. Aggiornare l'interfaccia `ThicknessCost`:**
+### Files da modificare/creare
 
-Aggiungere i campi `avgPietraPerMq`, `avgRischioPerMq`, `avgFinituraPerMq`.
+| File | Azione |
+|---|---|
+| `src/components/DescriptionAssistant.tsx` | Nuovo — UI template + AI |
+| `src/components/Glossary.tsx` | Nuovo — glossario statico |
+| `supabase/functions/generate-description/index.ts` | Nuovo — edge function AI |
+| `supabase/config.toml` | Aggiunta config funzione |
+| `src/pages/Tools.tsx` | Aggiunta 2 nuovi tool |
+| `src/pages/ToolPage.tsx` | Registrazione 2 nuovi tool |
 
-**2. Aggiornare il `useMemo` di `thicknessCosts`:**
-
-- Il `thicknessMap` accumulera' 4 valori separati per spessore: `totalPietra`, `totalRischio`, `totalFinitura`, `totalMq`, `count`.
-- Per ogni sezione con PIETRA:
-  - Determina mq con fallback: `mqTotali` -> quantita' "2 taglio" -> quantita' PIETRA.
-  - `pietraLavorazioni` = somma di tutti `item.total` nella sezione.
-  - `rischio` = per ogni risk: se `appliedToItemId === 'SECTION_TOTAL'`, applica percentuale su itemsTotal; altrimenti applica su item specifico.
-  - `finitura` = `section.engobbio + section.finitura`.
-  - Moltiplica tutto per `section.quantity || 1`.
-- Alla fine, divide ogni totale accumulato per `totalMq` per ottenere i costi al mq.
-
-**3. Aggiornare il grafico:**
-
-Sostituire la singola `<Bar>` con 3 barre stacked:
-
-```tsx
-<Bar dataKey="avgPietraPerMq" stackId="cost" fill="hsl(var(--primary))" name="Pietra e Lavorazioni" radius={[0, 0, 0, 0]} />
-<Bar dataKey="avgRischioPerMq" stackId="cost" fill="#f97316" name="Rischio" radius={[0, 0, 0, 0]} />
-<Bar dataKey="avgFinituraPerMq" stackId="cost" fill="#22c55e" name="Finitura" radius={[0, 4, 4, 0]} />
-```
-
-**4. Aggiornare il tooltip custom** per mostrare i 3 valori con i colori corrispondenti e il totale complessivo.
-
-Nessun altro file viene modificato.
