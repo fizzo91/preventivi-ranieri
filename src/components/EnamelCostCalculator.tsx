@@ -46,7 +46,7 @@ function getDefaultProfilo(spessore: number): number {
   return 4.2
 }
 
-function calcRow(r: PieceRow) {
+export function calcRow(r: EnamelPieceRow) {
   const mq_modulo = (r.lato1 * r.lato2) / 10000
   const quota_fissa =
     80 - r.listino * 25 + r.spessore * 20 + (r.finitura_code * 30 - r.listino * r.finitura_code * 10)
