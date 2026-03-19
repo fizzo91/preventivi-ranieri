@@ -33,13 +33,18 @@ const ToolPage = () => {
     }
   }
 
+  const isWide = toolId === "enamel"
+
   return (
-    <div className="min-h-screen bg-background p-6 max-w-lg mx-auto space-y-6">
-      <div>
-        <h1 className="text-xl font-bold text-foreground">{toolMeta[toolId].title}</h1>
-      </div>
+    <div className={`min-h-screen bg-background ${isWide ? "" : "p-6 max-w-lg mx-auto space-y-6"}`}>
+      {!isWide && (
+        <div>
+          <h1 className="text-xl font-bold text-foreground">{toolMeta[toolId].title}</h1>
+        </div>
+      )}
       {renderTool()}
     </div>
+  )
   )
 }
 
