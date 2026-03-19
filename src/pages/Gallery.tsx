@@ -76,9 +76,18 @@ const Gallery = () => {
       setFailedImages(new Set());
       const updatedImages = await Promise.all(
         galleryImages.map(async (img) => {
+          // Try to regenerate from path
           if (img.imagePath) {
             const url = await regenerateSignedUrl(img.imagePath);
             if (url) return { ...img, imageUrl: url };
+          }
+          // If we still have the original URL, try to extract path and regenerate
+          if (img.imageUrl && !img.imagePath) {
+            const extractedPath = extractPathFromSignedUrl(img.imageUrl);
+            if (extractedPath) {
+              const url = await regenerateSignedUrl(extractedPath);
+              if (url) return { ...img, imageUrl: url, imagePath: extractedPath };
+            }
           }
           return img;
         })
