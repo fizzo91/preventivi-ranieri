@@ -77,9 +77,20 @@ const fmtMq = (v: number) => v.toFixed(2).replace(".", ",")
 const fmtKg = (v: number) => Math.round(v).toString()
 
 /* ───────── component ───────── */
-export function EnamelCostCalculator() {
-  const [rows, setRows] = useState<PieceRow[]>([defaultRow(1)])
-  const [nextId, setNextId] = useState(2)
+interface EnamelCostCalculatorProps {
+  value?: EnamelPieceRow[]
+  onChange?: (rows: EnamelPieceRow[]) => void
+}
+
+export function EnamelCostCalculator({ value, onChange }: EnamelCostCalculatorProps = {}) {
+  const [internalRows, setInternalRows] = useState<EnamelPieceRow[]>([defaultRow(1)])
+  const rows = value ?? internalRows
+  const setRows = useCallback((updater: EnamelPieceRow[] | ((prev: EnamelPieceRow[]) => EnamelPieceRow[])) => {
+    const newRows = typeof updater === 'function' ? updater(rows) : updater
+    if (onChange) onChange(newRows)
+    else setInternalRows(newRows)
+  }, [onChange, rows])
+  const [nextId, setNextId] = useState(() => (rows.length > 0 ? Math.max(...rows.map(r => r.id)) + 1 : 2))
   const [sviluppato, setSviluppato] = useState("")
 
   const addRow = useCallback(() => {
