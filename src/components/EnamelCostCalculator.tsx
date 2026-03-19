@@ -200,12 +200,8 @@ export function EnamelCostCalculator() {
               const rowId = String(idx + 1).padStart(2, "0")
               return (
                 <tr key={row.id} className="hover:bg-muted/20">
-                  {/* DATA */}
-                  <td className={tdCalc}>{today()}</td>
                   {/* REP */}
                   <td className={tdCalc}>CER.</td>
-                  {/* ID */}
-                  <td className={tdCalc}>{rowId}</td>
                   {/* RV */}
                   <td className={tdCalc}>1</td>
                   {/* DESCRIZ */}
