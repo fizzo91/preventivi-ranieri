@@ -256,6 +256,9 @@ const NewQuote = () => {
         const sectionsWithUrls = await regenerateSignedUrls(sectionsWithRisks)
         setSections(sectionsWithUrls)
       }
+      if (editQuote.enamel_data && Array.isArray(editQuote.enamel_data)) {
+        setEnamelData(editQuote.enamel_data as EnamelPieceRow[])
+      }
     }
     loadEditQuote()
   }, [editQuote])
