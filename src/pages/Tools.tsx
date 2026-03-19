@@ -1,4 +1,4 @@
-import { Ruler, Scale, ArrowRightLeft, Circle } from "lucide-react"
+import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 const tools = [
@@ -19,6 +19,24 @@ const tools = [
     available: true,
     gradient: "from-violet-500 to-purple-400",
     shadow: "shadow-violet-500/25",
+  },
+  {
+    id: "descriptions",
+    title: "Descrizioni",
+    subtitle: "Assistente AI",
+    icon: FileText,
+    available: true,
+    gradient: "from-orange-500 to-amber-400",
+    shadow: "shadow-orange-500/25",
+  },
+  {
+    id: "glossary",
+    title: "Glossario",
+    subtitle: "Terminologia",
+    icon: BookOpen,
+    available: true,
+    gradient: "from-amber-500 to-yellow-400",
+    shadow: "shadow-amber-500/25",
   },
   {
     id: "weight",
@@ -46,9 +64,9 @@ const Tools = () => {
   const handleToolClick = (toolId: string) => {
     const sizes: Record<string, [number, number]> = {
       imperial: [480, 600],
-      finish: [560, 750],
       circle: [480, 650],
-      enamel: [940, 800],
+      descriptions: [560, 800],
+      glossary: [520, 700],
     }
     const [w, h] = sizes[toolId] || [480, 600]
     const left = (screen.width - w) / 2

@@ -2,11 +2,15 @@ import { useState } from "react"
 import { useParams, Navigate } from "react-router-dom"
 import { ImperialConverter } from "@/components/ImperialConverter"
 import { CircleCalculator } from "@/components/CircleCalculator"
+import { DescriptionAssistant } from "@/components/DescriptionAssistant"
+import { Glossary } from "@/components/Glossary"
 import { MacWindowBar } from "@/components/MacWindowBar"
 
 const toolMeta: Record<string, { title: string }> = {
   imperial: { title: "Convertitore Pollici/Piedi → mm" },
   circle: { title: "Calcolo Cerchi" },
+  descriptions: { title: "Assistente Descrizioni" },
+  glossary: { title: "Glossario Pietra" },
 }
 
 const ToolPage = () => {
@@ -23,6 +27,10 @@ const ToolPage = () => {
         return <ImperialConverter />
       case "circle":
         return <CircleCalculator />
+      case "descriptions":
+        return <DescriptionAssistant />
+      case "glossary":
+        return <Glossary />
       default:
         return null
     }
