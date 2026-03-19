@@ -376,12 +376,6 @@ export function EnamelCostCalculator() {
                   <td className={tdCalcBold}>{fmtEur(c.importo_modulo)}</td>
                   {/* TOT RIGA */}
                   <td className={tdCalcBold}>{fmtEur(c.totale_riga)}</td>
-                  {/* TOT CAD - show only on last row */}
-                  <td className={tdCalcBold}>
-                    {idx === rows.length - 1 && summary.totalePezzi > 0
-                      ? fmtEur(summary.totaleCadauno)
-                      : ""}
-                  </td>
                   {/* Delete */}
                   <td className="px-0 py-0 border border-border text-center">
                     {rows.length > 1 && (
