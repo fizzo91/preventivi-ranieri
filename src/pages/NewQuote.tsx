@@ -456,6 +456,10 @@ const NewQuote = () => {
                 {/* Actions */}
                 <div className="flex flex-wrap gap-2">
                   <Button onClick={() => openStoneCalculator(section.id)} size="sm" variant="outline" className="gap-1.5"><Calculator className="h-4 w-4" />Calc. Pietra</Button>
+                  <Button onClick={() => { setEnamelDialogSectionId(section.id); setEnamelDialogOpen(true) }} size="sm" variant="outline" className="gap-1.5">
+                    <Palette className="h-4 w-4" />Costi Smalto
+                    {(enamelDataMap[section.id]?.length || 0) > 0 && <span className="ml-1 bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 text-[10px] font-bold">{enamelDataMap[section.id].length}</span>}
+                  </Button>
                   <SaveTemplateDialog sectionName={section.name} items={section.items} tags={section.tags} complexity={section.complexity} risk={section.risk} />
                   <Button onClick={() => duplicateSection(section.id)} size="sm" variant="outline" className="gap-1.5"><Copy className="h-4 w-4" />Duplica</Button>
                   {sections.length > 1 && (
