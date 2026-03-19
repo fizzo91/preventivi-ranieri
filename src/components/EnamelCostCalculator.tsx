@@ -393,14 +393,13 @@ export function EnamelCostCalculator() {
 
             {/* Summary row */}
             <tr className="bg-muted/40">
-              <td colSpan={18} className="px-1 py-1 border border-border text-right text-[10px] font-bold uppercase text-muted-foreground">
+              <td colSpan={15} className="px-1 py-1 border border-border text-right text-[10px] font-bold uppercase text-muted-foreground">
                 Mq Tot: {fmtMq(summary.mqTotali)}
               </td>
               <td className={tdCalc}>{fmtMq(summary.mqTotali)}</td>
               <td colSpan={11} className="px-1 py-1 border border-border" />
               <td className="px-1 py-1 border border-border text-[10px] text-right font-bold text-muted-foreground">totale</td>
               <td className={tdCalcBold}>{fmtEur(summary.totaleGenerale)}</td>
-              <td className={tdCalcBold}>{fmtEur(summary.totaleCadauno)}</td>
               <td className="border border-border" />
             </tr>
           </tbody>
