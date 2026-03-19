@@ -341,7 +341,7 @@ const NewQuote = () => {
       client_address: clientData.address || null, client_vat_number: null, client_fiscal_code: null,
       sections, total_amount: totalAmount, status: quoteData.status,
       notes: quoteData.notes || null, payment_terms: null,
-      enamel_data: enamelData.length > 0 ? enamelData : null,
+      enamel_data: Object.keys(enamelDataMap).length > 0 ? enamelDataMap : null,
     }
 
     try {
