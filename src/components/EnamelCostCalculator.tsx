@@ -162,7 +162,6 @@ export function EnamelCostCalculator() {
             </tr>
             {/* Column headers */}
             <tr>
-              <th className={thCls} style={{ width: 65 }}>DATA</th>
               <th className={thCls} style={{ width: 40 }}>REP.</th>
               <th className={thCls} style={{ width: 30 }}>ID</th>
               <th className={thCls} style={{ width: 30 }}>RV</th>
@@ -176,8 +175,6 @@ export function EnamelCostCalculator() {
               <th className={thCls} style={{ width: 55 }}>LATO 2</th>
               <th className={thCls} style={{ width: 50 }}>Mq MOD.</th>
               <th className={thCls} style={{ width: 35 }}>NR. Pz.</th>
-              <th className={thCls} style={{ width: 60 }}>QUOTA FISSA</th>
-              <th className={thCls} style={{ width: 60 }}>QUOTA VAR.</th>
               <th className={thCls} style={{ width: 35 }}>% +/-</th>
               <th className={thCls} style={{ width: 65 }}>LISTINO A Mq</th>
               <th className={thCls} style={{ width: 50 }}>Mq TOT.</th>
@@ -194,7 +191,6 @@ export function EnamelCostCalculator() {
               <th className={thCls} style={{ width: 60 }}>TOT. PROF.</th>
               <th className={thCls} style={{ width: 75 }}>IMP. × MOD.</th>
               <th className={thCls} style={{ width: 75 }}>TOT. RIGA</th>
-              <th className={thCls} style={{ width: 60 }}>TOT CAD</th>
               <th className={thCls} style={{ width: 28 }}></th>
             </tr>
           </thead>
