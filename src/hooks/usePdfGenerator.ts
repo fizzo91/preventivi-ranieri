@@ -12,7 +12,7 @@ interface QuoteData {
   }
   sections: any[]
   totalAmount: number
-  enamelData?: EnamelPieceRow[] | null
+  enamelData?: EnamelPieceRow[] | Record<string, EnamelPieceRow[]> | null
 }
 
 export const usePdfGenerator = () => {
