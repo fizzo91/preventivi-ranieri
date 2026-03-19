@@ -84,6 +84,7 @@ interface EnamelCostCalculatorProps {
 }
 
 export function EnamelCostCalculator({ value, onChange }: EnamelCostCalculatorProps = {}) {
+  const { toast } = useToast()
   const [internalRows, setInternalRows] = useState<EnamelPieceRow[]>(() =>
     value && value.length > 0 ? value : [defaultRow(1)]
   )
