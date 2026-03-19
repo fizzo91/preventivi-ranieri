@@ -202,6 +202,8 @@ export function EnamelCostCalculator() {
                 <tr key={row.id} className="hover:bg-muted/20">
                   {/* REP */}
                   <td className={tdCalc}>CER.</td>
+                  {/* ID */}
+                  <td className={tdCalc}>{String(idx + 1).padStart(2, "0")}</td>
                   {/* RV */}
                   <td className={tdCalc}>1</td>
                   {/* DESCRIZ */}
