@@ -302,6 +302,16 @@ const NewQuote = () => {
   }
 
   const saveQuote = async () => {
+    // Warning if any section has no risks
+    const sectionsWithoutRisks = sections.filter(s => s.risks.length === 0)
+    if (sectionsWithoutRisks.length > 0) {
+      const names = sectionsWithoutRisks.map(s => `"${s.name}"`).join(", ")
+      const confirmed = window.confirm(
+        `Attenzione: ${sectionsWithoutRisks.length === 1 ? 'la sezione' : 'le sezioni'} ${names} non ${sectionsWithoutRisks.length === 1 ? 'ha' : 'hanno'} rischi aggiunti.\n\nVuoi salvare comunque?`
+      )
+      if (!confirmed) return
+    }
+
     const validUntilDate = quoteData.validUntil ? new Date(quoteData.validUntil) : null
     const dateObj = new Date(quoteData.date)
     const validityDays = validUntilDate ? Math.ceil((validUntilDate.getTime() - dateObj.getTime()) / (1000 * 60 * 60 * 24)) : 30
