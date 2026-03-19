@@ -1,4 +1,4 @@
-import { Calculator, Ruler, Scale, ArrowRightLeft, Circle } from "lucide-react"
+import { Calculator, Ruler, Scale, ArrowRightLeft, Circle, Palette } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 const tools = [
