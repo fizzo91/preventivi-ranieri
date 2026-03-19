@@ -100,6 +100,7 @@ export function EnamelCostDialog({ open, onOpenChange, value, onChange }: Enamel
           </button>
           {/* Fullscreen (green) */}
           <button
+            onMouseDown={(e) => e.stopPropagation()}
             onClick={() => { setIsFullscreen(!isFullscreen); setIsMinimized(false) }}
             className="group w-3 h-3 rounded-full bg-[#28C840] hover:bg-[#28C840]/80 flex items-center justify-center transition-colors"
             title="Schermo intero"
