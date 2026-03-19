@@ -53,7 +53,8 @@ const Quotes = () => {
       total_amount: quote.total_amount,
       status: 'draft',
       payment_terms: quote.payment_terms,
-      notes: quote.notes
+      notes: quote.notes,
+      enamel_data: quote.enamel_data || null,
     })
     toast({ title: "Preventivo Duplicato", description: "Il preventivo è stato duplicato con successo" })
   }
