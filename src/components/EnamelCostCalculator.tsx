@@ -147,17 +147,17 @@ export function EnamelCostCalculator() {
           <thead>
             {/* Column group headers */}
             <tr>
-              <th colSpan={5} className={`${thCls} bg-primary/10`}>Identificazione</th>
+              <th colSpan={4} className={`${thCls} bg-primary/10`}>Identificazione</th>
               <th colSpan={4} className={`${thCls} bg-emerald-100/60 dark:bg-emerald-950/30`}>Parametri</th>
               <th colSpan={2} className={`${thCls} bg-sky-100/60 dark:bg-sky-950/30`}>Dimensioni (cm)</th>
               <th colSpan={3} className={`${thCls} bg-blue-100/60 dark:bg-blue-950/30`}>Superfici</th>
-              <th colSpan={3} className={`${thCls} bg-violet-100/60 dark:bg-violet-950/30`}>Costi base</th>
+              <th colSpan={1} className={`${thCls} bg-violet-100/60 dark:bg-violet-950/30`}>Costi base</th>
               <th colSpan={2} className={`${thCls} bg-blue-100/60 dark:bg-blue-950/30`}>Ceramica</th>
               <th className={`${thCls} bg-muted`}>Peso</th>
               <th colSpan={2} className={`${thCls} bg-orange-100/60 dark:bg-orange-950/30`}>Imballaggio</th>
               <th colSpan={4} className={`${thCls} bg-pink-100/60 dark:bg-pink-950/30`}>Altre produzioni</th>
               <th colSpan={2} className={`${thCls} bg-teal-100/60 dark:bg-teal-950/30`}>Profilo</th>
-              <th colSpan={3} className={`${thCls} bg-amber-100/60 dark:bg-amber-950/30`}>Totali</th>
+              <th colSpan={2} className={`${thCls} bg-amber-100/60 dark:bg-amber-950/30`}>Totali</th>
               <th className={thCls}></th>
             </tr>
             {/* Column headers */}
