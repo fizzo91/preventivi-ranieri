@@ -158,7 +158,8 @@ export function CircleCalculator() {
           <div className="text-[10px] text-muted-foreground space-y-1">
             <div className="font-semibold text-xs mb-1">Formule</div>
             <div>Circonferenza = π × d (risultato in ml)</div>
-            <div>Area = π × r² (risultato in mq)</div>
+            <div>Area rettangolo = d × d (risultato in mq)</div>
+            <div>Area maggiorata = (d+100) × (d+100) — +50mm per lato</div>
           </div>
         </CardContent>
       </Card>
