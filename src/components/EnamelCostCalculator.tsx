@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 /* ───────── types ───────── */
-interface PieceRow {
+export interface EnamelPieceRow {
   id: number
   descrizione: string
   finitura_colore: string
