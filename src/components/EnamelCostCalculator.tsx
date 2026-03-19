@@ -107,7 +107,7 @@ export function EnamelCostCalculator({ value, onChange }: EnamelCostCalculatorPr
   )
 
   const updateRow = useCallback(
-    (idx: number, field: keyof PieceRow, value: string | number | null) => {
+    (idx: number, field: keyof EnamelPieceRow, value: string | number | null) => {
       setRows((prev) =>
         prev.map((r, i) => (i === idx ? { ...r, [field]: value } : r))
       )
