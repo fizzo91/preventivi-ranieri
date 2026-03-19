@@ -298,10 +298,6 @@ export function EnamelCostCalculator() {
                       onChange={(e) => updateRow(idx, "nr_pezzi", e.target.value === "" ? 1 : parseInt(e.target.value))}
                     />
                   </td>
-                  {/* QUOTA FISSA */}
-                  <td className={tdCalc}>{fmtEur(c.quota_fissa)}</td>
-                  {/* QUOTA VAR */}
-                  <td className={tdCalc}>{fmtEur(c.quota_var)}</td>
                   {/* % +/- */}
                   <td className={tdInput}>
                     <Input
