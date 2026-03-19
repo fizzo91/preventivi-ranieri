@@ -1,7 +1,8 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react"
-import { Plus, Trash2 } from "lucide-react"
+import { Plus, Trash2, ClipboardCopy } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useToast } from "@/hooks/use-toast"
 
 /* ───────── types ───────── */
 export interface EnamelPieceRow {
@@ -83,6 +84,7 @@ interface EnamelCostCalculatorProps {
 }
 
 export function EnamelCostCalculator({ value, onChange }: EnamelCostCalculatorProps = {}) {
+  const { toast } = useToast()
   const [internalRows, setInternalRows] = useState<EnamelPieceRow[]>(() =>
     value && value.length > 0 ? value : [defaultRow(1)]
   )
@@ -415,7 +417,19 @@ export function EnamelCostCalculator({ value, onChange }: EnamelCostCalculatorPr
                   {/* IMP × MODULO */}
                   <td className={tdCalcBold}>{fmtEur(c.importo_modulo)}</td>
                   {/* TOT RIGA */}
-                  <td className={tdCalcBold}>{fmtEur(c.totale_riga)}</td>
+                  <td className={`${tdCalcBold} relative group/cell`}>
+                    {fmtEur(c.totale_riga)}
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(c.totale_riga.toFixed(2))
+                        toast({ title: "Copiato", description: `€ ${c.totale_riga.toFixed(2)} copiato negli appunti` })
+                      }}
+                      className="absolute right-0.5 top-1/2 -translate-y-1/2 opacity-0 group-hover/cell:opacity-100 transition-opacity p-0.5 hover:text-primary"
+                      title="Copia totale riga"
+                    >
+                      <ClipboardCopy className="h-2.5 w-2.5" />
+                    </button>
+                  </td>
                   {/* Delete */}
                   <td className="px-0 py-0 border border-border text-center">
                     {rows.length > 1 && (

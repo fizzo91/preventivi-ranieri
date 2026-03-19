@@ -12,7 +12,7 @@ interface QuoteData {
   }
   sections: any[]
   totalAmount: number
-  enamelData?: EnamelPieceRow[] | null
+  enamelData?: EnamelPieceRow[] | Record<string, EnamelPieceRow[]> | null
 }
 
 export const usePdfGenerator = () => {
@@ -415,7 +415,24 @@ export const usePdfGenerator = () => {
       pdf.text(`TOTALE: € ${quoteData.totalAmount.toFixed(2)}`, margin + contentWidth, y, { align: 'right' })
 
       // ── Enamel Cost Appendix ──
-      if (quoteData.enamelData && quoteData.enamelData.length > 0) {
+      // Normalize enamel data: support both flat array (legacy) and per-section map
+      let allEnamelSections: { sectionName: string; rows: EnamelPieceRow[] }[] = []
+      if (quoteData.enamelData) {
+        if (Array.isArray(quoteData.enamelData)) {
+          if (quoteData.enamelData.length > 0) {
+            allEnamelSections.push({ sectionName: '', rows: quoteData.enamelData })
+          }
+        } else {
+          for (const [sectionId, rows] of Object.entries(quoteData.enamelData)) {
+            if (rows && rows.length > 0) {
+              const section = quoteData.sections.find((s: any) => s.id === sectionId)
+              allEnamelSections.push({ sectionName: section?.name || '', rows })
+            }
+          }
+        }
+      }
+
+      if (allEnamelSections.length > 0) {
         pdf.addPage()
         currentPage++
         y = margin
@@ -425,70 +442,79 @@ export const usePdfGenerator = () => {
         pdf.text('ALLEGATO: COSTI SMALTO', pageWidth / 2, y, { align: 'center' })
         y += 12
 
-        // Table headers
-        const eCols = ['ID', 'Descrizione', 'Finit.', 'Sp.', 'L1×L2', 'Mq Mod', 'Pz', '%', '€/Mq', 'Tot Cer.', 'Imb.', 'Prof.', 'TOTALE']
-        const eWidths = [8, 30, 15, 10, 18, 14, 8, 8, 14, 18, 14, 14, 18]
-        const eX: number[] = []
-        let cx = margin
-        for (const w of eWidths) { eX.push(cx); cx += w }
-
-        pdf.setFillColor(248, 249, 250)
-        pdf.rect(margin, y, contentWidth, 7, 'F')
-        pdf.setFontSize(6)
-        pdf.setFont('helvetica', 'bold')
-        for (let i = 0; i < eCols.length; i++) {
-          pdf.text(eCols[i], eX[i] + 1, y + 5)
-        }
-        y += 7
-
-        pdf.setFont('helvetica', 'normal')
-        let enamelGrandTotal = 0
-
-        for (let ri = 0; ri < quoteData.enamelData.length; ri++) {
-          checkPageBreak(8)
-          const row = quoteData.enamelData[ri]
-          const c = calcRow(row)
-          enamelGrandTotal += c.totale_riga
-
-          const fmtE = (v: number) => v.toFixed(2)
-          const vals = [
-            String(ri + 1).padStart(2, '0'),
-            (row.descrizione || '-').substring(0, 18),
-            String(row.finitura_code),
-            String(row.spessore),
-            `${row.lato1}×${row.lato2}`,
-            c.mq_modulo.toFixed(2),
-            String(row.nr_pezzi),
-            row.percentuale ? `${row.percentuale}` : '0',
-            `€${fmtE(c.listino_mq)}`,
-            `€${fmtE(c.totale_ceramica)}`,
-            `€${fmtE(c.tot_imballaggio)}`,
-            `€${fmtE(c.tot_profilo)}`,
-            `€${fmtE(c.totale_riga)}`,
-          ]
-
-          // Alternate row background
-          if (ri % 2 === 0) {
-            pdf.setFillColor(252, 252, 253)
-            pdf.rect(margin, y, contentWidth, 6, 'F')
+        for (const enamelSection of allEnamelSections) {
+          if (enamelSection.sectionName) {
+            checkPageBreak(12)
+            pdf.setFontSize(11)
+            pdf.setFont('helvetica', 'bold')
+            pdf.text(enamelSection.sectionName, margin, y)
+            y += 8
           }
 
+          // Table headers
+          const eCols = ['ID', 'Descrizione', 'Finit.', 'Sp.', 'L1×L2', 'Mq Mod', 'Pz', '%', '€/Mq', 'Tot Cer.', 'Imb.', 'Prof.', 'TOTALE']
+          const eWidths = [8, 30, 15, 10, 18, 14, 8, 8, 14, 18, 14, 14, 18]
+          const eX: number[] = []
+          let cx = margin
+          for (const w of eWidths) { eX.push(cx); cx += w }
+
+          pdf.setFillColor(248, 249, 250)
+          pdf.rect(margin, y, contentWidth, 7, 'F')
           pdf.setFontSize(6)
-          for (let i = 0; i < vals.length; i++) {
-            pdf.text(vals[i], eX[i] + 1, y + 4)
+          pdf.setFont('helvetica', 'bold')
+          for (let i = 0; i < eCols.length; i++) {
+            pdf.text(eCols[i], eX[i] + 1, y + 5)
           }
-          y += 6
-        }
+          y += 7
 
-        // Enamel total
-        checkPageBreak(10)
-        pdf.setFillColor(255, 251, 235)
-        pdf.rect(margin, y, contentWidth, 8, 'F')
-        pdf.setFontSize(9)
-        pdf.setFont('helvetica', 'bold')
-        pdf.text('TOTALE SMALTO', margin + 2, y + 5)
-        pdf.text(`€ ${enamelGrandTotal.toFixed(2)}`, margin + contentWidth - 2, y + 5, { align: 'right' })
-        y += 12
+          pdf.setFont('helvetica', 'normal')
+          let enamelSectionTotal = 0
+
+          for (let ri = 0; ri < enamelSection.rows.length; ri++) {
+            checkPageBreak(8)
+            const row = enamelSection.rows[ri]
+            const c = calcRow(row)
+            enamelSectionTotal += c.totale_riga
+
+            const fmtE = (v: number) => v.toFixed(2)
+            const vals = [
+              String(ri + 1).padStart(2, '0'),
+              (row.descrizione || '-').substring(0, 18),
+              String(row.finitura_code),
+              String(row.spessore),
+              `${row.lato1}×${row.lato2}`,
+              c.mq_modulo.toFixed(2),
+              String(row.nr_pezzi),
+              row.percentuale ? `${row.percentuale}` : '0',
+              `€${fmtE(c.listino_mq)}`,
+              `€${fmtE(c.totale_ceramica)}`,
+              `€${fmtE(c.tot_imballaggio)}`,
+              `€${fmtE(c.tot_profilo)}`,
+              `€${fmtE(c.totale_riga)}`,
+            ]
+
+            if (ri % 2 === 0) {
+              pdf.setFillColor(252, 252, 253)
+              pdf.rect(margin, y, contentWidth, 6, 'F')
+            }
+
+            pdf.setFontSize(6)
+            for (let i = 0; i < vals.length; i++) {
+              pdf.text(vals[i], eX[i] + 1, y + 4)
+            }
+            y += 6
+          }
+
+          // Section total
+          checkPageBreak(10)
+          pdf.setFillColor(255, 251, 235)
+          pdf.rect(margin, y, contentWidth, 8, 'F')
+          pdf.setFontSize(9)
+          pdf.setFont('helvetica', 'bold')
+          pdf.text(enamelSection.sectionName ? `TOTALE ${enamelSection.sectionName}` : 'TOTALE SMALTO', margin + 2, y + 5)
+          pdf.text(`€ ${enamelSectionTotal.toFixed(2)}`, margin + contentWidth - 2, y + 5, { align: 'right' })
+          y += 12
+        }
       }
       
       // Footer

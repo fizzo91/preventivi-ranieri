@@ -6,9 +6,10 @@ interface EnamelCostDialogProps {
   onOpenChange: (open: boolean) => void
   value: EnamelPieceRow[]
   onChange: (rows: EnamelPieceRow[]) => void
+  sectionName?: string
 }
 
-export function EnamelCostDialog({ open, onOpenChange, value, onChange }: EnamelCostDialogProps) {
+export function EnamelCostDialog({ open, onOpenChange, value, onChange, sectionName }: EnamelCostDialogProps) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [position, setPosition] = useState({ x: 60, y: 40 })
@@ -122,7 +123,7 @@ export function EnamelCostDialog({ open, onOpenChange, value, onChange }: Enamel
         </div>
 
         <span className="flex-1 text-center text-xs font-semibold text-muted-foreground select-none">
-          Calcolatore Costi Smalto
+          Costi Smalto{sectionName ? ` — ${sectionName}` : ""}
         </span>
 
         {/* Spacer to balance traffic lights */}

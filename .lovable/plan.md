@@ -1,53 +1,72 @@
 
+# Barra a 3 segmenti con fallback mq
 
-## Plan: Enamel per-section, macOS popups, remove tools
+## Cosa cambia
 
-### Changes Overview
+Il grafico "Costo Medio per Spessore" passera' da una singola barra blu a **3 segmenti colorati sovrapposti**, con la logica di fallback per i mq.
 
-**1. Enamel data per-section instead of global**
+### Visualizzazione
 
-Currently `enamelData` is a single array on the quote. It needs to become per-section so each section has its own enamel calculation sheet.
+```text
+50 mm  |████████████████░░░░░░░▓▓▓▓|
+        Pietra+Lavoraz.  Rischio Finitura
 
-- **Database**: The `enamel_data` JSONB column already exists on `quotes`. No migration needed — we'll store a map `{ [sectionId]: EnamelPieceRow[] }` instead of a flat array.
-- **NewQuote.tsx**: 
-  - Replace `enamelData: EnamelPieceRow[]` state with `enamelDataMap: Record<string, EnamelPieceRow[]>`
-  - Move the "Costi Smalto" button from the top action bar into each section's action row (next to "Calc. Pietra", "Duplica", etc.)
-  - Pass `enamelDataMap[section.id]` to the dialog when opening for that section
-  - Save `enamel_data` as the full map object
-- **EnamelCostDialog.tsx**: No structural changes needed, just receives per-section data
-- **EnamelCostCalculator.tsx**: Add a "copy" button on each row's `TOT. RIGA` cell that copies the value to clipboard
-- **usePdfGenerator.ts**: Update to iterate over sections' enamel data instead of a flat array
-- **Quotes.tsx**: Update enamel data loading to handle the new map format
+30 mm  |████████░░░▓▓|
+```
 
-**2. Copy button on TOT. RIGA**
+| Segmento | Contenuto | Colore |
+|----------|-----------|--------|
+| Pietra e Lavorazioni | Somma di tutti gli `item.total` | Blu (primary) |
+| Rischio | Somma dei costi calcolati dai `risks` | Arancione |
+| Finitura | `engobbio` + `finitura` | Verde |
 
-- Add a small copy icon button next to each row's total in `EnamelCostCalculator.tsx`
-- On click, copy the formatted euro value to clipboard with a toast confirmation
+### Logica mq (fallback a 3 livelli)
 
-**3. macOS-style controls on all tool popups**
+1. `section.mqTotali` -- se compilato e > 0
+2. Quantita' della voce "2 taglio" -- se presente
+3. Quantita' della voce PIETRA -- ultima risorsa
 
-Currently only the EnamelCostDialog has the macOS floating window. The other tools (Imperial, Circle) open via `window.open()` as separate browser windows — they don't have custom controls.
+Se nessuno e' disponibile o > 0, la sezione viene saltata.
 
-- Since `window.open()` popups already have native OS chrome, the macOS-style controls should apply to the **ToolPage.tsx** wrapper that renders inside those popups
-- Add a reusable `FloatingWindowBar` component with the red/yellow/green traffic light buttons that calls `window.close()`, minimizes, and toggles fullscreen
-- Apply this bar to `ToolPage.tsx` for all standalone tool windows
+### Tooltip
 
-**4. Remove "Finitura" and "Smalto" from Tools page**
+Al passaggio del mouse:
+- Spessore
+- Pietra e Lavorazioni: X euro/mq
+- Rischio: X euro/mq
+- Finitura: X euro/mq
+- Totale: X euro/mq
+- N sezioni, N mq totali
 
-- Remove entries with `id: "finish"` and `id: "enamel"` from the `tools` array in `Tools.tsx`
-- Remove `finish` and `enamel` cases from `ToolPage.tsx`
-- Keep the component files in case they're used elsewhere (EnamelCostCalculator is used in quotes)
+## Dettagli tecnici
 
-### Files to modify
+### File: `src/pages/Dashboard.tsx`
 
-| File | Change |
-|---|---|
-| `src/pages/Tools.tsx` | Remove "finish" and "enamel" entries |
-| `src/pages/ToolPage.tsx` | Remove finish/enamel cases, add macOS title bar |
-| `src/pages/NewQuote.tsx` | Per-section enamel state, move button to section actions |
-| `src/components/EnamelCostCalculator.tsx` | Add copy button on TOT. RIGA |
-| `src/components/EnamelCostDialog.tsx` | Minor: accept section name for title |
-| `src/hooks/usePdfGenerator.ts` | Update for per-section enamel map |
-| `src/pages/Quotes.tsx` | Update enamel data format handling |
-| `src/components/MacWindowBar.tsx` | New reusable macOS title bar component |
+**1. Aggiornare l'interfaccia `ThicknessCost`:**
 
+Aggiungere i campi `avgPietraPerMq`, `avgRischioPerMq`, `avgFinituraPerMq`.
+
+**2. Aggiornare il `useMemo` di `thicknessCosts`:**
+
+- Il `thicknessMap` accumulera' 4 valori separati per spessore: `totalPietra`, `totalRischio`, `totalFinitura`, `totalMq`, `count`.
+- Per ogni sezione con PIETRA:
+  - Determina mq con fallback: `mqTotali` -> quantita' "2 taglio" -> quantita' PIETRA.
+  - `pietraLavorazioni` = somma di tutti `item.total` nella sezione.
+  - `rischio` = per ogni risk: se `appliedToItemId === 'SECTION_TOTAL'`, applica percentuale su itemsTotal; altrimenti applica su item specifico.
+  - `finitura` = `section.engobbio + section.finitura`.
+  - Moltiplica tutto per `section.quantity || 1`.
+- Alla fine, divide ogni totale accumulato per `totalMq` per ottenere i costi al mq.
+
+**3. Aggiornare il grafico:**
+
+Sostituire la singola `<Bar>` con 3 barre stacked:
+
+```tsx
+<Bar dataKey="avgPietraPerMq" stackId="cost" fill="hsl(var(--primary))" name="Pietra e Lavorazioni" radius={[0, 0, 0, 0]} />
+<Bar dataKey="avgRischioPerMq" stackId="cost" fill="#f97316" name="Rischio" radius={[0, 0, 0, 0]} />
+<Bar dataKey="avgFinituraPerMq" stackId="cost" fill="#22c55e" name="Finitura" radius={[0, 4, 4, 0]} />
+```
+
+**4. Aggiornare il tooltip custom** per mostrare i 3 valori con i colori corrispondenti e il totale complessivo.
+
+Nessun altro file viene modificato.
