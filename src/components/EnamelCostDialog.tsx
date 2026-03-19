@@ -77,6 +77,7 @@ export function EnamelCostDialog({ open, onOpenChange, value, onChange }: Enamel
         <div className="flex items-center gap-1.5">
           {/* Close (red) */}
           <button
+            onMouseDown={(e) => e.stopPropagation()}
             onClick={() => onOpenChange(false)}
             className="group w-3 h-3 rounded-full bg-[#FF5F57] hover:bg-[#FF5F57]/80 flex items-center justify-center transition-colors"
             title="Chiudi"
