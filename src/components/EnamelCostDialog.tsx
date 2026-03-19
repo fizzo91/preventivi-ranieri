@@ -6,6 +6,7 @@ interface EnamelCostDialogProps {
   onOpenChange: (open: boolean) => void
   value: EnamelPieceRow[]
   onChange: (rows: EnamelPieceRow[]) => void
+  sectionName?: string
 }
 
 export function EnamelCostDialog({ open, onOpenChange, value, onChange }: EnamelCostDialogProps) {
