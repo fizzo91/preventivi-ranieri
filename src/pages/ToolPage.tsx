@@ -2,11 +2,13 @@ import { useParams, Navigate } from "react-router-dom"
 import { ImperialConverter } from "@/components/ImperialConverter"
 import { FinishCalculator } from "@/components/FinishCalculator"
 import { CircleCalculator } from "@/components/CircleCalculator"
+import { EnamelCostCalculator } from "@/components/EnamelCostCalculator"
 
 const toolMeta: Record<string, { title: string }> = {
   imperial: { title: "Convertitore Pollici/Piedi → mm" },
   finish: { title: "Calcolo Finitura" },
   circle: { title: "Calcolo Cerchi" },
+  enamel: { title: "Calcolatore Costi Smalto" },
 }
 
 const ToolPage = () => {
