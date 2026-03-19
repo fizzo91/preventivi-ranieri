@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Copy, Sparkles, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -44,9 +44,38 @@ const TEMPLATES: { category: string; templates: string[] }[] = [
 
 export function DescriptionAssistant() {
   const [sectionName, setSectionName] = useState("")
-  const [existingDescriptions, setExistingDescriptions] = useState("")
   const [result, setResult] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [storedDescriptions, setStoredDescriptions] = useState("")
+  const [descCount, setDescCount] = useState(0)
+
+  // Fetch all section descriptions from user's quotes on mount
+  useEffect(() => {
+    const fetchDescriptions = async () => {
+      const { data, error } = await supabase
+        .from("quotes")
+        .select("sections")
+
+      if (error || !data) return
+
+      const descriptions: string[] = []
+      for (const quote of data) {
+        const sections = quote.sections as any[]
+        if (!Array.isArray(sections)) continue
+        for (const section of sections) {
+          if (section.description && typeof section.description === "string" && section.description.trim()) {
+            descriptions.push(`${section.name || "Sezione"}: ${section.description.trim()}`)
+          }
+        }
+      }
+
+      const unique = [...new Set(descriptions)]
+      setDescCount(unique.length)
+      setStoredDescriptions(unique.slice(0, 30).join("\n\n"))
+    }
+
+    fetchDescriptions()
+  }, [])
 
   const handleTemplateClick = (template: string) => {
     setResult(template)
@@ -68,7 +97,7 @@ export function DescriptionAssistant() {
       const { data, error } = await supabase.functions.invoke("generate-description", {
         body: {
           sectionName: sectionName.trim(),
-          existingDescriptions: existingDescriptions.trim(),
+          existingDescriptions: storedDescriptions,
         },
       })
       if (error) throw error
@@ -92,6 +121,9 @@ export function DescriptionAssistant() {
           <Sparkles className="h-4 w-4 text-primary" />
           Genera con AI
         </h3>
+        <p className="text-xs text-muted-foreground">
+          L'AI analizzerà {descCount > 0 ? `${descCount} descrizioni` : "le descrizioni"} dai tuoi preventivi per generare testi coerenti.
+        </p>
         <div className="space-y-2">
           <div>
             <Label className="text-xs">Nome sezione</Label>
@@ -99,15 +131,6 @@ export function DescriptionAssistant() {
               placeholder="es. Top cucina in marmo Calacatta"
               value={sectionName}
               onChange={(e) => setSectionName(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Descrizioni esistenti (opzionale, per coerenza)</Label>
-            <Textarea
-              placeholder="Incolla qui le descrizioni delle altre sezioni del preventivo per mantenere uno stile coerente..."
-              value={existingDescriptions}
-              onChange={(e) => setExistingDescriptions(e.target.value)}
-              rows={3}
             />
           </div>
           <Button onClick={handleGenerate} disabled={isLoading} size="sm" className="w-full">
