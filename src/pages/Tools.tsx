@@ -30,6 +30,15 @@ const tools = [
     shadow: "shadow-violet-500/25",
   },
   {
+    id: "enamel",
+    title: "Smalto",
+    subtitle: "Costi ceramica",
+    icon: Palette,
+    available: true,
+    gradient: "from-rose-500 to-pink-400",
+    shadow: "shadow-rose-500/25",
+  },
+  {
     id: "weight",
     title: "Peso",
     subtitle: "Calcolatore",
