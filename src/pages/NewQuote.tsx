@@ -650,7 +650,15 @@ const NewQuote = () => {
       <StoneCalculator open={stoneCalculatorOpen} onOpenChange={setStoneCalculatorOpen} onConfirm={(result) => {
         if (stoneCalculatorSectionId) handleStoneCalculatorConfirm(stoneCalculatorSectionId, result)
       }} />
-      <EnamelCostDialog open={enamelDialogOpen} onOpenChange={setEnamelDialogOpen} value={enamelData} onChange={setEnamelData} />
+      {enamelDialogSectionId && (
+        <EnamelCostDialog
+          open={enamelDialogOpen}
+          onOpenChange={(open) => { setEnamelDialogOpen(open); if (!open) setEnamelDialogSectionId(null) }}
+          value={enamelDataMap[enamelDialogSectionId] || []}
+          onChange={(rows) => setEnamelDataMap(prev => ({ ...prev, [enamelDialogSectionId!]: rows }))}
+          sectionName={sections.find(s => s.id === enamelDialogSectionId)?.name || ""}
+        />
+      )}
     </div>
   )
 }

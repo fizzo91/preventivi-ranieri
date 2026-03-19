@@ -123,7 +123,7 @@ export function EnamelCostDialog({ open, onOpenChange, value, onChange, sectionN
         </div>
 
         <span className="flex-1 text-center text-xs font-semibold text-muted-foreground select-none">
-          Calcolatore Costi Smalto
+          Costi Smalto{sectionName ? ` — ${sectionName}` : ""}
         </span>
 
         {/* Spacer to balance traffic lights */}
