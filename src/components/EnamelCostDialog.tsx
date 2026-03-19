@@ -89,6 +89,7 @@ export function EnamelCostDialog({ open, onOpenChange, value, onChange }: Enamel
           </button>
           {/* Minimize (yellow) */}
           <button
+            onMouseDown={(e) => e.stopPropagation()}
             onClick={() => setIsMinimized(!isMinimized)}
             className="group w-3 h-3 rounded-full bg-[#FEBC2E] hover:bg-[#FEBC2E]/80 flex items-center justify-center transition-colors"
             title="Minimizza"
