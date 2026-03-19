@@ -365,12 +365,7 @@ const NewQuote = () => {
           <h1 className="text-3xl font-bold text-foreground">{editQuote ? 'Modifica Preventivo' : 'Nuovo Preventivo'}</h1>
           <p className="text-muted-foreground mt-1">Lavorazione Pietra Lavica Smaltata</p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" className="gap-2"><Eye className="h-4 w-4" />Anteprima</Button>
-          <Button onClick={() => setEnamelDialogOpen(true)} variant="outline" className="gap-2">
-            <Palette className="h-4 w-4" />Costi Smalto
-            {enamelData.length > 0 && <span className="ml-1 bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 text-[10px] font-bold">{enamelData.length}</span>}
-          </Button>
+         <div className="flex flex-wrap gap-2">
           <Button onClick={duplicateQuote} variant="outline" className="gap-2"><Copy className="h-4 w-4" />Duplica</Button>
           <Button onClick={saveQuote} className="gap-2" disabled={createQuote.isPending || updateQuote.isPending}><Save className="h-4 w-4" />Salva</Button>
         </div>
