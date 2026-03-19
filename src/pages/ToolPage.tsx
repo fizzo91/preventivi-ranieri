@@ -2,11 +2,13 @@ import { useParams, Navigate } from "react-router-dom"
 import { ImperialConverter } from "@/components/ImperialConverter"
 import { FinishCalculator } from "@/components/FinishCalculator"
 import { CircleCalculator } from "@/components/CircleCalculator"
+import { EnamelCostCalculator } from "@/components/EnamelCostCalculator"
 
 const toolMeta: Record<string, { title: string }> = {
   imperial: { title: "Convertitore Pollici/Piedi → mm" },
   finish: { title: "Calcolo Finitura" },
   circle: { title: "Calcolo Cerchi" },
+  enamel: { title: "Calcolatore Costi Smalto" },
 }
 
 const ToolPage = () => {
@@ -24,16 +26,22 @@ const ToolPage = () => {
         return <FinishCalculator />
       case "circle":
         return <CircleCalculator />
+      case "enamel":
+        return <EnamelCostCalculator />
       default:
         return null
     }
   }
 
+  const isWide = toolId === "enamel"
+
   return (
-    <div className="min-h-screen bg-background p-6 max-w-lg mx-auto space-y-6">
-      <div>
-        <h1 className="text-xl font-bold text-foreground">{toolMeta[toolId].title}</h1>
-      </div>
+    <div className={`min-h-screen bg-background ${isWide ? "" : "p-6 max-w-lg mx-auto space-y-6"}`}>
+      {!isWide && (
+        <div>
+          <h1 className="text-xl font-bold text-foreground">{toolMeta[toolId].title}</h1>
+        </div>
+      )}
       {renderTool()}
     </div>
   )
