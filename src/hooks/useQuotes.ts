@@ -69,7 +69,7 @@ export const useCreateQuote = () => {
 
       const { data, error } = await supabase
         .from("quotes")
-        .insert({ ...quote, user_id: user.id })
+        .insert({ ...quote, user_id: user.id } as any)
         .select()
         .single();
 
