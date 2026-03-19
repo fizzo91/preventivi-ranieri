@@ -91,9 +91,9 @@ export function DescriptionAssistant() {
         </p>
         <div className="space-y-2">
           <div>
-            <Label className="text-xs">Nome sezione</Label>
+            <Label className="text-xs">Descrizione generica</Label>
             <Input
-              placeholder="es. Top cucina in marmo Calacatta"
+              placeholder="es. Tavolo top in pietra lavica smaltata Deep"
               value={sectionName}
               onChange={(e) => setSectionName(e.target.value)}
             />
