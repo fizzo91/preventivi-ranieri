@@ -66,6 +66,7 @@ const Tools = () => {
       imperial: [480, 600],
       finish: [560, 750],
       circle: [480, 650],
+      enamel: [940, 800],
     }
     const [w, h] = sizes[toolId] || [480, 600]
     const left = (screen.width - w) / 2

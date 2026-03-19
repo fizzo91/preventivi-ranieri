@@ -26,6 +26,8 @@ const ToolPage = () => {
         return <FinishCalculator />
       case "circle":
         return <CircleCalculator />
+      case "enamel":
+        return <EnamelCostCalculator />
       default:
         return null
     }
