@@ -77,6 +77,7 @@ export function EnamelCostDialog({ open, onOpenChange, value, onChange }: Enamel
         <div className="flex items-center gap-1.5">
           {/* Close (red) */}
           <button
+            onMouseDown={(e) => e.stopPropagation()}
             onClick={() => onOpenChange(false)}
             className="group w-3 h-3 rounded-full bg-[#FF5F57] hover:bg-[#FF5F57]/80 flex items-center justify-center transition-colors"
             title="Chiudi"
@@ -88,6 +89,7 @@ export function EnamelCostDialog({ open, onOpenChange, value, onChange }: Enamel
           </button>
           {/* Minimize (yellow) */}
           <button
+            onMouseDown={(e) => e.stopPropagation()}
             onClick={() => setIsMinimized(!isMinimized)}
             className="group w-3 h-3 rounded-full bg-[#FEBC2E] hover:bg-[#FEBC2E]/80 flex items-center justify-center transition-colors"
             title="Minimizza"
@@ -98,6 +100,7 @@ export function EnamelCostDialog({ open, onOpenChange, value, onChange }: Enamel
           </button>
           {/* Fullscreen (green) */}
           <button
+            onMouseDown={(e) => e.stopPropagation()}
             onClick={() => { setIsFullscreen(!isFullscreen); setIsMinimized(false) }}
             className="group w-3 h-3 rounded-full bg-[#28C840] hover:bg-[#28C840]/80 flex items-center justify-center transition-colors"
             title="Schermo intero"
