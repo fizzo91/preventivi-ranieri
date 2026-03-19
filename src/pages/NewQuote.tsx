@@ -640,6 +640,7 @@ const NewQuote = () => {
       <StoneCalculator open={stoneCalculatorOpen} onOpenChange={setStoneCalculatorOpen} onConfirm={(result) => {
         if (stoneCalculatorSectionId) handleStoneCalculatorConfirm(stoneCalculatorSectionId, result)
       }} />
+      <EnamelCostDialog open={enamelDialogOpen} onOpenChange={setEnamelDialogOpen} value={enamelData} onChange={setEnamelData} />
     </div>
   )
 }
