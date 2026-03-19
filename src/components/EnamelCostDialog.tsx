@@ -9,7 +9,7 @@ interface EnamelCostDialogProps {
   sectionName?: string
 }
 
-export function EnamelCostDialog({ open, onOpenChange, value, onChange }: EnamelCostDialogProps) {
+export function EnamelCostDialog({ open, onOpenChange, value, onChange, sectionName }: EnamelCostDialogProps) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [position, setPosition] = useState({ x: 60, y: 40 })
