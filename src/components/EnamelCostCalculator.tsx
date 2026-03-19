@@ -75,10 +75,6 @@ function calcRow(r: PieceRow) {
 const fmtEur = (v: number) => "€ " + v.toFixed(2).replace(".", ",")
 const fmtMq = (v: number) => v.toFixed(2).replace(".", ",")
 const fmtKg = (v: number) => Math.round(v).toString()
-const today = () => {
-  const d = new Date()
-  return `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(2)}`
-}
 
 /* ───────── component ───────── */
 export function EnamelCostCalculator() {
@@ -147,26 +143,25 @@ export function EnamelCostCalculator() {
 
       {/* Scrollable table */}
       <div className="flex-1 overflow-auto">
-        <table className="border-collapse min-w-[1600px] w-full text-foreground">
+        <table className="border-collapse min-w-[1400px] w-full text-foreground">
           <thead>
             {/* Column group headers */}
             <tr>
-              <th colSpan={5} className={`${thCls} bg-primary/10`}>Identificazione</th>
+              <th colSpan={4} className={`${thCls} bg-primary/10`}>Identificazione</th>
               <th colSpan={4} className={`${thCls} bg-emerald-100/60 dark:bg-emerald-950/30`}>Parametri</th>
               <th colSpan={2} className={`${thCls} bg-sky-100/60 dark:bg-sky-950/30`}>Dimensioni (cm)</th>
               <th colSpan={3} className={`${thCls} bg-blue-100/60 dark:bg-blue-950/30`}>Superfici</th>
-              <th colSpan={3} className={`${thCls} bg-violet-100/60 dark:bg-violet-950/30`}>Costi base</th>
+              <th colSpan={1} className={`${thCls} bg-violet-100/60 dark:bg-violet-950/30`}>Costi base</th>
               <th colSpan={2} className={`${thCls} bg-blue-100/60 dark:bg-blue-950/30`}>Ceramica</th>
               <th className={`${thCls} bg-muted`}>Peso</th>
               <th colSpan={2} className={`${thCls} bg-orange-100/60 dark:bg-orange-950/30`}>Imballaggio</th>
               <th colSpan={4} className={`${thCls} bg-pink-100/60 dark:bg-pink-950/30`}>Altre produzioni</th>
               <th colSpan={2} className={`${thCls} bg-teal-100/60 dark:bg-teal-950/30`}>Profilo</th>
-              <th colSpan={3} className={`${thCls} bg-amber-100/60 dark:bg-amber-950/30`}>Totali</th>
+              <th colSpan={2} className={`${thCls} bg-amber-100/60 dark:bg-amber-950/30`}>Totali</th>
               <th className={thCls}></th>
             </tr>
             {/* Column headers */}
             <tr>
-              <th className={thCls} style={{ width: 65 }}>DATA</th>
               <th className={thCls} style={{ width: 40 }}>REP.</th>
               <th className={thCls} style={{ width: 30 }}>ID</th>
               <th className={thCls} style={{ width: 30 }}>RV</th>
@@ -180,8 +175,6 @@ export function EnamelCostCalculator() {
               <th className={thCls} style={{ width: 55 }}>LATO 2</th>
               <th className={thCls} style={{ width: 50 }}>Mq MOD.</th>
               <th className={thCls} style={{ width: 35 }}>NR. Pz.</th>
-              <th className={thCls} style={{ width: 60 }}>QUOTA FISSA</th>
-              <th className={thCls} style={{ width: 60 }}>QUOTA VAR.</th>
               <th className={thCls} style={{ width: 35 }}>% +/-</th>
               <th className={thCls} style={{ width: 65 }}>LISTINO A Mq</th>
               <th className={thCls} style={{ width: 50 }}>Mq TOT.</th>
@@ -198,7 +191,6 @@ export function EnamelCostCalculator() {
               <th className={thCls} style={{ width: 60 }}>TOT. PROF.</th>
               <th className={thCls} style={{ width: 75 }}>IMP. × MOD.</th>
               <th className={thCls} style={{ width: 75 }}>TOT. RIGA</th>
-              <th className={thCls} style={{ width: 60 }}>TOT CAD</th>
               <th className={thCls} style={{ width: 28 }}></th>
             </tr>
           </thead>
@@ -208,12 +200,10 @@ export function EnamelCostCalculator() {
               const rowId = String(idx + 1).padStart(2, "0")
               return (
                 <tr key={row.id} className="hover:bg-muted/20">
-                  {/* DATA */}
-                  <td className={tdCalc}>{today()}</td>
                   {/* REP */}
                   <td className={tdCalc}>CER.</td>
                   {/* ID */}
-                  <td className={tdCalc}>{rowId}</td>
+                  <td className={tdCalc}>{String(idx + 1).padStart(2, "0")}</td>
                   {/* RV */}
                   <td className={tdCalc}>1</td>
                   {/* DESCRIZ */}
@@ -310,10 +300,6 @@ export function EnamelCostCalculator() {
                       onChange={(e) => updateRow(idx, "nr_pezzi", e.target.value === "" ? 1 : parseInt(e.target.value))}
                     />
                   </td>
-                  {/* QUOTA FISSA */}
-                  <td className={tdCalc}>{fmtEur(c.quota_fissa)}</td>
-                  {/* QUOTA VAR */}
-                  <td className={tdCalc}>{fmtEur(c.quota_var)}</td>
                   {/* % +/- */}
                   <td className={tdInput}>
                     <Input
@@ -392,12 +378,6 @@ export function EnamelCostCalculator() {
                   <td className={tdCalcBold}>{fmtEur(c.importo_modulo)}</td>
                   {/* TOT RIGA */}
                   <td className={tdCalcBold}>{fmtEur(c.totale_riga)}</td>
-                  {/* TOT CAD - show only on last row */}
-                  <td className={tdCalcBold}>
-                    {idx === rows.length - 1 && summary.totalePezzi > 0
-                      ? fmtEur(summary.totaleCadauno)
-                      : ""}
-                  </td>
                   {/* Delete */}
                   <td className="px-0 py-0 border border-border text-center">
                     {rows.length > 1 && (
@@ -415,14 +395,13 @@ export function EnamelCostCalculator() {
 
             {/* Summary row */}
             <tr className="bg-muted/40">
-              <td colSpan={18} className="px-1 py-1 border border-border text-right text-[10px] font-bold uppercase text-muted-foreground">
+              <td colSpan={15} className="px-1 py-1 border border-border text-right text-[10px] font-bold uppercase text-muted-foreground">
                 Mq Tot: {fmtMq(summary.mqTotali)}
               </td>
               <td className={tdCalc}>{fmtMq(summary.mqTotali)}</td>
               <td colSpan={11} className="px-1 py-1 border border-border" />
               <td className="px-1 py-1 border border-border text-[10px] text-right font-bold text-muted-foreground">totale</td>
               <td className={tdCalcBold}>{fmtEur(summary.totaleGenerale)}</td>
-              <td className={tdCalcBold}>{fmtEur(summary.totaleCadauno)}</td>
               <td className="border border-border" />
             </tr>
           </tbody>
