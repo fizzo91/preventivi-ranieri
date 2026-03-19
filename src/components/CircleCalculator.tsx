@@ -39,17 +39,23 @@ export function CircleCalculator() {
 
     const dMm = rMm * 2
     const circumferenceMm = 2 * Math.PI * rMm
-    const areaMm2 = Math.PI * rMm * rMm
+
+    // Inscribing rectangle: d × d
+    const rectAreaMm2 = dMm * dMm
+    // Enlarged rectangle: (d+100) × (d+100) — 50mm extra per lato
+    const rectEnlargedMm2 = (dMm + 100) * (dMm + 100)
 
     // Convert to meters
     const circumferenceMl = circumferenceMm / 1000
-    const areaMq = areaMm2 / 1_000_000
+    const rectAreaMq = rectAreaMm2 / 1_000_000
+    const rectEnlargedMq = rectEnlargedMm2 / 1_000_000
 
     return [
       { label: "Diametro", value: `${fmt2(dMm)} mm`, rawValue: dMm },
       { label: "Raggio", value: `${fmt2(rMm)} mm`, rawValue: rMm },
       { label: "Circonferenza", value: `${fmt(circumferenceMl)} ml`, rawValue: circumferenceMl },
-      { label: "Area", value: `${fmt(areaMq)} mq`, rawValue: areaMq },
+      { label: "Area rettangolo", value: `${fmt(rectAreaMq)} mq`, rawValue: rectAreaMq },
+      { label: "Area maggiorata (+50mm/lato)", value: `${fmt(rectEnlargedMq)} mq`, rawValue: rectEnlargedMq },
     ]
   }, [diameter, radius, activeField])
 
