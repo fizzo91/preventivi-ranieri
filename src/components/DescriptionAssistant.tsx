@@ -42,10 +42,6 @@ export function DescriptionAssistant() {
     fetchDescriptions()
   }, [])
 
-  const handleTemplateClick = (template: string) => {
-    setResult(template)
-  }
-
   const handleCopy = () => {
     if (!result) return
     navigator.clipboard.writeText(result)
@@ -54,7 +50,7 @@ export function DescriptionAssistant() {
 
   const handleGenerate = async () => {
     if (!sectionName.trim()) {
-      toast.error("Inserisci il nome della sezione")
+      toast.error("Inserisci una descrizione generica")
       return
     }
     setIsLoading(true)
@@ -108,28 +104,6 @@ export function DescriptionAssistant() {
           </Button>
         </div>
       </div>
-
-      {/* Templates */}
-      <div className="space-y-3">
-        <h3 className="text-sm font-semibold">Template predefiniti</h3>
-        {TEMPLATES.map((cat) => (
-          <div key={cat.category}>
-            <p className="text-xs font-medium text-muted-foreground mb-1.5">{cat.category}</p>
-            <div className="space-y-1.5">
-              {cat.templates.map((tpl, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleTemplateClick(tpl)}
-                  className="w-full text-left text-xs p-2.5 rounded-md border border-border bg-background hover:bg-accent transition-colors leading-relaxed"
-                >
-                  {tpl}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* Result */}
       {result && (
         <div className="space-y-2 p-4 rounded-lg border border-primary/30 bg-primary/5">
