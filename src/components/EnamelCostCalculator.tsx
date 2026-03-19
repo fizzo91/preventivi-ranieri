@@ -1,7 +1,8 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react"
-import { Plus, Trash2 } from "lucide-react"
+import { Plus, Trash2, ClipboardCopy } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useToast } from "@/hooks/use-toast"
 
 /* ───────── types ───────── */
 export interface EnamelPieceRow {
