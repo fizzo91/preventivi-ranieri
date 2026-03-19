@@ -51,6 +51,8 @@ import { useSectionManager } from "@/hooks/useSectionManager"
 import { calculateGrandTotal } from "@/utils/quoteCalculations"
 import type { QuoteItem, QuoteSection, PriceWarning } from "@/types/quote"
 import type { Product } from "@/hooks/useProducts"
+import { EnamelCostDialog } from "@/components/EnamelCostDialog"
+import type { EnamelPieceRow } from "@/components/EnamelCostCalculator"
 
 // ── SortableItem (extracted inline component) ──────────────────────────
 
