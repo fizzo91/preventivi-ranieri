@@ -11,6 +11,7 @@ import NewQuote from "./pages/NewQuote";
 import Quotes from "./pages/Quotes";
 import Products from "./pages/Products";
 import Gallery from "./pages/Gallery";
+import Descriptions from "./pages/Descriptions";
 import Settings from "./pages/Settings";
 import Tools from "./pages/Tools";
 import ToolPage from "./pages/ToolPage";
@@ -39,6 +40,7 @@ const App = () => (
                       <Route path="/new-quote" element={<NewQuote />} />
                       <Route path="/quotes" element={<Quotes />} />
                       <Route path="/gallery" element={<Gallery />} />
+                      <Route path="/descriptions" element={<Descriptions />} />
                       <Route path="/products" element={<Products />} />
                       <Route path="/tools" element={<Tools />} />
                       <Route path="/settings" element={<Settings />} />
