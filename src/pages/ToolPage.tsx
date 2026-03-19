@@ -1,10 +1,12 @@
 import { useParams, Navigate } from "react-router-dom"
 import { ImperialConverter } from "@/components/ImperialConverter"
 import { FinishCalculator } from "@/components/FinishCalculator"
+import { CircleCalculator } from "@/components/CircleCalculator"
 
 const toolMeta: Record<string, { title: string }> = {
   imperial: { title: "Convertitore Pollici/Piedi → mm" },
   finish: { title: "Calcolo Finitura" },
+  circle: { title: "Calcolo Cerchi" },
 }
 
 const ToolPage = () => {
@@ -20,6 +22,8 @@ const ToolPage = () => {
         return <ImperialConverter />
       case "finish":
         return <FinishCalculator />
+      case "circle":
+        return <CircleCalculator />
       default:
         return null
     }

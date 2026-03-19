@@ -93,6 +93,17 @@ export async function regenerateSignedUrl(filePath: string): Promise<string | nu
  * Extract a storage path from a signed URL
  */
 export function extractPathFromSignedUrl(url: string): string | undefined {
-  const match = url.match(/section-charts\/(.+?)\?/)
-  return match ? match[1] : undefined
+  // Match signed URLs with query params
+  const matchWithQuery = url.match(/section-charts\/(.+?)\?/)
+  if (matchWithQuery) return matchWithQuery[1]
+  
+  // Match public/direct URLs without query params
+  const matchDirect = url.match(/section-charts\/(.+?)$/)
+  if (matchDirect) return matchDirect[1]
+  
+  // Match /object/sign/ or /object/public/ patterns
+  const matchObject = url.match(/\/object\/(?:sign|public)\/section-charts\/(.+?)(?:\?|$)/)
+  if (matchObject) return matchObject[1]
+  
+  return undefined
 }
