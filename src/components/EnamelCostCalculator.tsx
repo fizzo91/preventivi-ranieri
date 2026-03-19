@@ -83,27 +83,54 @@ interface EnamelCostCalculatorProps {
 }
 
 export function EnamelCostCalculator({ value, onChange }: EnamelCostCalculatorProps = {}) {
-  const [internalRows, setInternalRows] = useState<EnamelPieceRow[]>([defaultRow(1)])
+  const [internalRows, setInternalRows] = useState<EnamelPieceRow[]>(() =>
+    value && value.length > 0 ? value : [defaultRow(1)]
+  )
   const rows = value ?? internalRows
+  const rowsRef = useRef(rows)
+
+  useEffect(() => {
+    rowsRef.current = rows
+  }, [rows])
+
+  useEffect(() => {
+    if (value && value.length === 0 && onChange) {
+      onChange([defaultRow(1)])
+    }
+  }, [value, onChange])
+
   const setRows = useCallback((updater: EnamelPieceRow[] | ((prev: EnamelPieceRow[]) => EnamelPieceRow[])) => {
-    const newRows = typeof updater === 'function' ? updater(rows) : updater
+    const baseRows = rowsRef.current
+    const computedRows = typeof updater === "function" ? updater(baseRows) : updater
+    const newRows = computedRows.length > 0 ? computedRows : [defaultRow(1)]
+
     if (onChange) onChange(newRows)
     else setInternalRows(newRows)
-  }, [onChange, rows])
-  const [nextId, setNextId] = useState(() => (rows.length > 0 ? Math.max(...rows.map(r => r.id)) + 1 : 2))
+  }, [onChange])
+
+  const [nextId, setNextId] = useState(() =>
+    rowsRef.current.length > 0 ? Math.max(...rowsRef.current.map((r) => r.id)) + 1 : 2
+  )
   const [sviluppato, setSviluppato] = useState("")
+
+  useEffect(() => {
+    if (rows.length > 0) {
+      const maxId = Math.max(...rows.map((r) => r.id))
+      setNextId((n) => Math.max(n, maxId + 1))
+    }
+  }, [rows])
 
   const addRow = useCallback(() => {
     setRows((prev) => [...prev, defaultRow(nextId)])
     setNextId((n) => n + 1)
-  }, [nextId])
+  }, [nextId, setRows])
 
   const removeRow = useCallback(
     (idx: number) => {
       if (rows.length <= 1) return
       setRows((prev) => prev.filter((_, i) => i !== idx))
     },
-    [rows.length]
+    [rows.length, setRows]
   )
 
   const updateRow = useCallback(
@@ -112,7 +139,7 @@ export function EnamelCostCalculator({ value, onChange }: EnamelCostCalculatorPr
         prev.map((r, i) => (i === idx ? { ...r, [field]: value } : r))
       )
     },
-    []
+    [setRows]
   )
 
   const calculations = useMemo(() => rows.map(calcRow), [rows])
