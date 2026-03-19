@@ -65,7 +65,8 @@ const Quotes = () => {
         quoteNumber: quote.quote_number,
         client: { name: quote.client_name, company: quote.client_company || '', email: quote.client_email || '', phone: quote.client_phone || '', address: quote.client_address || '' },
         sections: quote.sections || [],
-        totalAmount: quote.total_amount
+        totalAmount: quote.total_amount,
+        enamelData: quote.enamel_data || null,
       })
     } catch {
       toast({ title: "Errore", description: "Errore durante la generazione del PDF.", variant: "destructive" })
