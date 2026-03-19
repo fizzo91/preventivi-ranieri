@@ -30,6 +30,7 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/tool/:toolId" element={<ToolPage />} />
+            <Route path="/tools" element={<Tools />} />
             <Route
               path="/*"
               element={
@@ -42,7 +43,6 @@ const App = () => (
                       <Route path="/gallery" element={<Gallery />} />
                       <Route path="/descriptions" element={<Descriptions />} />
                       <Route path="/products" element={<Products />} />
-                      <Route path="/tools" element={<Tools />} />
                       <Route path="/settings" element={<Settings />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
