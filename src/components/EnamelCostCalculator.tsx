@@ -75,10 +75,6 @@ function calcRow(r: PieceRow) {
 const fmtEur = (v: number) => "€ " + v.toFixed(2).replace(".", ",")
 const fmtMq = (v: number) => v.toFixed(2).replace(".", ",")
 const fmtKg = (v: number) => Math.round(v).toString()
-const today = () => {
-  const d = new Date()
-  return `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(2)}`
-}
 
 /* ───────── component ───────── */
 export function EnamelCostCalculator() {
