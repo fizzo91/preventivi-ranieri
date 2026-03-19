@@ -64,9 +64,9 @@ const Tools = () => {
   const handleToolClick = (toolId: string) => {
     const sizes: Record<string, [number, number]> = {
       imperial: [480, 600],
-      finish: [560, 750],
       circle: [480, 650],
-      enamel: [940, 800],
+      descriptions: [560, 800],
+      glossary: [520, 700],
     }
     const [w, h] = sizes[toolId] || [480, 600]
     const left = (screen.width - w) / 2
