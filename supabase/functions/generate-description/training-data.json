@@ -1,0 +1,2851 @@
+[
+  {
+    "section_name": "Sezione 2",
+    "description": "teddd",
+    "quote_number": "TEST",
+    "client_name": "",
+    "date": "2026-03-19T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 DEEP",
+    "description": "ID.01 – OP.1  Tavolo top in pietra lavica smaltata – Finitura: Deep – Colore: TBD – Dims: L 700 x P 700 x Sp. 20 mm – Bordo smaltato standard",
+    "quote_number": "CAR 859/26",
+    "client_name": "WALL MAR",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 OP TINTED",
+    "description": "ID.01 – OP.2  Tavolo top in pietra lavica smaltata – Finitura: Tinted – Colore: TBD – Dims: L 700 x P 700 x Sp. 20 mm – Bordo smaltato standard",
+    "quote_number": "CAR 859/26",
+    "client_name": "WALL MAR",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 DEEP ",
+    "description": "ID.02 – OP.1  Tavolo top in pietra lavica smaltata – Finitura: Deep – Colore: TBD – Dims: L 900 x P 900 x Sp. 20 mm – Bordo smaltato standard",
+    "quote_number": "CAR 859/26",
+    "client_name": "WALL MAR",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 TINTED",
+    "description": "ID.02 – OP.2  Tavolo top in pietra lavica smaltata – Finitura: Tinted – Colore: TBD – Dims: L 900 x P 900 x Sp. 20 mm – Bordo smaltato standard",
+    "quote_number": "CAR 859/26",
+    "client_name": "WALL MAR",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03A DEEP  ",
+    "description": "ID.03a – OP.1  Tavolo circolare top in pietra lavica smaltata – Finitura: Deep – Colore: TBD – Dims: Dia 1600 x Sp. 20 mm, diviso in 2 pezzi (diametro massimo in 1 pezzo 1500 mm) – Bordo smaltato standard",
+    "quote_number": "CAR 859/26",
+    "client_name": "WALL MAR",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03A TINTED",
+    "description": "ID.03a – OP.2  Tavolo circolare top in pietra lavica smaltata – Finitura: Tinted – Colore: TBD – Dims: Dia 1600 x Sp. 20 mm, diviso in 2 pezzi (diametro massimo in 1 pezzo 1500 mm) – Bordo smaltato standard",
+    "quote_number": "CAR 859/26",
+    "client_name": "WALL MAR",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03B DEEP  ",
+    "description": "ID.03b – OP.1  Tavolo circolare top in pietra lavica smaltata – Finitura: Deep – Colore: TBD – Dims: Dia 1500 x Sp. 20 mm – Bordo smaltato standard",
+    "quote_number": "CAR 859/26",
+    "client_name": "WALL MAR",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03B tinted",
+    "description": "ID.03b – OP.2  Tavolo circolare top in pietra lavica smaltata – Finitura: Tinted – Colore: TBD – Dims: Dia 1500 x Sp. 20 mm – Bordo smaltato standard",
+    "quote_number": "CAR 859/26",
+    "client_name": "WALL MAR",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "ID.01 – Kitchen Island top in glazed lava stone – Finish: Deep – Colour: Old white TBC – Dims: L 2455 x W 1348 x T 30 mm, divided into 4 pieces – Hob cut out included – Half bull nose edge on the visibile edges",
+    "quote_number": " CAR 853.26",
+    "client_name": "makers",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 – Sink run top in glazed lava stone – Finish: Deep – Colour: Old white TBC – Dims: L 2460 x W 750 x T 30 mm, divided into 3 pieces – Sink cut out and tap drill hole included – Half bull nose edge on the visibile edges",
+    "quote_number": " CAR 853.26",
+    "client_name": "makers",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.03 – Sink run backsplash in glazed lava stone – Finish: Deep – Colour: Old white TBC – Dims: L 2460 x H 625 x T 20 mm, divided into 3 pieces",
+    "quote_number": " CAR 853.26",
+    "client_name": "makers",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID04",
+    "description": "ID.04 – Sink run shelf in glazed lava stone – Finish: Deep – Colour: Old white TBC – Dims: L 2460 x H 225 x T 40 mm, divided into 3 pieces",
+    "quote_number": " CAR 853.26",
+    "client_name": "makers",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID05",
+    "description": "ID.05 – Bar area top in glazed lava stone – Finish: Deep – Colour: Old white TBC – Dims: L 1682 x H 642 x T 30 – Half bull nose edge on the visibile edges",
+    "quote_number": " CAR 853.26",
+    "client_name": "makers",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID06",
+    "description": "ID.06 – Bar area backsplash in glazed lava stone – Finish: Deep – Colour: Old white TBC – Dims: L 1682 x H 625 x T 30",
+    "quote_number": " CAR 853.26",
+    "client_name": "makers",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID07",
+    "description": "ID.07 – Coffe station top in glazed lava stone – Finish: Deep – Colour: Old white TBC – Dims: L 959 x H 642 x T 30 – Half bull nose edge on the visibile edges",
+    "quote_number": " CAR 853.26",
+    "client_name": "makers",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID08",
+    "description": "ID.08 – Pnatry shelf top in glazed lava stone – Finish: Deep – Colour: Old white TBC – Dims: L 959 x H 642 x T 30 – Half bull nose edge on the visibile edges",
+    "quote_number": " CAR 853.26",
+    "client_name": "makers",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Vanity top in glazed lava stone - Finish: Deep - Colour: Black - Dims: L 1795 x W 516 x T 20 mm, shaped as per drawing - 2 sink cut-out included - Standard glazed edge",
+    "quote_number": "CAR 857/26",
+    "client_name": "LIVRA",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 - Vanity upstand in glazed lava stone - Finish: Deep - Colour: Black - Dims: L 1795 x H 100 x T 20 mm, shaped as per drawing - Standard glazed edge",
+    "quote_number": "CAR 857/26",
+    "client_name": "LIVRA",
+    "date": "2026-03-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "ID.01  - Rivestimento in pietra lavica naturale - Finitura: Meteorite - Colore: Golden Brown - Dims: H 918 x L 210 x Sp. 20 mm",
+    "quote_number": " RNR 844/26",
+    "client_name": " PATRICIA URQUIOLA SPA",
+    "date": "2026-03-17T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "ID.01 - Top per tavolo rettangolare in pietra lavica smaltata - Finitura: Deep - Colore: TBD - Dims: L 700 x P 700 x Sp. 20 mm - Bordi smaltati standar",
+    "quote_number": " RNR 846/26",
+    "client_name": " Minimal48",
+    "date": "2026-03-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - HIDDEN BAR - Top in pietra lavica smaltata - Finitura: Deep - Colore: Chiaro da definire - Dims: 1860 x 700 x Sp. 20 mm, diviso in 2 pezzi - Con foro per lavello e rubinetto inclusi - Bordo smaltato standard - 8 inserti m6 inclusi per fissaggio meccanico",
+    "quote_number": "CAR 852/26",
+    "client_name": "LEGNO ART",
+    "date": "2026-03-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.01 - CONSOLE - Top in pietra lavica smaltata - Finitura: Deep - Colore: Chiaro da definire - Dims: 2100 x 450 x Sp. 20 mm, diviso in 2 pezzi  - Bordo smaltato standard - 8 inserti m6 inclusi per fissaggio meccanico",
+    "quote_number": "CAR 852/26",
+    "client_name": "LEGNO ART",
+    "date": "2026-03-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Sushi bar top in pietra lavica - Finitura: cristallina trasparente protettiva  - Dimensioni generali: L 7638 x  D 940 x H  150 - formato da: 14 top,7 alzatine, 7 triangolini sanitari, 11 velette, da assemblare in cantiere - Raggio R5 sui bordi visibili",
+    "quote_number": "RNR 752/26",
+    "client_name": "NAVAL INTERIOR",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 - Back bar top in pietra lavica -  Finitura: cristallina trasparente protettiva  - Dimensioni generali: L 6139 x  D 840 x T 20  con velette H 20- composto da 4 top, 6 alzatine, 6 triangolini sanitari e 4 alzatine - Bordo arrotondato con R 10 sopra e sotto",
+    "quote_number": "RNR 752/26",
+    "client_name": "NAVAL INTERIOR",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 aggiunta da sommare",
+    "description": "ID.01 - Sushi bar top in pietra lavica - Finitura: cristallina trasparente protettiva  - Dimensioni generali: L 7638 x  D 940 x H  150 - formato da: 14 top,7 alzatine, 7 triangolini sanitari, 11 velette, da assemblare in cantiere - Raggio R5 sui bordi visibili",
+    "quote_number": "RNR 752/26",
+    "client_name": "NAVAL INTERIOR",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01. Lavabo 106 Bad 2 – Vanity with integrated sink in glazed lava stone – Finish: Deep – Colour: Custom Beige – Dims: L 720 x W 500 x H 160 mm",
+    "quote_number": "CAR 845/26",
+    "client_name": " Zbären Kreativküchen AG",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02. Lavabo 104 WC – Vanity with integrated sink in glazed lava stone – Finish: Deep – Colour: Custom Beige – Dims: L 1680 x W 560 x H 160 mm",
+    "quote_number": "CAR 845/26",
+    "client_name": " Zbären Kreativküchen AG",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.03. Lavabo 109 douche/wc – Washbasin in glazed lava stone – Finish: Deep – Colour: Custom Beige – Dims: L 660 x W 560 x H 180 mm",
+    "quote_number": "CAR 845/26",
+    "client_name": " Zbären Kreativküchen AG",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID04",
+    "description": "ID.04. Lavabo 005 bad – Washbasin in glazed lava stone – Finish: Deep – Colour: Custom Beige – Dims: L 600 x W 460 x H 180 mm",
+    "quote_number": "CAR 845/26",
+    "client_name": " Zbären Kreativküchen AG",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID05",
+    "description": "ID.05. Lavabo 006 wc – Washbasin in glazed lava stone – Finish: Deep – Colour: Custom Beige – Dims: DIA 300 x H 160 mm",
+    "quote_number": "CAR 845/26",
+    "client_name": " Zbären Kreativküchen AG",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "id06",
+    "description": "ID.06 – Island counter top in glazed lava stone – Finish: Deep – Colour: Custom Beige – Ov. Dims: L 2000 x 2000 x Th 40 mm, shaped as per drawing – Divided into 3 pieces – Standard glazed edge",
+    "quote_number": "CAR 845/26",
+    "client_name": " Zbären Kreativküchen AG",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "id07",
+    "description": "ID.07 – L-shaped Back kitchen countertop in glazed lava stone – Finish: Deep – Colour: Custom Beige – Ov.Dims 3974 x W 1435 x T 40 mm, divided into 3 pieces – 2 sink cut included – 5 faucet drill holes included – Standard glazed edge",
+    "quote_number": "CAR 845/26",
+    "client_name": " Zbären Kreativküchen AG",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "id08",
+    "description": "ID.08 - Window sill in glazed lava stone - Finish: Deep - Colour: Custom Beige - Dims:\nWS01 = 1035 x 140 x T 30 mm\nWS02 = 1748 x 140 x T 30 mm\nWS03 = 2300 x 100 x T 30 mm (divided into 2 equal pieces)",
+    "quote_number": "CAR 845/26",
+    "client_name": " Zbären Kreativküchen AG",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Vanity top in glazed lava stone - Finish: Tinted - colour: Burgundy - Dims: L 2438 x W 534 x T 50 mm, with upstand L 2298 x H 180 x T 30 mm - \" sink cut outs included - 6 drill hoels for faucet included - Standard glazed edge where visible",
+    "quote_number": "RNR 842/26",
+    "client_name": "KULK",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01 OP1",
+    "description": "OP. 1 ID.01 - Bespoke table top in bare lava stone - Finish: Dark - Dims: L 3269 x W 1100 x T 100 mm, reduced and modeled as per drawing provided, with reduced thickness to 50 mm",
+    "quote_number": "RNR 817/26 ",
+    "client_name": "Be At Home Design Consulting",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01 OP2",
+    "description": "OP. 2 ID.01 - Bespoke table top in bare lava stone - Finish: Dark - Dims: L 3269 x W 1100 x T 100 mm, reduced and modeled as per drawing provided, with 2 recess for legs installation",
+    "quote_number": "RNR 817/26 ",
+    "client_name": "Be At Home Design Consulting",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 - Custom monolithic leg in bare lava stone - Finish: Dark - Dims: H 705 x W 565 x D 257 - internally hallowed where possible - shaped as per drawing",
+    "quote_number": "RNR 817/26 ",
+    "client_name": "Be At Home Design Consulting",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Round top in glazed lava stone - Finish: Deep - Colour: Custom Red - Dim: Dia 600 x T 20 mm - Standard glazed edge",
+    "quote_number": "CAR 850/26",
+    "client_name": "ETHICAL STONE",
+    "date": "2026-03-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "id.01",
+    "description": "Top credenza in pietra lavica smaltata - Finitura: Deep - Colore: Blue - Dims: L 2400 x W 500 x T 20 mm - Lati corti sagomati - Bordo smaltato standard - 4 inserti M6 inclusi per installazione meccanica,\n\nNote: in base al colore finale scelto potrebbe essere necessario suddividere il top in 2 pezzi uguali",
+    "quote_number": "RNR 843/26",
+    "client_name": "POLIFORM",
+    "date": "2026-03-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Counter top in glazed lava stone - Finish: Deep - Colour: Orange ARC25SC1 - Ov. Dims: L 4215 x W 2200 x D 450/490 x T 70 mm reduced to 30 - divided into 5 pieces",
+    "quote_number": "RNR 844/26 ",
+    "client_name": "ALIG",
+    "date": "2026-03-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "Sezione 2",
+    "description": "ID.02 - Vertical flat cladding in glazed lava stone - Finish: Deep - Colour: Orange ARC25SC1 -  Dims: H 1100 x W 200 x T 20 mm",
+    "quote_number": "RNR 844/26 ",
+    "client_name": "ALIG",
+    "date": "2026-03-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Round Table top in glazed lava stone - Finish: NON-SLIP - Colour: ROSE - Dims: DIA 1800 x T 60 mm reduced to 30, divided into 3 pieces - Full bull nose edge on the visible edges - 9 m6 inserts for mechanical fixing",
+    "quote_number": "RNR 332/25 ",
+    "client_name": "HARINI PONTARINI",
+    "date": "2026-03-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 - Custom Table leg in glazed lava stone - Finish: NON-SLIP - Colour: ROSE - Dims: DIA max 887 x H 630 mm, divided into 3 pieces - to be assembled onto a substructure",
+    "quote_number": "RNR 332/25 ",
+    "client_name": "HARINI PONTARINI",
+    "date": "2026-03-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.03 - Metallic substructure for leg and top - included the costs of assembly the pieces of lava stone onto the substructure. - Under top metal plate to be assembled on site",
+    "quote_number": "RNR 332/25 ",
+    "client_name": "HARINI PONTARINI",
+    "date": "2026-03-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 opzione deep",
+    "description": "ID.01 - OPTION 1 = Kitchen front counter top in glazed lava stone - Finish: Deep - Colour: Burgundy -Dims: L 4242 x W 909 x T 20 mm - Divided into 2 pieces - Kitchen hob cut-out included - Standard glazed edge - 8 M6 inserts included for mechanical fixing",
+    "quote_number": "RNR 837/26 ",
+    "client_name": "Firm Architects",
+    "date": "2026-03-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 opzione surface",
+    "description": "ID.01 - OPTION 2 = Kitchen front counter top in glazed lava stone - Finish: Surface Definition- Colour: Mars -Dims: L 4242 x W 909 x T 20 mm - Divided into 2 pieces - Kitchen hob cut-out included - Standard glazed edge - 8 M6 inserts included for mechanical fixing",
+    "quote_number": "RNR 837/26 ",
+    "client_name": "Firm Architects",
+    "date": "2026-03-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 opzione dark",
+    "description": "ID.01 - OPTION 3 = Kitchen front counter top in bare lava stone - Finish: BROWN -Dims: L 4242 x W 909 x T 20 mm - Divided into 2 pieces - Kitchen hob cut-out included - Standard glazed edge - 8 M6 inserts included for mechanical fixing",
+    "quote_number": "RNR 837/26 ",
+    "client_name": "Firm Architects",
+    "date": "2026-03-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 opzione deep ",
+    "description": "ID.02 - OPTION 1 = Kitchen back counter top in glazed lava stone - Finish: Deep - Colour: Burgundy -Dims: L 3393 x W 606 x T 20 mm - Divided into 2 pieces - Sink hob cut-out included - Standard glazed edge - 8 M6 inserts included for mechanical fixing",
+    "quote_number": "RNR 837/26 ",
+    "client_name": "Firm Architects",
+    "date": "2026-03-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 opzione surface",
+    "description": "ID.02 - OPTION 2 = Kitchen back counter top in glazed lava stone - Finish: Surface definition - Colour:Mars-Dims: L 3393 x W 606 x T 20 mm - Divided into 2 pieces - Sink hob cut-out included - Standard glazed edge - 8 M6 inserts included for mechanical fixing",
+    "quote_number": "RNR 837/26 ",
+    "client_name": "Firm Architects",
+    "date": "2026-03-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 opzione dark",
+    "description": "ID.02 - OPTION 3 = Kitchen back counter top in bare lava stone - Finish: BROWN  -Dims: L 3393 x W 606 x T 20 mm - Divided into 2 pieces - Sink hob cut-out included - Standard glazed edge - 8 M6 inserts included for mechanical fixing",
+    "quote_number": "RNR 837/26 ",
+    "client_name": "Firm Architects",
+    "date": "2026-03-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "ID.01  Bespoke table top in bare lava stone - Finish: Roccia - Dims: L 1380 x W 737 x T 20 mm - custom shaped with grooves on top, as per drawing",
+    "quote_number": "RNR 838.26",
+    "client_name": "",
+    "date": "2026-03-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Massive box in glazed lava stone - Finish: Deep - Colour: Sepia - Dims: 450 x 450 x 140 mm, internally emptied - Round R10 edge - Glazed underneath for max 40 mm",
+    "quote_number": "RNR 825/26 ",
+    "client_name": "Chadesaigues 94",
+    "date": "2026-03-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 - Massive box in glazed lava stone - Finish: Deep - Colour: Burgundy - Dims: 450 x 450 x 250 mm, internally emptied - Round R10 edge - Glazed underneath for max 40 mm",
+    "quote_number": "RNR 825/26 ",
+    "client_name": "Chadesaigues 94",
+    "date": "2026-03-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.03 - Massive box in glazed lava stone - Finish: Deep - Colour: Burgundy - Dims: 450 x 450 x 450 mm, internally emptied - Round R10 edge - Glazed underneath for max 40 mm",
+    "quote_number": "RNR 825/26 ",
+    "client_name": "Chadesaigues 94",
+    "date": "2026-03-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.03 - C-shape counter top in glazed lava stone - Finish: Deep - Colour: Fern - Ov.Dims: L 1165 x W 550 x T 30 mm, divided into 3 piece - Standard glazed edge",
+    "quote_number": "RNR 825/26 ",
+    "client_name": "Chadesaigues 94",
+    "date": "2026-03-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID04",
+    "description": "ID.04 - Rectangular counter top in glazed lava stone - Finish: Deep - Colour: Fern - Ov.Dims: L 2000 x W 400 x T 30 mm, divided into 2 piece - Standard glazed edge",
+    "quote_number": "RNR 825/26 ",
+    "client_name": "Chadesaigues 94",
+    "date": "2026-03-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "id01",
+    "description": "ID.01 - Kitchen Island top in glazed lava stone - Finish: Deep - White TBC - Ov.Dims: L 2705 x W 914 x H 1041 x T 50 mm, composed by 2 top elements and 2 apron elements - Standard glazed edge",
+    "quote_number": " RNR 782/26 Novel 1 design",
+    "client_name": "novel design",
+    "date": "2026-03-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Custom shaped TV top in glazed lava stone - Finish: Tinted - Colour: Burgundy - Dims: L 1492 x W 580 x T 20 mm - Reduced on the top of 5 mm - Custom slanted edge",
+    "quote_number": "RNR 826/26",
+    "client_name": "ATELIER LONDON",
+    "date": "2026-03-06T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02",
+    "description": "ID.02 -  3 Bespoke TV Handle pieces in glazed lava stone - Finish: Tinted - Colour: Burgundy - Dims: 96 x 40 x 47;  92 x 36 x 47; 92 x 37 x 47 - shaped as per drawing - further detail and coordination must be done prior any manufacturing",
+    "quote_number": "RNR 826/26",
+    "client_name": "ATELIER LONDON",
+    "date": "2026-03-06T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Top cucina in pietra lavica smaltata - Finitura: Tinted - Colore: Beryl Green - Dims: 4290 x 675 x Sp. 20 mm - Diviso in 3 pezzi (2 top principali e un pezzo divisorio per i fori dei lavelli) - Bordo dritto in lava naturale con trattamento protettivo",
+    "quote_number": "RNR 815/26 Quincoces-Dragó",
+    "client_name": "Quincoces-Dragó",
+    "date": "2026-03-06T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 - Alzatina per cucina in pietra lavica smaltata - Finitura: Tinted - Colore: Beryl Green - Dims: 4290 x h 130 x Sp. 20 mm - Diviso in 2 pezzi - Bordo superiore con scalanatura 5x5 mm, bordo superiore in lava naturale con trattamento protettivo",
+    "quote_number": "RNR 815/26 Quincoces-Dragó",
+    "client_name": "Quincoces-Dragó",
+    "date": "2026-03-06T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "ID.01 - L-shaped Counter top in glazed lava stone - Finish: Deep - Colour: Custom light colour - Ov. dims: L 2726 x 1812 x T 20 mm - Shaped as per drawing - Sink cut out and faucet drill hol included - Standard glazed edge",
+    "quote_number": "RNR 822/26",
+    "client_name": "Fraser Worldwide S.A.M.",
+    "date": "2026-03-06T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 – Rectangular Top in glazed lava stone – finish: Deep – Colour: Burgundy – Dims: L 1050 x W 1050 x T 20 mm – R20 edge on the visible edges -4 M6 inserts for installation",
+    "quote_number": "RNR 832/26",
+    "client_name": " LUX DESIGN S.A.R.L.",
+    "date": "2026-03-05T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 – Round  Top in glazed lava stone – finish: Deep – Colour: Burgundy – Dims: DIA 1350 x T 20 mm – R20 edge on the visible edges -4 M6 inserts for installation",
+    "quote_number": "RNR 832/26",
+    "client_name": " LUX DESIGN S.A.R.L.",
+    "date": "2026-03-05T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "ID.01 - P1 - Top in glazed lava stone - Finish: Deep - Colour: Sequoia - Dims: L 1520 x W 700 x T 30 mm - with sink cut out and tap hole included - R6 on the visibile edges",
+    "quote_number": "CAR 811/26 ARĒE",
+    "client_name": "WINKLER NATURSTEIN",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02",
+    "description": "ID.02- P2 - Front panel in glazed lava stone - Finish: Deep - Colour: Sequoia - Dims: L 1520 x W 670 x T 30 mm -  R6 on the visibile edges",
+    "quote_number": "CAR 811/26 ARĒE",
+    "client_name": "WINKLER NATURSTEIN",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.03",
+    "description": "ID.03- P3 & P4 - Side panel in glazed lava stone - Finish: Deep - Colour: Sequoia - Dims: L 670 x W 670 x T 30 mm -  R6 on the visibile edges",
+    "quote_number": "CAR 811/26 ARĒE",
+    "client_name": "WINKLER NATURSTEIN",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID04",
+    "description": "ID.04 - Monolithic sink in glazed lava stone - Finish: Deep - Colour: Sequoia - Dims: L 500 x W350 x H 160 mm",
+    "quote_number": "CAR 811/26 ARĒE",
+    "client_name": "WINKLER NATURSTEIN",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.05",
+    "description": "ID.05- P6 & P8 - Front plinth panel in glazed lava stone - Finish: Deep - Colour: Sequoia - Dims: L 1000 x W 200 x T 20 mm -  R6 on the visibile edges",
+    "quote_number": "CAR 811/26 ARĒE",
+    "client_name": "WINKLER NATURSTEIN",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.06",
+    "description": "ID.06- P7 & P9 - Side plinth panel in glazed lava stone - Finish: Deep - Colour: Sequoia - Dims: L 540 x W 200 x T 20 mm -  R6 on the visibile edges",
+    "quote_number": "CAR 811/26 ARĒE",
+    "client_name": "WINKLER NATURSTEIN",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "ID.01 – DT00 – Top in glazed lava stone – finish: Surface Definition – Colour: Black TOS24TB3 – Dims: L 3150 x W 1000 x T 20 mm, divided into 2 pieces – Shaped as per drawing – 2 cut-out included – custom R40 and R2 edge",
+    "quote_number": "SAV 49/24",
+    "client_name": "Mega Marble LTD",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02",
+    "description": "ID.02 – DT01 – Top in glazed lava stone – finish: Surface Definition – Colour: Black TOS24TB3 – Dims: L 1550 x W 900 x T 20 mm– 1 cut-out included - custom R40 and R2 edge",
+    "quote_number": "SAV 49/24",
+    "client_name": "Mega Marble LTD",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.03",
+    "description": "ID.03 – DT02 – Top in glazed lava stone – finish: Surface Definition – Colour: Black TOS24TB3 – Dims: L 1700 x W 900 x T 20 mm – shaped as per drawing – 1 cut-out included - custom R40 and R2 edge",
+    "quote_number": "SAV 49/24",
+    "client_name": "Mega Marble LTD",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.04",
+    "description": "ID.04 – DT04 – Top in glazed lava stone – finish: Surface Definition – Colour: Black TOS24TB3 – Dims: L 1100 x W 1100 x T 20 mm - custom R40 and R2 edge",
+    "quote_number": "SAV 49/24",
+    "client_name": "Mega Marble LTD",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.05",
+    "description": "ID.05 – DT05 – Round Top in glazed lava stone – finish: Surface Definition – Colour: Black TOS24TB3 – Dims: DIA 1200 x T 20 mm - custom R40 and R2 edge",
+    "quote_number": "SAV 49/24",
+    "client_name": "Mega Marble LTD",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "id01",
+    "description": "ID.01 - DE01.A - Vanity monolitico con lavandino integrato in pietra lavica smaltata - Finitura: Deep - Colore: Verde - Dims: L 1400 x W 575 x H 210, sagomato come da disegno con lavorazione bordo bespoke - Inclusa alzatina H 155 x Sp. 20 mm",
+    "quote_number": "RNR 814/26",
+    "client_name": "FERRARI STUDIO",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "id02",
+    "description": "ID.02 - DE01.B - Vanity monolitico con doppio lavandino integrato in pietra lavica smaltata - Finitura: Deep - Colore: Verde - Dims: L 1800 x W 575 x H 210, sagomato come da disegno con lavorazione bordo bespoke - Inclusa alzatina H 155 x Sp. 20 mm",
+    "quote_number": "RNR 814/26",
+    "client_name": "FERRARI STUDIO",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.03 - DE02 - Vanity monolitico con doppio lavandino integrato in pietra lavica smaltata - Finitura: Deep - Colore: Verde - Dims: L 1400 x W 575 x H 210, sagomato come da disegno con lavorazione bordo bespoke - Inclusa alzatina H 155 x Sp. 20 mm",
+    "quote_number": "RNR 814/26",
+    "client_name": "FERRARI STUDIO",
+    "date": "2026-03-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Dining table top in glazed lava stone - Finish: Deep - Colour: Green TBD - Ov. Dims: L 3500 x W 1100 x T 20 mm, divided into 7 pieces custom shaped - Unglazed edges",
+    "quote_number": "fab 820/26",
+    "client_name": "Humbert & Poyet",
+    "date": "2026-03-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 - Dining table 2 top in glazed lava stone - Finish: Deep - Colour: Green TBD - Ov. Dims: L 3500 x W 1100 x T 20 mm, divided into 7 pieces custom shaped - Unglazed edges",
+    "quote_number": "fab 820/26",
+    "client_name": "Humbert & Poyet",
+    "date": "2026-03-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "ID.01 – LEATHER PODIUM - Round top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: Dia 400 x T 40 mm – Standard glazed edge",
+    "quote_number": "FAB 799/26",
+    "client_name": "Bau Haus",
+    "date": "2026-03-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 – PODIUM A - Custom shape top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 580  x W 190 x T  20 mm – Standard glazed edge X 4",
+    "quote_number": "FAB 799/26",
+    "client_name": "Bau Haus",
+    "date": "2026-03-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.03 – PODIUM B - Custom shape top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 580  x W 190 x T  20 mm – Standard glazed edge X 5",
+    "quote_number": "FAB 799/26",
+    "client_name": "Bau Haus",
+    "date": "2026-03-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID04",
+    "description": "ID.04 – PODIUM C - Custom shape top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 700  x W 860 x T  20 mm – Standard glazed edge",
+    "quote_number": "FAB 799/26",
+    "client_name": "Bau Haus",
+    "date": "2026-03-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID05",
+    "description": "ID.05 – PODIUM D - Custom shape top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 1400  x W 700 x T  20 mm – Standard glazed edge",
+    "quote_number": "FAB 799/26",
+    "client_name": "Bau Haus",
+    "date": "2026-03-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID06",
+    "description": "ID.06 – PODIUM E - Custom shape top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 700  x W 860 x T  20 mm – Standard glazed edge",
+    "quote_number": "FAB 799/26",
+    "client_name": "Bau Haus",
+    "date": "2026-03-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID07",
+    "description": "ID.07 – PODIUM F - Custom shape top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 710  x W 710 x T  20 mm – Standard glazed edge",
+    "quote_number": "FAB 799/26",
+    "client_name": "Bau Haus",
+    "date": "2026-03-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID08",
+    "description": "ID.08 – PODIUM G - Custom shape top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 710  x W 710 x T  20 mm – Standard glazed edge",
+    "quote_number": "FAB 799/26",
+    "client_name": "Bau Haus",
+    "date": "2026-03-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID9",
+    "description": "ID.09 – ROUND SHELF in glazed lava stone – Finish: Deep – Colour: TBD – Ov. Dims: DIA 1400  x D 160 x T  20 mm, composed by 2 elements – detail to be coordinated",
+    "quote_number": "FAB 799/26",
+    "client_name": "Bau Haus",
+    "date": "2026-03-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01- TA02 – Round top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: Dia 1190 x T 30 mm – Unglazed edges",
+    "quote_number": "RNR 816/26",
+    "client_name": "hurlè & martin",
+    "date": "2026-03-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02- TA03 – Elliptical top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 2140 x W 1040 x T 40 mm – Unglazed edges",
+    "quote_number": "RNR 816/26",
+    "client_name": "hurlè & martin",
+    "date": "2026-03-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 Kitchen Backsplash in glazed lava stone - finish: surface definition - colour: Venus - Dims:\nPiece A = 561 x 568 x T 20 mm\nPiece B = 1460 x 860 x T 20 mm\nPiece A = 561 x 568 x T 20 mm",
+    "quote_number": "FAB 802/26",
+    "client_name": "HUGO TORO",
+    "date": "2026-03-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "ID.01 - Fireplace cladding in bare lava stone - Finish: Dark - Ov. Dims: 4407 x 1169 x H 413, divided into 12 elements to be ssembled on site",
+    "quote_number": "RNR 810/26",
+    "client_name": "MOLTENI",
+    "date": "2026-03-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "ID.01 - Counter top in pietra lavica smaltata - Finitura: Deep - Coloure: bianco - Dim: L 2800 x P 850 x 250 x Sp. 20 mm - Bordo arrotondato R2 sopra e sotto - diviso in 3 pezzi",
+    "quote_number": "RNR 818/26",
+    "client_name": "Riabiz and Partners",
+    "date": "2026-02-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "Option 1 - Vanity top in glazed lava stone - finish: Deep - Colour: TBD - Dims: L 1200 x W 500 x T 30 mm - with 2 cutouts for undermounted sinks - Standard glazed edge",
+    "quote_number": "SAV 808/26",
+    "client_name": "SCENARIO",
+    "date": "2026-02-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale (Copia)",
+    "description": "Option 2 - Vanity top in glazed lava stone - finish: Deep - Colour: TBD - Dims: L 1200 x W 500 x T 40 mm - with 2 cutouts for undermounted sinks - Standard glazed edge",
+    "quote_number": "SAV 808/26",
+    "client_name": "SCENARIO",
+    "date": "2026-02-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Round top in glazed lava stone - finish: Deep - Colour: Marsala - Dims: Dia 1200 x T 40 - Standard glazed edge",
+    "quote_number": "SAV 805/26-1",
+    "client_name": "Sonic Stone",
+    "date": "2026-02-24T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 ",
+    "description": "ID.01 - Round top in glazed lava stone - finish: Deep - Colour: Marsala - Dims: Dia 1200 x T 30 - Standard glazed edge",
+    "quote_number": "SAV 805/26-1",
+    "client_name": "Sonic Stone",
+    "date": "2026-02-24T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "ID.01 - Top circolare in pietra lavica smaltata – Finitura: Deep – Colore: Burgundy – Dims: Dia 700 x Sp. 20 mm – Bordo smaltato standard  7 pezzi",
+    "quote_number": "RNR 787.26 - HORO 4",
+    "client_name": "DIVANIA ",
+    "date": "2026-02-23T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02",
+    "description": "ID.02 - Top ellittico in pietra lavica smaltata – Finitura: Deep – Colore: Burgundy – Dims: L 800 x P 600 x Sp. 20 mm – Bordo smaltato standard x 3 pezzi",
+    "quote_number": "RNR 787.26 - HORO 4",
+    "client_name": "DIVANIA ",
+    "date": "2026-02-23T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.03",
+    "description": "ID.03 – Top bancone in pietra lavica smaltata – Finitura: Deep – Colore: Burgundy - Dims: L 1200 x P 623 x Sp 40 mm, diviso in 3 pezzi – Bordo smaltato standard x 1 pezzo",
+    "quote_number": "RNR 787.26 - HORO 4",
+    "client_name": "DIVANIA ",
+    "date": "2026-02-23T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "ID.01 - Top per tavolo rettangolare in pietra lavica smaltata - Finitura: Deep - Colore: Burgundy - Dims: 700 x 600 x T 20 mm - Bordo R2 sopra e sotto",
+    "quote_number": "RNR 787/26 - HORO -3",
+    "client_name": " Divania srl",
+    "date": "2026-02-20T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02",
+    "description": "ID.02 - Top per tavolo circolare in pietra lavica smaltata - Finitura: Citrus Zest - Colore: Burgundy - Dims: Dia  600 x T 20 mm - Bordo R2 sopra e sotto",
+    "quote_number": "RNR 787/26 - HORO -3",
+    "client_name": " Divania srl",
+    "date": "2026-02-20T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Monolithic vanity in glazed lava stone - Finish: Deep - colour: Custom terracotta - Dims: 1600 x 500 x 110 - Detail to be coordinated",
+    "quote_number": "FAB 795/26",
+    "client_name": "Imaad Rahmouni ",
+    "date": "2026-02-19T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 - Tablette dressing Top in glazed lava stone - Dims: L 750 x W 530 x T 20 mm - Standard glazed edge - 3 upstand H 50 mm, shaped as per drawing included",
+    "quote_number": "FAB 795/26",
+    "client_name": "Imaad Rahmouni ",
+    "date": "2026-02-19T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Elliptical Table top in glazed lava stone - Finish: Deep - Colour: Golden Brown - Dims: L 2400 x W 1300 x T 30 mm - Full bull nose edge",
+    "quote_number": "FAB 798.26",
+    "client_name": " MATIERES ET MONTAGNE ",
+    "date": "2026-02-19T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "OPTION 1 - Onda tile in glazed lava stone - Finish: Deep - Colour: Miami Green - Dims: H 800 x W 150 x T 30 mm",
+    "quote_number": "FAB 793/26-",
+    "client_name": "RIC DESIGN",
+    "date": "2026-02-19T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "OPTION 2 - Onda tile in glazed lava stone - Finish: Deep - Colour: Miami Green - Dims: H 800 x W 75x T 30 mm",
+    "quote_number": "FAB 793/26-",
+    "client_name": "RIC DESIGN",
+    "date": "2026-02-19T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "Table top elements in glazed lava stone - Finish: Deep - Colour: Dark copper or Rust - Dims: 1000 x 390 x 12 mm - Unglazed edges",
+    "quote_number": "fab 791/26",
+    "client_name": "SOHO",
+    "date": "2026-02-19T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "Top per tavolo in pietra lavica smaltata - Finitura: Surface Definition - Colore: Solar Storm - Dims: 2400 x 1000 x Sp. 20 mm - Bordo standard smaltato",
+    "quote_number": "RNR 792/26 - SURFACE",
+    "client_name": "LAI VALENTI",
+    "date": "2026-02-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "Top per tavolo in pietra lavica smaltata - Finitura: Tinted - Colore: Golden Brown - Dims: 2400 x 1000 x Sp. 20 mm - Bordo standard smaltato",
+    "quote_number": "RNR 792/26-1 - tinted",
+    "client_name": "LAI VALENTI",
+    "date": "2026-02-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "ID.01 - Top per tavolo rettangolare in pietra lavica smaltata - Finitura: Citrus- Colore: Burgundy - Dims: 700 x 600 x T 30 mm - Bordo Toro",
+    "quote_number": "RNR 787/26 - HORO -2",
+    "client_name": " Divania srl",
+    "date": "2026-02-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02",
+    "description": "ID.02 - Top per tavolo circolare in pietra lavica smaltata - Finitura: Citrus Zest - Colore: Burgundy - Dims: Dia  600 x T 30 mm - Bordo Toro",
+    "quote_number": "RNR 787/26 - HORO -2",
+    "client_name": " Divania srl",
+    "date": "2026-02-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "ID.01 - Top per tavolo rettangolare in pietra lavica smaltata - Finitura: Deep - Colore: Burgundy - Dims: 700 x 600 x T 30 mm - Bordo Toro",
+    "quote_number": "RNR 787/26 - HORO -1 ",
+    "client_name": " Divania srl",
+    "date": "2026-02-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02",
+    "description": "ID.02 - Top per tavolo circolare in pietra lavica smaltata - Finitura: Citrus Zest - Colore: Burgundy - Dims: Dia  600 x T 30 mm - Bordo Toro",
+    "quote_number": "RNR 787/26 - HORO -1 ",
+    "client_name": " Divania srl",
+    "date": "2026-02-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01.P1 – ST-14 - TA-01 Main lobby coffe table top in glazed lava stone – Finish: Deep – Colour: Denim – Dims: 1455 x W 820 x T 50 mm, shaped as per drawing – custom chamfered edge  x 2",
+    "quote_number": "RAN 632/26 -1 ",
+    "client_name": "iL RICCIO",
+    "date": "2026-02-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02.P1 – ST-14 - TA-02 Main lobby coffe table top in glazed lava stone – Finish: Deep – Colour: Duck Egg – Dims: 1145 x W 840 x T 50 mm, shaped as per drawing – custom chamfered edge",
+    "quote_number": "RAN 632/26 -1 ",
+    "client_name": "iL RICCIO",
+    "date": "2026-02-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03A",
+    "description": "ID.03A.P1 – ST-13 – Temptation room island table top in glazed lava stone – Finish: Deep – Colour: Custom Blue – Dims: 2680  x W 930 x T 20 mm, divided into 2 pieces – R20 edge",
+    "quote_number": "RAN 632/26 -1 ",
+    "client_name": "iL RICCIO",
+    "date": "2026-02-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03B",
+    "description": "ID.03B.P1 – ST-13 – Temptation room island table below top in glazed lava stone – Finish: Deep – Colour: Custom Blue – Dims: 2590  x W 836 x T 30 mm, divided into 2 pieces – bull nose edge",
+    "quote_number": "RAN 632/26 -1 ",
+    "client_name": "iL RICCIO",
+    "date": "2026-02-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "ID.01 - Counter top in glazed lava stone - Finish: Deep - Colour: Duck Egg - Ov. Dims: L 6820 x W 4752 x D 450 x T 30, divided into 19 elements - Full bull nose edge onthe visible edge",
+    "quote_number": "ran 746.26 -1 ",
+    "client_name": "",
+    "date": "2026-02-05T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02",
+    "description": "ID.02 - Island top in glazed lava stone - Finish: Deep - Colour: Duck Egg - Ov. Dims: L 2567 x W 2052 x T 30, divided into 4 elements - Full bull nose edge onthe visible edge",
+    "quote_number": "ran 746.26 -1 ",
+    "client_name": "",
+    "date": "2026-02-05T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.03A",
+    "description": "ID.03 – Custom onda tile in glazed lava stone – Finish: Deep – Colour: Blueberry Juice – Dims: H 950 x W 150 x T 30 mm x 128",
+    "quote_number": "ran 746.26 -1 ",
+    "client_name": "",
+    "date": "2026-02-05T00:00:00+00:00"
+  },
+  {
+    "section_name": "ONDA TILE",
+    "description": "onda tile w150 mm",
+    "quote_number": "ran 746.26 -1 ",
+    "client_name": "",
+    "date": "2026-02-05T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01. Kitchen counter top in glazed lava stone – Finish: Deep – Colour: TBD – Ov. Dims. L 4560 x W 3870 x D 686 x T 30 mm, divided into 4 piece  - Standard glazed edge – Sinkcut out and faucet drill hole included",
+    "quote_number": "RNR 767/26",
+    "client_name": "ALL THAT MATTERS",
+    "date": "2026-02-05T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "Bancone top in pietra lavica smaltata - Finitura: Deep - Colore: Golden brown - Dimensioni generali: L 6089 x 3136 x Sp. 40 mm - Diviso in 8 top e 3 alzatine H 150 x Sp.20 mm - Bordo smaltato dritto con arrotondamento R2 mm sopra e sotto",
+    "quote_number": "rnr 762/26",
+    "client_name": "NATIVO",
+    "date": "2026-02-05T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "ID.01 - Bar Service Top in glazed lava stone - Finish: Surface Definnition - Colour: Green - Dims: 7900 x 2309 x W 450 x T 60 mm reduced to 30, divided into 6 elements - Bush hammered edge",
+    "quote_number": "RNR 754/26",
+    "client_name": "T.ZED Architects",
+    "date": "2026-02-05T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 - Cladding fascia in glazed lava stone - Finish: Surface Definnition - Colour: Red - H 1550 x D various x T 20 mm",
+    "quote_number": "RNR 754/26",
+    "client_name": "T.ZED Architects",
+    "date": "2026-02-05T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "Counter top in glazed lava stone - Finish: Metallic - Color: Bronze - Ov. Dims: L 3627 x 1080 x T 20 mm, divided into 4 pieces",
+    "quote_number": "FAB 723.26",
+    "client_name": "",
+    "date": "2026-02-05T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID-01 P1",
+    "description": "Custom 3d Tile in Bare lava stone - Finish: Dark - Dims: H 711 x W 150 x T 100 mm - Shaped as per drawing",
+    "quote_number": "RNR 765/26",
+    "client_name": "CierreEsse srl",
+    "date": "2026-02-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID-01 P1 (Copia)",
+    "description": "Custom 3d Tile in Glazed lava stone - Finish: Tinted - Colour: TBD  - Dims: H 711 x W 150 x T 10 mm - Shaped as per drawing - Detail to be coordinated",
+    "quote_number": "RNR 765/26",
+    "client_name": "CierreEsse srl",
+    "date": "2026-02-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Counter top in glazed lava stone - Finish: Deep - Colour: Antracite - Dims: 1060 x 620 x 70 reduced to 30 - Standard glazed edge where visible",
+    "quote_number": "RNR 759/26 EPR Architects",
+    "client_name": "SPECIFICO LTD",
+    "date": "2026-02-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 - Shelf top in glazed lava stone - Finish: Deep - Colour: Antracite - Dims: 1060 x 350 x 40 reduced to 20 - Standard glazed edge where visible",
+    "quote_number": "RNR 759/26 EPR Architects",
+    "client_name": "SPECIFICO LTD",
+    "date": "2026-02-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.03 - Monolithic vanity in glazed lava stone - Finish: Deep - Colour: Custom Sjy grey - Dims: 917 x 530 x H 180 - Standard glazed edge where visible - shaped as per drawing",
+    "quote_number": "RNR 759/26 EPR Architects",
+    "client_name": "SPECIFICO LTD",
+    "date": "2026-02-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 - OP-1",
+    "description": "ID.01. - OPTION 1 : Monolithic vanity station in glazed lava stone - Finish: Deep - Colour: Custom White TBD - Dims: L 1300 x W 623 x H 125, with 2 integrated basins.",
+    "quote_number": "RNR 753/26 Piperhill Construction - 1",
+    "client_name": "",
+    "date": "2026-02-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 - OP-2",
+    "description": "ID.01. - OPTION 2: Vanity station in glazed lava stone - Finish: Deep - Colour: Custom White TBD - Dims: L 1300 x W 623 x H 125,composed by: 1 top, 3 aprons with mitred edges, 2 detached basins - elements to be assembled on site",
+    "quote_number": "RNR 753/26 Piperhill Construction - 1",
+    "client_name": "",
+    "date": "2026-02-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID,03",
+    "description": "ID.03 Square Wall frame in glazed lava stone - Finish: Deep - Colour: Custom white - Dims: 4000 x 100 x T 20 mm, divided into 4 pieces - Stndard glazed edge where visible",
+    "quote_number": "RNR 753/26 Piperhill Construction - 1",
+    "client_name": "",
+    "date": "2026-02-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "ID.01 - Top tavolino in pietra lavica smaltata - Finitura: DEEP - Colore: Pure White - Dims: Dia 550 x Sp. 20 mm - Bordo smaltato standard",
+    "quote_number": "RNR 758/26 Hotel Mediterraneo srl - 1",
+    "client_name": "hotel meditteraneo",
+    "date": "2026-02-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "id02",
+    "description": "ID.02 - Top tavolino in pietra lavica smaltata - Finitura: DEEP - Colore: Pure White - Dims: Dia 450 x Sp. 20 mm - Bordo smaltato standard",
+    "quote_number": "RNR 758/26 Hotel Mediterraneo srl - 1",
+    "client_name": "hotel meditteraneo",
+    "date": "2026-02-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "id01",
+    "description": "Option 1 - Table top in glazed lava stone - Finish: Deep - Colour: Custom Petrol Blue - Dims: 2400 x 850 x Th. 30 mm - Standard glazed edge",
+    "quote_number": "RNR 755/26 STUDIO ASAÏ",
+    "client_name": "CRIVELLER CONTRACTINg",
+    "date": "2026-02-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "id01",
+    "description": "Option 2 - Table top in glazed lava stone - Finish: Deep - Colour: Custom Petrol Blue - Dims: 2400 x 850 x Th. 30 mm, divided into 2 elements - Standard glazed edge",
+    "quote_number": "RNR 755/26 STUDIO ASAÏ",
+    "client_name": "CRIVELLER CONTRACTINg",
+    "date": "2026-02-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Bespoke counter top in glazed lava stone - Finish: Deep - Colour: Golden Brown - Dims: L 3210 x W 748 x D 350 x T 40 mm, divided into 3 pieces - Custom edge on the front edge - Shaped as per drawing provided",
+    "quote_number": "CAR 743/26",
+    "client_name": "NAWROCKI",
+    "date": "2026-01-31T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID01",
+    "quote_number": "SAV 714/26",
+    "client_name": "KMD",
+    "date": "2026-01-31T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID02",
+    "quote_number": "SAV 714/26",
+    "client_name": "KMD",
+    "date": "2026-01-31T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID01",
+    "quote_number": "SAV 714/26",
+    "client_name": "KMD",
+    "date": "2026-01-31T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID04",
+    "description": "ID01",
+    "quote_number": "SAV 714/26",
+    "client_name": "KMD",
+    "date": "2026-01-31T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID06",
+    "description": "ID.06A.P1 – Island counter tops in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: L 3864 x W 1536 x T 70 mm reduced to 30, divided into 6 elements, shaped as per drawing. R15 radius edge – to be assembled on site",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID06B",
+    "description": "ID.06B.P1 – Island counter shelf Typ1  in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: Dia 983 x T 40 mm, divided into 2 elements, R15 radius edge – Led channel included - to be assembled on site – Please note: Only 1 face can bel fully glazed",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID06c",
+    "description": "ID.06C.P1 – Venue 2 Bar Adult Pool Bar B - Island counter shelf Type 2 in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: Dia 1360 x T 40 mm, reduced to 20 on the top - divided into 2 elements, R15 radius edge – Led channel included - to be assembled on site – Please note: Only 1 face can bel fully glazed",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID07",
+    "description": "ID.07.P1 – Venue 2 Bar Adult Pool Bar B – Service Counter top in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 9603 x 6533 x D 942 x T 60 mm reduced to 30 , divided into 16 elements, shaped as per drawing - Double R15 radius edge - included 18 bottom return elements, various dimensions x T 20 mm – R15 radius edge – to be assembled on site",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID8",
+    "description": "ID.08A.P1 – Venue 2 Bar Adult Pool Bar B – Work station counter top in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 7680 x 6551 x D 546 x T 60 mm reduced to 30 , divided into 10elements, shaped as per drawing - Double R15 radius edge - to be assembled on site – cutout included as per drawing",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID9",
+    "description": "ID.09.P1 – Venue 2 Bar Adult Pool Bar A – Service counter top in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 9235 x 6632 x D 738 x T 60 mm reduced to 30 , divided into 11 elements, shaped as per drawing  - Double R15 radius edge – cutout included as per drawing- included 22 bottom return elements, various dimensions x T 20 mm – R15 radius edge – to be assembled on site",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID11",
+    "description": "ID.11A.P1 – Venue 2 Bar Adult Pool Bar A – work top in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 5950 x 8042 x D 790 x T 60 mm reduced to 30 , divided into 30 elements, shaped as per drawing - Double R15 radius edge -– to be assembled on site – cutout included as per drawing",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID10",
+    "description": "ID.10A.P1 – Venue 2 Bar Adult Pool Bar A – Back bar counter top in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 4316 x 3854 x D 400 x T 60 mm reduced to 30 , divided into 6 elements, shaped as per drawing - Double R15 radius edge -– to be assembled on site – cutout included as per drawing",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID13",
+    "description": "ID.13.P1 – Venue 2 Bar Adult Pool Bar C – Service top in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 5956 x 7613 x D 700 x T 60 mm reduced to 30 , divided into 8 elements, shaped as per drawing - included 16 bottom return elements, various dimensions x T 20 mm – R15 radius edge – to be assembled on site",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID14",
+    "description": "ID.14A.P1 – Venue 2 Bar Adult Pool Bar C – work top in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 3532 x 6670 x D 740x T 60 mm reduced to 30 , divided into 11 elements, shaped as per drawing - Double R15 radius edge -– to be assembled on site – cutout included as per drawing",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID12",
+    "description": "ID.12A.P1 – Venue 2 Bar Adult Pool Bar C – Back bar counter top in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 2787 x 2323 x D 400 x T 60 mm reduced to 30, divided into 5 elements, shaped as per drawing - Double R15 radius edge -– to be assembled on site",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID12B",
+    "description": "ID.12B.P1 – Venue 2 Bar Adult Pool Bar C – Back bar shelves in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 620 x 365 x T 30mm reduced to 10 per drawing - Double R5 radius edge",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID15",
+    "description": "ID.15P1 – Venue 4 Family Pool Bar – island counter top in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 4849 x 1746 x T 60 mm reduced to 30 , divided into 6 elements, shaped as per drawing - Double R15 radius edge -– to be assembled on site – cutout included as per drawing",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID16D",
+    "description": "ID.16D.P1 – Venue 4 Family Pool Bar ID.06C.P1 Island counter shelf Type 4 in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: Dia 1800 x T 40 mm, reduced to 20 on the top - divided into 2 elements, R15 radius edge – Led channel included - to be assembled on site – Please note: Only 1 face can bel fully glazed",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID16",
+    "description": "ID.16A.P1 – Venue 4 Family Pool Bar - Island counter shelf Type 1 in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: Dia 900 x T 40 mm, divided into 2 elements, R15 radius edge – Led channel included - to be assembled on site – Please note: Only 1 face can bel fully glazed",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID16B",
+    "description": "ID.16B.P1 – Venue 4 Family Pool Bar - Island counter shelf Type 2 in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: Dia 1150 x T 40 mm, divided into 2 elements, R15 radius edge – Led channel included - to be assembled on site – Please note: Only 1 face can bel fully glazed",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID16C",
+    "description": "ID.16C.P1 – Venue 4 Family Pool Bar -  Island counter shelf Type 3  in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: Dia 1400 x T 40 mm, divided into 2 elements, R15 radius edge – Led channel included - to be assembled on site – Please note: Only 1 face can bel fully glazed",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID17",
+    "description": "ID.17.P1 – Venue 4 Family Pool Bar – main bar ceiling in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 4849 x 1746 x T 40 mm reduced to 20, divided into 6 elements, shaped as per drawing - Double R15 radius edge – to be assembled on site",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID18",
+    "description": "ID.18.P1 – Venue 4 Family Pool Bar – Service counter top in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 9200 x 5326 x T 60 mm reduced to 30, divided into 10 elements, shaped as per - included 24 bottom return elements, various dimensions x T 20 mm – R15 radius edge – to be assembled on site",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID19",
+    "description": "ID.19A.P1 – Venue 4 Family Pool Bar – Work  counter top in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 7800 x 4947 x D 700 x T 60 mm reduced to 30, divided into 16 elements, shaped as per drawing - Double R15 radius edge -– to be assembled on site – cut out included where required",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID20",
+    "description": "ID.20.P1 – Venue 4 Family Pool Bar – Vestibular niche top in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 1108 x 904 x T 40 mm– R15 radius edge",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID21",
+    "description": "ID.21.P1 – Venue 4 Family Pool Bar – Shelf top in glazed lava stone – Finish: Deep – Colour: Dark Jade – Ov. Dims: 720 x 645 x T 40 mm – led channel included – R15 radius edge 2– Please note: Only 1 face can bel fully glazed",
+    "quote_number": "RAN 700/25 - PARTE 2 ",
+    "client_name": "WYNN PROJECT",
+    "date": "2026-01-28T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "Pannello in pietra lavica smaltata - Finitura: Deep - colore: Custom Verde - Dims: L 1400 x P 650 x Sp.20 mm - Bordo smaltato standard - 4 fori dia. 10 per ancoraggio inclusi",
+    "quote_number": "SARTOGO",
+    "client_name": "",
+    "date": "2026-01-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "ID.01 – Kitchen counter top 1 in glazed lava stone – Finish: Deep – Color: Marsala – Dims: 2757 x 653 x T 20 mm, divided into 3 pieces – with backsplashes H 616 x T 20 mm – 2 socket cutouts included – Standard glazed edge where visible",
+    "quote_number": "FAB 487/26 ",
+    "client_name": "Ferlin Interieur - 2",
+    "date": "2026-01-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 – Kitchen counter top 2 in glazed lava stone – Finish: Deep – Color: Marsala - Dims: 2718 x 604 x T 20 mm, divided into 3 pieces – with backsplashes H 616 x T 20 mm – 1 socket cutouts included – Cut out for undermounted sink included – 2 drill holes for faucet included - Standard glazed edge where visible",
+    "quote_number": "FAB 487/26 ",
+    "client_name": "Ferlin Interieur - 2",
+    "date": "2026-01-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "ID.01 - bespoke table top in glazed lava stone - Finish: Custom Deep decoration in 3 different colours - Dims:  Dia 1200 x T 20 mm - R10 edge on the visible edge",
+    "quote_number": "SAV 725/26 Fabled Studio ",
+    "client_name": "Fabled Studio ",
+    "date": "2026-01-20T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01. Kitchen backsplash in glazed lava stone – Finish: Surface definition – Colour: Venus – Ov.Dims: L 2536 x H 860 x T 20 mm, divided into 3 pieces – Unglazed edge",
+    "quote_number": "FRA 732/26 Hugo Toro",
+    "client_name": "HUGO TORO",
+    "date": "2026-01-20T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "Kitchen top in glazed lava stone - Finish: Deep - Colour: TBD - Dims:  x T 30 mm - with 2 upstands 2000 x 550 x 20 mm and 2000 x 70 x 20 mm - undermount sink cut our, 2 tap drill holes and 2 socket cut-outs included",
+    "quote_number": "cucina mabiroski",
+    "client_name": "",
+    "date": "2026-01-19T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID12",
+    "description": "Stone earth extensions in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: L 2292 x 1362 x T 20 mm, divided into 4 elements",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID13",
+    "description": "ID.13 Stone earth solid in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: L 1530 x 800 x x H 355 x T 20 mm, divided into 1 top, 4 vertical flat elements and 4 vertical curved elements - Cut out included - standard glazed edge where visible",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID14",
+    "description": "ID.14 Courtyyard floor in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: L 4390 x 1870 x T 20 mm, divided ino 4 elements",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID15",
+    "description": "ID.15 Pawder room floor in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: 2177 x 1156 + 773 x 509 x T 20 mm",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID16",
+    "description": "ID.16 - Monolithic vanity sink in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: 1156 x W490 x H 170 - Shaped as per drawing",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID17",
+    "description": "ID.17 Bath 3a room floor in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: 2618 x 2690  x T 20 mm, divided in 9 elements",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID18",
+    "description": "ID.18 - Monolithic vanity sink in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: 1525 x W610 x H 150- Shaped as per drawing - with upstand and rebat as per drawing",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID19",
+    "description": "ID.19 - Monolithic vanity sink in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: 520 x W 230 x H 110- Shaped as per drawing - with frontal cladding H 450 x T 10 mm",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID20",
+    "description": "ID.20 wc 3b room floor in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: 1151 x 895  x T 20 mm",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID21",
+    "description": "ID.21 - Lounge counter top in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: 2238 x W 640 x T 20 mm, divided into 2 top elements - Standard glazed edge",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID22",
+    "description": "ID.22 - Lounge counter cladding in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: 2238 x W 640 x H 862 mm, divided into 6 flat vertical elements and 4 curved vertical elements",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID23",
+    "description": "ID.23 -Powder 5a  Monolithic vanity sink in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: 520 x W 430 x H 150- Shaped as per drawing - with frontal cladding H 450 x T 10 mm",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID24",
+    "description": "ID.24 Powder 5a room floor in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: 1628 x 813  x T 20 mm",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID25",
+    "description": "ID.25 - Bath tube apron and deck cladding in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: L 1828 x W 610 x H 722 x T 20 mm, composed by 4 elements to be assembled on site. Standard glazed edge where visible.",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID26",
+    "description": "ID.26 - Stairs Treads in glazed lava stone - Finish: Deep - Colour: Anthracite - Dims: Various x T 20 mm - Shaped as per drawing - (Counted 52 treads in total)",
+    "quote_number": "CAR 587/25 Marble Crafters, Inc. - 3 - Budget",
+    "client_name": "",
+    "date": "2026-01-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "ID.01 - Rivestimento in pietra lavica smaltata - Finitura: Citrus Zest - Colore: Night Blue - Dims: L 800 x W 970 x Sp. 12 mm - Bordi smaltati standard",
+    "quote_number": "BQ - 339- 2026",
+    "client_name": "Nicola Feriotti - Venezia",
+    "date": "2026-01-15T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "Rivestimento verticale in pietra lavica smaltata - Finitura: Deep - Colore:  Burgundy o Beryl Green - Dims: L 1200 x D 570 x H 990 x T 30 - composto da 13 pezzi da assemblare in cantiere - Bordo raggiato dove necessario",
+    "quote_number": "TECNOPROJECT 2",
+    "client_name": "TECNOPROJECT 2",
+    "date": "2026-01-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01. BC-T05.1 Round table top in glazed lava stone – Finish: Deep – Colour: Caramel – Dims: Dia 1080 x T. 30 mm – Standard glazed edge – 4 M6 inserts included for fixing onto substructure",
+    "quote_number": "BQ - 338- 2026",
+    "client_name": "CIDON INTERIOR",
+    "date": "2026-01-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02. BC-T05.3 Round table top in glazed lava stone – Finish: Deep – Colour: Bleu clair– Dims: Dia 1080 x T. 30 mm – Standard glazed edge – 4 M6 inserts included for fixing onto substructure",
+    "quote_number": "BQ - 338- 2026",
+    "client_name": "CIDON INTERIOR",
+    "date": "2026-01-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03 ",
+    "description": "IID.03. BC-T06.1 Capsule table top in glazed lava stone – Finish: Deep – Colour: Bleu clair– Dims: DL 2440 x W 1140 x T. 30 mm, divided into 2 pieces – Standard glazed edge – 8 M6 inserts included for fixing into substructure",
+    "quote_number": "BQ - 338- 2026",
+    "client_name": "CIDON INTERIOR",
+    "date": "2026-01-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID04",
+    "description": "ID.04. BC-T06.2 Elliptical table top in glazed lava stone – Finish: Deep – Colour: Bleu clair– Dims: DL 2540 x W 1140 x T. 30 mm, divided into 2 pieces – Standard glazed edge – 8 M6 inserts included for fixing into substructure",
+    "quote_number": "BQ - 338- 2026",
+    "client_name": "CIDON INTERIOR",
+    "date": "2026-01-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID05",
+    "description": "ID.05. BC-T06.3 Capsule table top in glazed lava stone – Finish: Deep – Colour: Bleu clair– Dims: DL 2440 x W 1140 x T. 30 mm, divided into 2 pieces – Standard glazed edge – 8 M6 inserts included for fixing into substructure",
+    "quote_number": "BQ - 338- 2026",
+    "client_name": "CIDON INTERIOR",
+    "date": "2026-01-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID06",
+    "description": "ID.06. BC-T10 Round table top in glazed lava stone – Finish: Deep – Colour: Bleu fonce – Dims: Dia 980 x T. 30 mm – Standard glazed edge – 4 M6 inserts included for fixing onto substructure",
+    "quote_number": "BQ - 338- 2026",
+    "client_name": "CIDON INTERIOR",
+    "date": "2026-01-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01. Kitchen top in glazed lava stone - finish: Deep - Colour: Pistacho - Dims: L 1452 x W 690 x T 30mm - with full bull nose edge onthe visible edge - sink cut out included",
+    "quote_number": "BQ - 335- 2026",
+    "client_name": "The Ethical Stone Company  IKEA",
+    "date": "2026-01-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02. Kitchen top 2 in glazed lava stone - finish: Deep - Colour: Pistacho - Dims: L 757 x W 635 x T 30mm - with full bull nose edge onthe visible edge",
+    "quote_number": "BQ - 335- 2026",
+    "client_name": "The Ethical Stone Company  IKEA",
+    "date": "2026-01-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "Custom shaped Table top in glazed lava stone - Finish: Deep - Colour: Sepia or similiar TBC - Dims: 1750 x 850 x Th. 30 mm - Full bull nose edge on the visible edges",
+    "quote_number": "BQ - 337- 2026",
+    "client_name": "Casa Muñoz",
+    "date": "2026-01-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "id01",
+    "description": "ID.01. Counter top in glazed lava stone – Finish: Deep – Colour: TBD – Ov.Dims: 4620 x 4725,4 x 500 x T – Divided into 8 pieces – Standrd glazed edge",
+    "quote_number": "BQ - 330- 2026",
+    "client_name": "MOSAIKHJØRNET",
+    "date": "2026-01-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "TOP VASCA",
+    "quote_number": "BQ - 306- 2025",
+    "client_name": "Sacco srl",
+    "date": "2025-12-23T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "RIVESTIMENTO",
+    "quote_number": "BQ - 306- 2025",
+    "client_name": "Sacco srl",
+    "date": "2025-12-23T00:00:00+00:00"
+  },
+  {
+    "section_name": "id04",
+    "description": "Rivestimento nicchia",
+    "quote_number": "BQ - 306- 2025",
+    "client_name": "Sacco srl",
+    "date": "2025-12-23T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID05",
+    "description": "mensola",
+    "quote_number": "BQ - 306- 2025",
+    "client_name": "Sacco srl",
+    "date": "2025-12-23T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 – Top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 2400 x 1040 x T 50 mm divided into 2 elements – Shaped as per drawing – Full bull nose edge on the visible edges.",
+    "quote_number": "BQ - 294- 2025",
+    "client_name": "TES - Hayley Terry",
+    "date": "2025-12-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "Tavolo quadrato in pietra lavica smaltata – Finitura: Deep – Colore: Dark Jade o Beryl Green – Dims: L 800 x P 800 x Sp. 20 mm – Bordo smaltato standard",
+    "quote_number": "BQ - 310- 2025",
+    "client_name": "SKPAD - costiera Amalfitana",
+    "date": "2025-12-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "Tavolo rotondo in pietra lavica smaltata – Finitura: Deep – Colore: Dark Jade o Beryl Green – Dims: Dia 900  x Sp. 20 mm – Bordo smaltato standard",
+    "quote_number": "BQ - 310- 2025",
+    "client_name": "SKPAD - costiera Amalfitana",
+    "date": "2025-12-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "Tavolo rotondo in pietra lavica smaltata – Finitura: Deep – Colore: Dark Jade o Beryl Green – Dims: Dia 1200  x Sp. 20 mm – Bordo smaltato standard",
+    "quote_number": "BQ - 310- 2025",
+    "client_name": "SKPAD - costiera Amalfitana",
+    "date": "2025-12-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID04",
+    "description": "Tavolo rotondo in pietra lavica smaltata – Finitura: Deep – Colore: Dark Jade o Beryl Green – Dims: Dia 900  x Sp. 20 mm – Bordo smaltato standard",
+    "quote_number": "BQ - 310- 2025",
+    "client_name": "SKPAD - costiera Amalfitana",
+    "date": "2025-12-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "Bancone bar in pietra lavica smaltate - Finitura: Deep - Colore: Da Definire - Dim. generali: L 10450 x L 6200 x P 550 x sp. 30 mm - Diviso in 19 pezzi - Bordi arrotondati R 10",
+    "quote_number": "BQ - 311- 2025",
+    "client_name": "A + A",
+    "date": "2025-12-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "Elliptical table top in glazed lava stone - Dims: 1650 x W 800 x T 20 mm - Standard glazed edge",
+    "quote_number": "BQ - 300- 2025",
+    "client_name": "",
+    "date": "2025-12-19T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "Elliptical table top in glazed lava stone - Dims: 1000 x W 700 x T 20 mm - Standard glazed edge",
+    "quote_number": "BQ - 300- 2025",
+    "client_name": "",
+    "date": "2025-12-19T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "Round table top in glazed lava stone - Dims: Dia 600 x T 20 mm - Standard glazed edge",
+    "quote_number": "BQ - 300- 2025",
+    "client_name": "",
+    "date": "2025-12-19T00:00:00+00:00"
+  },
+  {
+    "section_name": "Senza nome",
+    "description": "Rivestimento tavolo in pietra lavica naturale - Finitura: Dark - Dim generali: L 2200 x P 700 x H 900 x Sp. 20 - Composto da 9 elementi, con tagli a 45° per assemblaggio su sottostruttura non inclusa. \nTop = 2200 x 900",
+    "quote_number": "Fabbri Service x Zimmer",
+    "client_name": "",
+    "date": "2025-12-17T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 – Vanity top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: 1143 x 610 x T 40 mm – with cut our for undermounted sink and 3 faucet drill holes included – Standard glazed edge",
+    "quote_number": "CAR 673-25",
+    "client_name": "",
+    "date": "2025-12-17T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02B – Upstand in glazed lava stone – Finish: Deep – Colour: TBD – Dims: 940 x 413 x T 153 mm – Top edge glazed -3 faucet drill holes included",
+    "quote_number": "CAR 673-25",
+    "client_name": "",
+    "date": "2025-12-17T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 – Bar counter top in glazed lava stone – Finish: deep – Colour: Beryl Green – Ov.Dims: L 3950 x W 755 x T 50 mm, divided into 2 elements – R10 top&bottom radius edge where visible. Sin cut out and faucet drill hole included",
+    "quote_number": "Holzrausch Planung",
+    "client_name": "",
+    "date": "2025-12-17T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01.P1 – Custom table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: 2800x 1200 x Th.60  reduced to 30 mm – Shaped as per drawing – R10 top and bottom",
+    "quote_number": "Hayung Park x Kolkhoze",
+    "client_name": "",
+    "date": "2025-12-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 5 CM DOPPIA COTTURA - CALCOLATORE ",
+    "description": "ID.02.P1 – Custom table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: 2800x 1200 x Th.50  reduced to 30 mm – Shaped as per drawing – R10 top and bottom",
+    "quote_number": "Hayung Park x Kolkhoze",
+    "client_name": "",
+    "date": "2025-12-16T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "Round table top in glazed lava stone - Finish: Deep - Colour : Caramel - Dims: Dia 750 x T 30 mm - Glazed Edge With R10 on the top",
+    "quote_number": "BQ - 268- 2025",
+    "client_name": "Aguablava restaurant Rabat",
+    "date": "2025-12-15T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 – Top tavolo in pietra lavica smaltata – Finitura: Deep – Colore: Cream TBC – Dims: 1900 x 1149 x Sp. 30 mm – Sagomato come da disegno",
+    "quote_number": "BQ - 251- 2025",
+    "client_name": "CIMENTO",
+    "date": "2025-12-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "id01",
+    "description": "ID.01 – Kitchen top in glazed lava stone – Ov. Dims: 5620 x 814 x T 20 mm, divided into 5 elements – with sink cut out included – coocking hob cut out included – 3 faucet drill hole included – Standard glazed edge",
+    "quote_number": "BQ - 253- 2025",
+    "client_name": "CAROLINA SANDRI",
+    "date": "2025-12-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "id02",
+    "description": "ID.02 – Kitchen Backsplash in glazed lava stone – Ov. Dims: 5620 x H 700 x T 20 mm, divided into 5 elements –– 3 socket cut out included – Standard glazed edge where visible",
+    "quote_number": "BQ - 253- 2025",
+    "client_name": "CAROLINA SANDRI",
+    "date": "2025-12-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "Table top in glazed lava stone - Finish: Deep - Colour: Green / Grey  TBC - Dims: L 900 x W 900 x T 30 mm, reduced to 20 where required - Standard glazed edge",
+    "quote_number": "BQ - 250- 2025",
+    "client_name": "Syzygy Solutions SL",
+    "date": "2025-12-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "Table top in glazed lava stone - Finish: Deep - Colour: Green / Grey  TBC - Dims: L 920 x W 920 x T 30 mm, reduced to 20 where required - Standard glazed edge",
+    "quote_number": "BQ - 250- 2025",
+    "client_name": "Syzygy Solutions SL",
+    "date": "2025-12-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "id01",
+    "description": "ID01 - Table top in glazed lava stone - finish: deep - colour: TBD - Dims: 668 x 668 x T 10/12 mm - Standard edge",
+    "quote_number": "BQ - 247- 2025",
+    "client_name": "AIMA Interiors 2",
+    "date": "2025-12-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "id02",
+    "description": "ID01 - Table top in glazed lava stone - finish: deep - colour: TBD - Dims: 868 x 868 x T 10/12 mm - Standard edge",
+    "quote_number": "BQ - 247- 2025",
+    "client_name": "AIMA Interiors 2",
+    "date": "2025-12-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - tavolo in pietra lavica smaltata,  1200 x 3600 composto da 12 pezzi 600 x 600 x 10 mm - Finitura: Decoro personalizzato",
+    "quote_number": "BQ - 254- 2025",
+    "client_name": "DELFINA IODICE",
+    "date": "2025-12-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 - tavolo cucina in pietra lavica smaltata,   composto da 6 pezzi 600 x 600 x 20 mm - Finitura: Decoro personalizzato - Bordo R2 sopra e sotto - Foro rubinetto e foro lavandino soprapiano incluso",
+    "quote_number": "BQ - 254- 2025",
+    "client_name": "DELFINA IODICE",
+    "date": "2025-12-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "Top in pietra lavica smaltata - finitura: Citrus zest - Colore: Beryl Green - Dims. 2000 x 1000 x 20 mm, con bordi smaltati ed R2 sorpa e sotto",
+    "quote_number": "BQ - 254- 2025",
+    "client_name": "DELFINA IODICE",
+    "date": "2025-12-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "Island kitchen top in glazed lava stone - Finish: Deep - Colour: Tbd - Dims: 2770 x 1260 x T 30 mm, divided into 4 elements to be assembled on site - Milled knobs area as per request - R5 rounded edge on the visible edge",
+    "quote_number": "BQ - 239- 2025",
+    "client_name": "Wirth & Company - Apaquogue",
+    "date": "2025-12-05T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 02",
+    "description": "ID.02 Wall cladding A in glazed lava stone – Finish: Metallic Meteorite – Colour: Bronze – Dims: L 3350 x H 1880 x T 20 mm, divided into 8 pieces",
+    "quote_number": "BQ - 217- 2025",
+    "client_name": "Klaus Maier",
+    "date": "2025-12-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 03",
+    "description": "ID.03 Wall cladding B in glazed lava stone – Finish: Metallic Meteorite – Colour: Bronze – Dims: L 3350 x H 1880 x T 20 mm, divided into 10 pieces",
+    "quote_number": "BQ - 217- 2025",
+    "client_name": "Klaus Maier",
+    "date": "2025-12-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "id01",
+    "description": "ID.01. Floor tiling in glazed lava stone – finish: Deep – Colour: Green TBD – Dims: 450 x 48 x 10 mm",
+    "quote_number": "BQ - 217- 2025",
+    "client_name": "Klaus Maier",
+    "date": "2025-12-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01.P1 – Vanity top in glazed lava stone – Finish: Deep – Colour: Tbd – Dims: L 783 x W 489 x T 20 mm – With sink cut out – Shaped as per drawing – Standard glazd edge",
+    "quote_number": "BQ - 206- 2025",
+    "client_name": "KIMAK",
+    "date": "2025-12-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02.P1 – Cladding vertical element in glazed lava stone – Finish: Deep – Colour: Tbd – Dims: L 2980 x W 690 x T 20 mm – With sink cut out – Shaped as per drawing – Standard glazd edge",
+    "quote_number": "BQ - 206- 2025",
+    "client_name": "KIMAK",
+    "date": "2025-12-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "Counter top in glazed lava stone - Finish: Deep - Colour: TBD - Dims: 5420 x 358 x T 80 mm - composed by 4 top elements and 4 bullnose elements to be assembled on site",
+    "quote_number": "BQ - 173- 2025",
+    "client_name": "Big Mamma restaurant",
+    "date": "2025-12-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 – CG 162 Round table top in glazed lava stone – finish: deep – colour: TBD – Dims: Dia. 664 x T 30 mm – half bull nose edge on the visible edge R10",
+    "quote_number": "Bunkhouse Group x Hotel Daphne-2",
+    "client_name": "",
+    "date": "2025-12-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 – CG 164 table top in glazed lava stone – finish: deep – colour: TBD – Dims: L. 851 x W 851 x T 30 mm – half bull nose edge on the visible edge R10",
+    "quote_number": "Bunkhouse Group x Hotel Daphne-2",
+    "client_name": "",
+    "date": "2025-12-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01.P1 – Round table top in glazed lava stone – Finish: Deep – Colour:: Caffellatte – Dims: Dia 600 x T 20 mm – Standard glazed edge",
+    "quote_number": "CAR 653/25 HT INTERIOR DESIGN & CONTRACT SL - 1",
+    "client_name": "",
+    "date": "2025-12-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02.P1 – Elliptical table top in glazed lava stone – Finish: Deep – Colour:: Caffellatte – Dims: L 1650 x W800 x T 20 mm – Standard glazed edge",
+    "quote_number": "CAR 653/25 HT INTERIOR DESIGN & CONTRACT SL - 1",
+    "client_name": "",
+    "date": "2025-12-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.03.P1 – Elliptical table top in glazed lava stone – Finish: Deep – Colour:: Caffellatte – Dims: L 1000 x W700 x T 20 mm – Standard glazed edge",
+    "quote_number": "CAR 653/25 HT INTERIOR DESIGN & CONTRACT SL - 1",
+    "client_name": "",
+    "date": "2025-12-03T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "TOP VBLA BLA",
+    "quote_number": "TEST RANIERI",
+    "client_name": "",
+    "date": "2025-12-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 (Copia)",
+    "description": "TOP VBLA BLA",
+    "quote_number": "TEST RANIERI",
+    "client_name": "",
+    "date": "2025-12-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 – Option A – Custom table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: 3010 x 1250 x T 20 mm, divided into 2 pieces – Standard glazde edge",
+    "quote_number": "BQ - 207- 2025",
+    "client_name": "Pendhapa - Selene table",
+    "date": "2025-12-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.01 – Option B – Custom table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: 3010 x 1250 x T 20 mm, divided into 3 pieces – Standard glazde edge",
+    "quote_number": "BQ - 207- 2025",
+    "client_name": "Pendhapa - Selene table",
+    "date": "2025-12-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.01 – Option C – Custom table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: 3010 x 1250 x T 20 mm, divided into 7 pieces, shaped as per drawing – Standard glazde edge",
+    "quote_number": "BQ - 207- 2025",
+    "client_name": "Pendhapa - Selene table",
+    "date": "2025-12-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 – Option A – Custom table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: 3010 x 1250 x T 20 mm, divided into 2 pieces – Standard glazde edge",
+    "quote_number": "DUPLICATO SELENE FILASTONE",
+    "client_name": "Pendhapa - Selene table",
+    "date": "2025-12-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.01 – Option B – Custom table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: 3010 x 1250 x T 20 mm, divided into 3 pieces – Standard glazde edge",
+    "quote_number": "DUPLICATO SELENE FILASTONE",
+    "client_name": "Pendhapa - Selene table",
+    "date": "2025-12-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.01 – Option C – Custom table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: 3010 x 1250 x T 20 mm, divided into 7 pieces, shaped as per drawing – Standard glazde edge",
+    "quote_number": "DUPLICATO SELENE FILASTONE",
+    "client_name": "Pendhapa - Selene table",
+    "date": "2025-12-02T00:00:00+00:00"
+  },
+  {
+    "section_name": "id08",
+    "description": "X 2 ID.08.P1 –Side panels for back kitchen niche in glazed lava stone – finish: Deep – Colour: White TBD – Ov. Dims: H 2490 x W 800 x T 50 mm reduced to 30, divided into 2 pieces H 920 and H 1570 mm – Full bull nose edge on the visible edge  - detail to be further coordinated",
+    "quote_number": "CAR 595/25 Merckx Holvoet - 1 - parte aggiuntiva",
+    "client_name": "",
+    "date": "2025-12-01T00:00:00+00:00"
+  },
+  {
+    "section_name": "id09",
+    "description": "ID.09.P1 – Back kitchen splashback in glazed lava stone – finish: Deep – Colour: White TBD – Ov. Dims: H 2680 x H 850 x T 20 mm divided into 4 equal pieces",
+    "quote_number": "CAR 595/25 Merckx Holvoet - 1 - parte aggiuntiva",
+    "client_name": "",
+    "date": "2025-12-01T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID10",
+    "description": "ID.10.P1 – Hood casing cladding in glazed lava stone – finish: Deep – Colour: White TBD – Ov. Dims: H 2680 x H 870 x T 12 mm divided into 4 equal pieces, with full glazed edges",
+    "quote_number": "CAR 595/25 Merckx Holvoet - 1 - parte aggiuntiva",
+    "client_name": "",
+    "date": "2025-12-01T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID11",
+    "description": "ID.11.P1 – Breakfast niche top in glazed lava stone – finish: Deep – Colour: White TBD – Ov. Dims: H 1400 x W 500 x T 40 mm with R40 radius edge on the visible edges",
+    "quote_number": "CAR 595/25 Merckx Holvoet - 1 - parte aggiuntiva",
+    "client_name": "",
+    "date": "2025-12-01T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID12",
+    "description": "ID.11.P1 – Breakfast niche shelf in glazed lava stone – finish: Deep – Colour: White TBD – Ov. Dims: H 1300 x W 250 x T 40 mm reduced to 20 with R40 radius edge on the visible edges  + closing glazed element 130 x 250 x T 20 mm to be assembled on site",
+    "quote_number": "CAR 595/25 Merckx Holvoet - 1 - parte aggiuntiva",
+    "client_name": "",
+    "date": "2025-12-01T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 – Top in glazed lava stone – Finish: Deep – Colour: Custom light yellow – Dims: 1786 x 428 x T 40 reduced to 20 mm – with Upstands H 40 mm- Standard glazed edge where visibile",
+    "quote_number": "UBS - Excl Group ",
+    "client_name": "",
+    "date": "2025-12-01T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 – Top in glazed lava stone – Finish: Deep – Colour: Custom light yellow – Dims: 1139 x 269 x T 40 reduced to 20 mm – Standard glazed edge where visibile",
+    "quote_number": "UBS - Excl Group ",
+    "client_name": "",
+    "date": "2025-12-01T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.03.01 – AGE 78 – vertical cladding in glazed lava stone – Finish: Deep – Colour: TBD – Composed by 2 elements 700 x 900 x T 20 mm and 2 elements 700 x 700 x T 20 mm – Round R20 edge where required",
+    "quote_number": "BQ - 200- 2025",
+    "client_name": "Rinck - Pierre Peyron",
+    "date": "2025-12-01T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID04",
+    "description": "ID.04.01 – AGE 129 – Vanity top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 1900 x W 600 x T 20 mm -1 sin cut out and 3 faucet drill holes included – Half bull nose edge on the visible edge",
+    "quote_number": "BQ - 200- 2025",
+    "client_name": "Rinck - Pierre Peyron",
+    "date": "2025-12-01T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 DOPPIA",
+    "description": "ID.01.R1  (CF-JD-01) Caffe Island top in glazed lava stone - finishing: DEEP - Colour: Mustard TBD - Ov. Dims: L 3625 x W 450x T 20 mm, divided into 2 elements to be assembled on site – Full bull nose edge on the visible edge – 2 cut outs included – shaped as per drawing",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 SINGOLA",
+    "description": "ID.01.R1  (CF-JD-01) Caffe Island top in glazed lava stone - finishing: DEEP - Colour: Mustard TBD - Ov. Dims: L 3625 x W 450x T 20 mm, divided into 2 elements to be assembled on site – Full bull nose edge on the visible edge – 2 cut outs included – shaped as per drawing",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 DOPPIA",
+    "description": "ID.02.R1  (CF-JD-02) Caffe Ledge top in glazed lava stone - finishing: DEEP - Colour: Burgundy - Ov. Dims: L 3600 x W 450 x T 20 mm, divided into 2 elements to be assembled on site – Full bull nose edge on the visible edge –shaped as per drawing",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 SINGOLA",
+    "description": "ID.02.R1  (CF-JD-02) Caffe Ledge top in glazed lava stone - finishing: DEEP - Colour: Burgundy - Ov. Dims: L 3600 x W 450 x T 20 mm, divided into 2 elements to be assembled on site – Full bull nose edge on the visible edge –shaped as per drawing",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03 DOPPIA",
+    "description": "ID.03.R1  (CF-JD-02) Caffe Ledge  2 top in glazed lava stone - finishing: DEEP - Colour: Burgundy- Ov. Dims: L 2200 x W 450x T 20 mm, divided into 2 elements to be assembled on site - Full bull nose edge on the visible edge –shaped as per drawing",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03 SINGOLA",
+    "description": "ID.03.R1  (CF-JD-02) Caffe Ledge  2 top in glazed lava stone - finishing: DEEP - Colour: Burgundy- Ov. Dims: L 2200 x W 450x T 20 mm, divided into 2 elements to be assembled on site - Full bull nose edge on the visible edge –shaped as per drawing",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID04 DOPPIA ",
+    "description": "ID.04.R1  (CF-JD-04) Back counter top in glazed lava stone - finishing: DEEP - Colour: Burgundy - Ov. Dims: L 5060 x W 700 x T 20 mm, divided into 6 elements to be assembled on site - Full bull nose edge on the visible edge –shaped as per drawing",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID04 SINGOLA",
+    "description": "ID.04.R1  (CF-JD-04) Back counter top in glazed lava stone - finishing: DEEP - Colour: Burgundy - Ov. Dims: L 5060 x W 700 x T 20 mm, divided into 6 elements to be assembled on site - Full bull nose edge on the visible edge –shaped as per drawing",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID05 DOPPIA  ",
+    "description": "ID.05.R1  (CF-JD-05) Cafe retail top in glazed lava stone - finishing: DEEP - Colour: Burgundy - Ov. Dims: L 1550 x W 670 x T 20 mm - Full bull nose edge on the visible edge",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID05 singola",
+    "description": "ID.05.R1  (CF-JD-05) Cafe retail top in glazed lava stone - finishing: DEEP - Colour: Burgundy - Ov. Dims: L 1550 x W 670 x T 20 mm - Full bull nose edge on the visible edge",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID06 DOPPIA  ",
+    "description": "ID.06.R1  (PAN-JD-01) Pantry perimeter unit A top in glazed lava stone - finishing: DEEP - Colour: Burgundy - Ov. Dims: L 2595 x W 630 x T 20 mm, divided into 2 elements to be assembled on site - Full bull nose edge on the visible edge",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID06 singola",
+    "description": "ID.06.R1  (PAN-JD-01) Pantry perimeter unit A top in glazed lava stone - finishing: DEEP - Colour: Burgundy - Ov. Dims: L 2595 x W 630 x T 20 mm, divided into 2 elements to be assembled on site - Full bull nose edge on the visible edge",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID07 DOPPIA  ",
+    "description": "ID.07.R2  (PAN-JD-02) Pantry perimeter unit B top in glazed lava stone - finishing: DEEP - Colour: Burgundy - Ov. Dims: L 1800 x W 630 x T 20 mm - Full bull nose edge on the visible edge",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID07 SINGOLA",
+    "description": "ID.07.R2  (PAN-JD-02) Pantry perimeter unit B top in glazed lava stone - finishing: DEEP - Colour: Burgundy - Ov. Dims: L 1800 x W 630 x T 20 mm - Full bull nose edge on the visible edge",
+    "quote_number": "SAV 624/25",
+    "client_name": "",
+    "date": "2025-11-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01-DOPPIA COTTURA",
+    "description": "ID.01. Top in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: L 1100 x P 1100 x SP. 30 mm – Bordi R15 E R2",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01-SINGOLA COTTURA",
+    "description": "ID.01. Top in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: L 1100 x P 1100 x SP. 30 mm – Bordi R15 E R2",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 DOPPIA COTTURA",
+    "description": "ID.02. Top ellittico in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: L 1700 x P 2250 x SP. 30 mm, diviso in 2 pezzi – Bordi R15 E R2",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 SINGOLA COTTURA",
+    "description": "ID.02. Top ellittico in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: L 1700 x P 2250 x SP. 30 mm, diviso in 2 pezzi – Bordi R15 E R2",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03 DOPPIA COTTURA",
+    "description": "ID.03. Top ellittico in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: L 2400 x P 1100 x SP. 30 mm, diviso in 2 pezzi – Bordi R15 E R2",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03 SINGOLA COTTURA ",
+    "description": "ID.03. Top ellittico in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: L 2400 x P 1100 x SP. 30 mm, diviso in 2 pezzi – Bordi R15 E R2",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID04 DOPPIA COTTURA ",
+    "description": "ID.04. Top ellittico in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: L 1500 x  P 900 x SP. 30 mm – Bordi R15 E R2",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID04 SINGOLA COTTURA",
+    "description": "ID.04. Top ellittico in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: L 1500 x  P 900 x SP. 30 mm – Bordi R15 E R2",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID05 - DOPPIA COTTURA",
+    "description": "ID.05. Top rotondo in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: Dia 1100 x SP. 30 mm – Bordi R15 E R2",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID05 - SINGOLA COTTURA",
+    "description": "ID.05. Top rotondo in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: Dia 1100 x SP. 30 mm – Bordi R15 E R2",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID06 - DOPPIA COTTURA ",
+    "description": "ID.06. Top in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: L 2600 x P 750 x SP. 30 mm, diviso in 2 pezzi –Bordi R15 E R2",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID06 - SINGOLA COTTURA",
+    "description": "ID.06. Top in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: L 2600 x P 750 x SP. 30 mm, diviso in 2 pezzi – Bordi R15 E R2",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID07 - SINGOLA COTTURA ",
+    "description": "ID.07. Top mensola in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: L 550 x P 300 x SP. 30 mm – Bordi smaltati standard",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID08A E ID09A - SINGOLA COTTURA ",
+    "description": "ID.08A. Rivestimento Alto Anta frontale libreria in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: L 550 x P 600 x SP. 10 mm – Bordi smaltati standard",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID08B E ID09B - SINGOLA COTTURA",
+    "description": "ID.08B. Rivestimento Alto Anta top in pietra lavica smaltata - Finitura: Deep – Colore: Burgundy – Dims: L 550 x P 300 x SP. 10 mm – Bordi smaltati standard",
+    "quote_number": "RNR 651/25",
+    "client_name": "CASSINA SPA",
+    "date": "2025-11-26T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 ",
+    "description": "ID.01 - Kitchen top in glazed lava stone - Finish: Deep - Colour: Custom Pink TBD - Dims: 1300 x 800 x T 20 mm - R5 double rounded edge.",
+    "quote_number": "BQ - 169- 2025",
+    "client_name": "Charlie Fellerman - privato",
+    "date": "2025-11-25T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01  singola",
+    "description": "ID.01 - Kitchen top in glazed lava stone - Finish: Deep - Colour: Custom Pink TBD - Dims: 1300 x 800 x T 20 mm - R5 double rounded edge.",
+    "quote_number": "BQ - 169- 2025",
+    "client_name": "Charlie Fellerman - privato",
+    "date": "2025-11-25T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 OP1- FILASTONE",
+    "description": "ID.01- Option A – Round table top in bare lava stone – Finish: Dark – Dims: Dia. 700 x T 30 mm – with R5 double rounded edge glazed – no. 4 M6 inserts included",
+    "quote_number": "BQ - 172- 2025",
+    "client_name": "eclipse furniture",
+    "date": "2025-11-25T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 OP2 - DOPPIA COTTURA",
+    "description": "ID.01- Option A – Round table top in bare lava stone – Finish: Dark – Dims: Dia. 700 x T 30 mm – with R5 double rounded edge glazed – no. 4 M6 inserts included",
+    "quote_number": "BQ - 172- 2025",
+    "client_name": "eclipse furniture",
+    "date": "2025-11-25T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 OP2 - SINGOLA COTTURA",
+    "description": "ID.01- Option A – Round table top in bare lava stone – Finish: Dark – Dims: Dia. 700 x T 30 mm – with R5 double rounded edge glazed – no. 4 M6 inserts included",
+    "quote_number": "BQ - 172- 2025",
+    "client_name": "eclipse furniture",
+    "date": "2025-11-25T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 - DOPPIA COTTURA",
+    "description": "ID.01. Table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 1130 x W 1817 x T 30 mm – Shaped as per drawing – Reduced thickness where required – Standard glazed edge",
+    "quote_number": "BQ - 183- 2025",
+    "client_name": "C&C Studio - residential",
+    "date": "2025-11-25T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 - SINGOLA COTTURA",
+    "description": "ID.01. Table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 1130 x W 1817 x T 30 mm – Shaped as per drawing – Reduced thickness where required – Standard glazed edge",
+    "quote_number": "BQ - 183- 2025",
+    "client_name": "C&C Studio - residential",
+    "date": "2025-11-25T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 - DOPPIA COTTURA ",
+    "description": "ID.02. Round Table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: DIA 940 x T 30 mm – Shaped as per drawing – Reduced thickness where required – Standard glazed edge",
+    "quote_number": "BQ - 183- 2025",
+    "client_name": "C&C Studio - residential",
+    "date": "2025-11-25T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 - SINGOLA COTTURA",
+    "description": "ID.02. Round Table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: DIA 940 x T 30 mm – Shaped as per drawing – Reduced thickness where required – Standard glazed edge",
+    "quote_number": "BQ - 183- 2025",
+    "client_name": "C&C Studio - residential",
+    "date": "2025-11-25T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 01 OP A DOPPIA COTTURA",
+    "description": "ID.01- Option A – Round table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: Dia 914 (36”) x T 20 mm – Standard glazed edge",
+    "quote_number": "BQ - 190- 2025",
+    "client_name": "Armen Stone",
+    "date": "2025-11-25T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 01 OP A SINGOLA COTTURA",
+    "description": "ID.01- Option A – Round table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: Dia 914 (36”) x T 20 mm – Standard glazed edge",
+    "quote_number": "BQ - 190- 2025",
+    "client_name": "Armen Stone",
+    "date": "2025-11-25T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 02 OP B DOPPIA COTTURA",
+    "description": "ID.02 - Option B– Square table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 914 (36”) x W 914 (36”) x T 20 mm – Standard glazed edge",
+    "quote_number": "BQ - 190- 2025",
+    "client_name": "Armen Stone",
+    "date": "2025-11-25T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 02 OP B SINGOLA COTTURA",
+    "description": "ID.02 - Option B– Square table top in glazed lava stone – Finish: Deep – Colour: TBD – Dims: L 914 (36”) x W 914 (36”) x T 20 mm – Standard glazed edge",
+    "quote_number": "BQ - 190- 2025",
+    "client_name": "Armen Stone",
+    "date": "2025-11-25T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 DOPPIA COTTURA",
+    "description": "ID.01.P1- Kitchen top in glazed lava stone – Finish: Deep – Colour: Total Black – Finish: 3300 x 1232 x T 30 mm divided into 4 elements – Standard glazed edge – Faucet drill hole and sink-cut out included",
+    "quote_number": "RNR 532.25",
+    "client_name": "andy martin",
+    "date": "2025-11-24T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 SINGOLA COTTURA ",
+    "description": "ID.01.P1- Kitchen top in glazed lava stone – Finish: Deep – Colour: Total Black – Finish: 3300 x 1232 x T 30 mm divided into 4 elements – Standard glazed edge – Faucet drill hole and sink-cut out included",
+    "quote_number": "RNR 532.25",
+    "client_name": "andy martin",
+    "date": "2025-11-24T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 – Kitchen top in glazed lava stone – Finish: Surface Definition – Blue – Ov. Dims: 2131 x 612 x T 30 mm, reduced thickness on top and below, divided into 4 pieces + 3 upstands H 40 mm x T 20 mm.",
+    "quote_number": "FRA 620.25",
+    "client_name": "",
+    "date": "2025-11-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 – L Kitchen top in glazed lava stone – Finish: Surface Definition – Blue – Ov. Dims: 2529 x 2573 x 666 x T 30mm, reduced thickness on top and below, divided into 3 pieces + 5 upstands H 40 mm x T 20 mm..",
+    "quote_number": "FRA 620.25",
+    "client_name": "",
+    "date": "2025-11-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.03 – Monolithic Sink in glazed lava stone – Finish: : Surface Definition – Blue – Ov. Dims Internal: 500 x 400 x 180 – external: 560 x 460 x 210",
+    "quote_number": "FRA 620.25",
+    "client_name": "",
+    "date": "2025-11-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "id01",
+    "description": "Test piece in glazed lava stone - Finish: Deep - Colour: Blueberry Juice - Dims: 1380 x 210 x T 50 mm - one 210 mm side glazed",
+    "quote_number": "RNR 555/25 NEWPRO INTERNATIONAL INC. - 4- TEST TECNICI",
+    "client_name": "",
+    "date": "2025-11-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "id02",
+    "description": "Test piece in glazed lava stone - Finish: Deep - Colour: Blueberry Juice - Dims: 880 x 210 x T 50 mm - one 210 mm side glazed",
+    "quote_number": "RNR 555/25 NEWPRO INTERNATIONAL INC. - 4- TEST TECNICI",
+    "client_name": "",
+    "date": "2025-11-18T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01- DOPPIA COTTURA",
+    "description": "ID.01A.P1 – Island kitchen top in glazed lava stone – Finish: Deep – Colour: White TBD – Ov. Dims: 2685 x 900 x T 40 mm, divided into 4 pieces – R20 radius edge on the visible edges.",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01- SINGOLA COTTURA",
+    "description": "ID.01A.P1 – Island kitchen top in glazed lava stone – Finish: Deep – Colour: White TBD – Ov. Dims: 2685 x 900 x T 40 mm, divided into 4 pieces – R20 radius edge on the visible edges.",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01c - DOPPIA COTTURA",
+    "description": "ID.01C.P1 – Island cladding in glazed lava stone – Finish: Deep – Colour: White TBD – Composed by: 2 side panels 900 x 850 x T 40 mm with R40 radius edge on the visible edges and 8 elements 671 x 850 x 12 mm with hand cut out.",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01c - SINGOLA COTTURA",
+    "description": "ID.01C.P1 – Island cladding in glazed lava stone – Finish: Deep – Colour: White TBD – Composed by: 2 side panels 900 x 850 x T 40 mm with R40 radius edge on the visible edges and 8 elements 671 x 850 x 12 mm with hand cut out.",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 - DOPPIA COTTURA",
+    "description": "ID.02.P1 – Kitchen back top in glazed lava stone – Finish: Deep – Colour: White TBD – Dims: 2685 x 697 x T 40 mm, divided into 3 pieces – R20 radius edge on the visible edges. – hob cut-out included",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 - SINGOLA COTTURA",
+    "description": "ID.02.P1 – Kitchen back top in glazed lava stone – Finish: Deep – Colour: White TBD – Dims: 2685 x 697 x T 40 mm, divided into 3 pieces – R20 radius edge on the visible edges. – hob cut-out included",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03 - DOPPIA COTTURA",
+    "description": "ID.03.P1 – Pantry top in glazed lava stone – Finish: Deep – Colour: White TBD – Dims: L shape 2321 x 2894 x 694 x T 40 mm, divided into 4 pieces – R20 radius edge on the visible edge – sink cut out included – faucet drill hole included",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03 - SINGOLA COTTURA",
+    "description": "ID.03.P1 – Pantry top in glazed lava stone – Finish: Deep – Colour: White TBD – Dims: L shape 2321 x 2894 x 694 x T 40 mm, divided into 4 pieces – R20 radius edge on the visible edge – sink cut out included – faucet drill hole included",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "id04 A DOPPIA COTTURA",
+    "description": "ID.04A.P1 – Shower and steam room top in glazed lava stone – Finish: Deep – Colour: White TBD – Ov. Dims: 1272 x 430 x T 40 mm + Vertical cladding 1272 x H 450 x T 20 mm + Face vertical cladding H 450 x 430 x T 20 mm",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "id04 A SINGOLA COTTURA",
+    "description": "ID.04A.P1 – Shower and steam room top in glazed lava stone – Finish: Deep – Colour: White TBD – Ov. Dims: 1272 x 430 x T 40 mm + Vertical cladding 1272 x H 450 x T 20 mm + Face vertical cladding H 450 x 430 x T 20 mm",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "id04 B DOPPIA COTTURA ",
+    "description": "ID.04A.P1 – Shower and steam room top in glazed lava stone – Finish: Deep – Colour: White TBD – Ov. Dims: 1272 x 430 x T 40 mm + Vertical cladding 1272 x H 450 x T 20 mm + Face vertical cladding H 450 x 430 x T 20 mm",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "id04 B SINGOLA COTTURA ",
+    "description": "ID.04A.P1 – Shower and steam room top in glazed lava stone – Finish: Deep – Colour: White TBD – Ov. Dims: 1272 x 430 x T 40 mm + Vertical cladding 1272 x H 450 x T 20 mm + Face vertical cladding H 450 x 430 x T 20 mm",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "id06 doppia cottura",
+    "description": "ID.06.P1 – Bathtube vertical cladding in glazed lava stone – Finish: Deep – Colour: White TBD – Ov. Dims: 1687 x W 834 x h 580 X T 50 mm reduced to 30 – With R 20 radius edge where required",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "id06 singola cottura",
+    "description": "ID.06.P1 – Bathtube vertical cladding in glazed lava stone – Finish: Deep – Colour: White TBD – Ov. Dims: 1687 x W 834 x h 580 X T 50 mm reduced to 30 – With R 20 radius edge where required",
+    "quote_number": "CAR 595.25 MERCKX HOLOVET",
+    "client_name": "",
+    "date": "2025-11-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01.P1 – Kitchen counter top Left in bare lava stone – Finish: Dark – Dims: L 1326 x W 650 x T 40 mm – R1 radius edge on the visible edges",
+    "quote_number": "Colin Parker Kitchen countertop",
+    "client_name": "",
+    "date": "2025-11-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02.P1 – Kitchen counter top Right in bare lava stone – Finish: Dark – Dims: L 1536 x W 650 x T 40 mm – R1 radius edge on the visible edges – with sink cut-out and 3 drill holes  and one kitchen hob cut-out for flush installation",
+    "quote_number": "Colin Parker Kitchen countertop",
+    "client_name": "",
+    "date": "2025-11-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 Bespoke side table in glazed lava stone - Finish: Deep - Colour: Terracotta Burnt Orange - Dims: Top Dia 600 x T 50 mm with custom edge and glazing underside - Base: H 430 x Dia 280 mm",
+    "quote_number": "blanc carrere",
+    "client_name": "",
+    "date": "2025-11-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 Top in glazed lava stone – Finish: Custom hand painted – Dims: L 1000 x W 700 x T 20 mm – Full bull nose edge",
+    "quote_number": "First Within Painted tables",
+    "client_name": "",
+    "date": "2025-11-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 Circular Top in glazed lava stone – Finish: Custom hand painted – Dims: Dia 600  x T 20 mm – Full bull nose edge",
+    "quote_number": "First Within Painted tables",
+    "client_name": "",
+    "date": "2025-11-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.03 Top in glazed lava stone – Finish: Custom hand painted – Dims: L 1000 x W 800 x T 20 mm – Full bull nose edge",
+    "quote_number": "First Within Painted tables",
+    "client_name": "",
+    "date": "2025-11-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 01 doppia",
+    "description": "ID.01 – Counter top in glazed lava stone – Finish: Deep – Colour: Green TBD – Dims: L 5860 x W 1060 x T 40 mm reduced to 20, divided into 4 pieces to be assembled on site – Full bull nose edge on the visible edges",
+    "quote_number": "Holloway Li ",
+    "client_name": "",
+    "date": "2025-11-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "id05 5 doppia",
+    "description": "ID.05 – Custom cladding panels in glazed lava stone – Finish: Deep – Colour: Green TBD – Dims: L 5860 x H 570 x T 30 mm",
+    "quote_number": "Holloway Li ",
+    "client_name": "",
+    "date": "2025-11-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 01 singola",
+    "description": "ID.01 – Counter top in glazed lava stone – Finish: Deep – Colour: Green TBD – Dims: L 5860 x W 1060 x T 40 mm reduced to 20, divided into 4 pieces to be assembled on site – Full bull nose edge on the visible edges",
+    "quote_number": "Holloway Li ",
+    "client_name": "",
+    "date": "2025-11-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "id05 singola",
+    "description": "ID.05 – Custom cladding panels in glazed lava stone – Finish: Deep – Colour: Green TBD – Dims: L 5860 x H 570 x T 30 mm",
+    "quote_number": "Holloway Li ",
+    "client_name": "",
+    "date": "2025-11-12T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 01",
+    "description": "ID.01 – Custom shaped table top in glazed lava stone – Finish: Deep – Colour: Cinnamon – Dims: 437 x 437 x T 40mm reduced to 20 and 30 where required – Shaped as per drawing, Standard glazed edge",
+    "quote_number": "Prugent x Hermes Berlin",
+    "client_name": "",
+    "date": "2025-11-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 02",
+    "description": "ID.02 – Custom shaped table top in glazed lava stone – Finish: Deep – Colour: Caramel – Dims: 685 x 685 x T 40mm reduced to 20 and 30 where required – Shaped as per drawing, Standard glazed edge",
+    "quote_number": "Prugent x Hermes Berlin",
+    "client_name": "",
+    "date": "2025-11-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 03",
+    "description": "ID.03 – Custom shaped table top in glazed lava stone – Finish: Deep – Colour: Caramel – Dims: 567 x 567 x T 40mm reduced to 20 and 30 where required – Shaped as per drawing, Standard glazed edge",
+    "quote_number": "Prugent x Hermes Berlin",
+    "client_name": "",
+    "date": "2025-11-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "iID 04 E 05",
+    "description": "ID.04 – Custom round  table top in glazed lava stone – Finish: Deep – Colour: Chocolate – Dims: Dia 700 x T 20 mm – Custom glazed edge",
+    "quote_number": "Prugent x Hermes Berlin",
+    "client_name": "",
+    "date": "2025-11-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "iID 06 E 07",
+    "description": "ID.06 – Custom round  table top in glazed lava stone – Finish: Deep – Colour: Pea Cream – Dims: Dia 450 x T 20 mm – Custom glazed edge",
+    "quote_number": "Prugent x Hermes Berlin",
+    "client_name": "",
+    "date": "2025-11-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01.  Custom trivet in glazed lava stone – Finish: Deep – Colour: Old White – Dims: L 500 x W 200 x T 12 mm – Shaped as per drawing – edge glazed with R3 rounded edge",
+    "quote_number": "Maxence Lecomte - Artylae",
+    "client_name": "",
+    "date": "2025-11-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02.  Custom trivet in glazed lava stone – Finish: Deep – Colour: Old White – Dims: Dia 100 x T 12 mm – Shaped as per drawing – edge glazed with R3 rounded edge",
+    "quote_number": "Maxence Lecomte - Artylae",
+    "client_name": "",
+    "date": "2025-11-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 – option 1 – Fire pit top cladding in glazed lava stone – Finish: Deep – Colour: TBD – Dims: Dia 885 x T 12mm, divided into 19 pieces to be assembled on site – Glazed edge where visible",
+    "quote_number": "capocuoco x firepit ARDO",
+    "client_name": "",
+    "date": "2025-11-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 (Copia)",
+    "description": "ID.01 – option 2 – Fire pit top cladding in glazed lava stone – Finish: Deep – Colour: TBD – Dims: Dia 885 x T 12mm, divided into 3 pieces to be assembled on site – Glazed edge where visible",
+    "quote_number": "capocuoco x firepit ARDO",
+    "client_name": "",
+    "date": "2025-11-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 (Copia) (Copia)",
+    "description": "ID.01 – option 3 – Fire pit top cladding in glazed lava stone – Finish: Deep – Colour: TBD – Dims: Dia 885 x T 20mm– Glazed edge where visible",
+    "quote_number": "capocuoco x firepit ARDO",
+    "client_name": "",
+    "date": "2025-11-11T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 - CITRUS ZEST",
+    "description": "tavolo 300 x 300 x 10",
+    "quote_number": "BW BIELEFELDER 2",
+    "client_name": "",
+    "date": "2025-11-07T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 - tinted",
+    "description": "tavolo 300 x 300 x 10",
+    "quote_number": "BW BIELEFELDER 2",
+    "client_name": "",
+    "date": "2025-11-07T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 - citrus zest",
+    "description": "tavolo 400 x 400 x 10",
+    "quote_number": "BW BIELEFELDER 2",
+    "client_name": "",
+    "date": "2025-11-07T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 - tinted",
+    "description": "tavolo 400 x 400 x 10",
+    "quote_number": "BW BIELEFELDER 2",
+    "client_name": "",
+    "date": "2025-11-07T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03 -citrus zest",
+    "description": "tavolo 900 x 900 x 10",
+    "quote_number": "BW BIELEFELDER 2",
+    "client_name": "",
+    "date": "2025-11-07T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03 -tinted",
+    "description": "tavolo 900 x 900 x 10",
+    "quote_number": "BW BIELEFELDER 2",
+    "client_name": "",
+    "date": "2025-11-07T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 DOPPIA",
+    "description": "Top cucina formato da 4 pezzi – pietra lavica smaltata deep strawberry ice (chiaro)",
+    "quote_number": "ethical stone - kitchen",
+    "client_name": "2576613000153463115",
+    "date": "2025-11-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 (SINGOLA)",
+    "description": "Top cucina formato da 4 pezzi – pietra lavica smaltata deep strawberry ice (chiaro)",
+    "quote_number": "ethical stone - kitchen",
+    "client_name": "2576613000153463115",
+    "date": "2025-11-04T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "Top in pietra lavica smaltata – finitura: Deep – Colore: Crystal Seas – Dim: 2307 x 700 x T 20 mm, diviso in due pezzi come da disegno – Canale per incastro vetrina sottostante 10 x H 8mm – Bordo standard smaltato.",
+    "quote_number": "rnr 609",
+    "client_name": "",
+    "date": "2025-10-31T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 01 DA LASTRA ENGOBBIATA",
+    "description": "tavolo dia. 88 x 2 cm",
+    "quote_number": "ran 601/25",
+    "client_name": "",
+    "date": "2025-10-30T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 02 DA LASTRA ENGOBBIATA ",
+    "description": "tavolo dia. 42,5 x 2 cm",
+    "quote_number": "ran 601/25",
+    "client_name": "",
+    "date": "2025-10-30T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 SINGOLA COTTURA",
+    "description": "ID.01.P1 : Vanity top in pietra lavica smalata – Finitura: Deep – Colore: Blue TBD – Dims: L 720 x W 518 x Sp. 20 mm – Sagomato come da disegno – foro per lavabo sottoposto e foro per rubinetto inclusi",
+    "quote_number": "MODAR",
+    "client_name": "",
+    "date": "2025-10-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 - DOPPIA",
+    "description": "ID.02.P1 : Work top in pietra lavica smaltata – Finitura: Deep – Colore: Blue TBD – Dims: L 3070  x W 1185 x Sp. 50 ridotto a 20 mm, diviso in 3 pezzi  –  Bordo personalizzato non standard – Dettagli da confermare prima della produzione",
+    "quote_number": "MODAR",
+    "client_name": "",
+    "date": "2025-10-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 - SINGOLA",
+    "description": "ID.02.P1 : Work top in pietra lavica smaltata – Finitura: Deep – Colore: Blue TBD – Dims: L 3070  x W 1185 x Sp. 50 ridotto a 20 mm, diviso in 3 pezzi  –  Bordo personalizzato non standard – Dettagli da confermare prima della produzione",
+    "quote_number": "MODAR",
+    "client_name": "",
+    "date": "2025-10-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03 - DOPPIA COTTURA",
+    "description": "3)\tTop per piano di lavoro 3070 x 775 x sp.5 cm ribassato a 2 cm– colore deep Night Blue – bordo custom da modificare leggermente",
+    "quote_number": "MODAR",
+    "client_name": "",
+    "date": "2025-10-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03 - singola COTTURA (Copia)",
+    "description": "3)\tTop per piano di lavoro 3070 x 775 x sp.5 cm ribassato a 2 cm– colore deep Night Blue – bordo custom da modificare leggermente",
+    "quote_number": "MODAR",
+    "client_name": "",
+    "date": "2025-10-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01 SINGOLA COTTURA (Copia)",
+    "description": "ID.01.P1 : Vanity top in pietra lavica smalata – Finitura: Deep – Colore: Blue TBD – Dims: L 720 x W 518 x Sp. 20 mm – Sagomato come da disegno – foro per lavabo sottoposto e foro per rubinetto inclusi",
+    "quote_number": "MODAR",
+    "client_name": "",
+    "date": "2025-10-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01.P1 – Top in pietra lavica smaltata – Finitura: Deep – Colore: ND – Dims: L 1790 x P 500 x Sp. 30 mm, quattro lati standard smaltati a vista.",
+    "quote_number": "CAR 325/25 Criveller Contracting Company Srl – 2",
+    "client_name": "",
+    "date": "2025-10-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02.P1 – Top in pietra lavica smaltata – Finitura: Deep – Colore: ND – Dims: L 1270 x P 600 x Sp. 30 mm, quattro lati standard smaltati a vista.",
+    "quote_number": "CAR 325/25 Criveller Contracting Company Srl – 2",
+    "client_name": "",
+    "date": "2025-10-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID03",
+    "description": "ID.03.P1 – Top in pietra lavica smaltata – Finitura: Deep – Colore: ND – Dims: L 700 x P 600 x Sp. 30 mm, quattro lati standard smaltati a vista.",
+    "quote_number": "CAR 325/25 Criveller Contracting Company Srl – 2",
+    "client_name": "",
+    "date": "2025-10-27T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "Table top in glazed lava stone – Fininsh: Deep – Colour: TBD – Dims: 2470 x 921 x T 30 mm – Standard glazed edge",
+    "quote_number": "MIA TODD STUDIO - Lafayette 2",
+    "client_name": "",
+    "date": "2025-10-23T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 – CG 162 Round table top in glazed lava stone – finish: deep – colour: TBD – Dims: Dia. 587 x T 30 mm – half bull nose edge on the visible edge R10",
+    "quote_number": "Bunkhouse Group x Hotel Daphne",
+    "client_name": "Bunkhouse Group x Hotel Daphne",
+    "date": "2025-10-23T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.01 – CG 164 table top in glazed lava stone – finish: deep – colour: TBD – Dims: L. 737 x W 737 x T 30 mm – half bull nose edge on the visible edge R10",
+    "quote_number": "Bunkhouse Group x Hotel Daphne",
+    "client_name": "Bunkhouse Group x Hotel Daphne",
+    "date": "2025-10-23T00:00:00+00:00"
+  },
+  {
+    "section_name": "doppia cottura",
+    "description": "Ciculare table top in glazed lava stone – Finish: Deep – Colour: TBD – Dim: Dia 700 x T 30 mm – Pencil edge Tbd",
+    "quote_number": "Sagrada tables top",
+    "client_name": "",
+    "date": "2025-10-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "singola cottura",
+    "description": "Ciculare table top in glazed lava stone – Finish: Deep – Colour: TBD – Dim: Dia 700 x T 30 mm – Pencil edge Tbd",
+    "quote_number": "Sagrada tables top",
+    "client_name": "",
+    "date": "2025-10-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 – Circular table top in glazed lava stone – Finishing: Metallic – Colour: Custom TBD – Dim: Dia 580 x T 20 mm – Custom edge as per drawing – 4 M6 inserts included – underside glazed edge",
+    "quote_number": "Prugent x Hermes Chengdu China",
+    "client_name": "Prugent x Hermes Chengdu China",
+    "date": "2025-10-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 - DOPPIA COTTURA",
+    "description": "ID.02 – Console tops in glazed lava stone – Finish: Deep – Colour: White TBD – Every console is composed by 2 equal tops: Dims: L 2170 x W 489 x T 50 mm – With R5 + 55 round edge – 2 Underside 30 mm recessed joints included",
+    "quote_number": "Prugent x Hermes Chengdu China",
+    "client_name": "Prugent x Hermes Chengdu China",
+    "date": "2025-10-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02 - singola COTTURA",
+    "description": "ID.02 – Console tops in glazed lava stone – Finish: Deep – Colour: White TBD – Every console is composed by 2 equal tops: Dims: L 2170 x W 489 x T 50 mm – With R5 + 55 round edge – 2 Underside 30 mm recessed joints included",
+    "quote_number": "Prugent x Hermes Chengdu China",
+    "client_name": "Prugent x Hermes Chengdu China",
+    "date": "2025-10-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID01",
+    "description": "ID.01 - Circular table top in glazed lava stone - Finish: Deep - Colour: Honey Yellow - Dims: Dia. 450 x T 20 mm - Custom edge - with 4 M6 Inserts included",
+    "quote_number": "Zordan x Hermes - Nizza Airport",
+    "client_name": "",
+    "date": "2025-10-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.01 - Circular table top in glazed lava stone - Finish: Deep - Colour: Honey Yellow - Dims: Dia. 580 x T 20 mm - Custom edge - with 4 M6 Inserts included",
+    "quote_number": "Zordan x Hermes - Nizza Airport",
+    "client_name": "",
+    "date": "2025-10-22T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "Kitchen island top in glazed lava stone - Finish: Deep - Colour: Sage - Dims: 2438 x 838 x T 50 mm - divided into 2 pieces to be assembled on site - Dupont edge glazed on the visible edges",
+    "quote_number": "NVR Surfaces LLC",
+    "client_name": "",
+    "date": "2025-10-17T00:00:00+00:00"
+  },
+  {
+    "section_name": "DOPPIA COTTURA - LAVORAZIONI SEMPLICI",
+    "description": "isola 2000 x 1000 divisa in 2 pezzi, con foro lavandino e 3 fori rubinetti, 4 cm di spessore con bordo standard",
+    "quote_number": "test simulazioni",
+    "client_name": "",
+    "date": "2025-10-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "SINGOLA COTTURA - LAVORAZIONI SEMPLICI",
+    "description": "isola 2000 x 1000 divisa in 2 pezzi, con foro lavandino e 3 fori rubinetti, 4 cm di spessore con bordo standard",
+    "quote_number": "test simulazioni",
+    "client_name": "",
+    "date": "2025-10-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "DOPPIA COTTURA - LAVORAZIONI MEDIE (TORO E RIBASSO 1 CM)",
+    "description": "isola 2000 x 1000 divisa in 2 pezzi, con foro lavandino e 3 fori rubinetti, 4 cm di spessore con bordo standard",
+    "quote_number": "test simulazioni",
+    "client_name": "",
+    "date": "2025-10-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "SINGOLA COTTURA - LAVORAZIONI MEDIE (TORO E RIBASSO 1 CM) ",
+    "description": "isola 2000 x 1000 divisa in 2 pezzi, con foro lavandino e 3 fori rubinetti, 4 cm di spessore con bordo standard",
+    "quote_number": "test simulazioni",
+    "client_name": "",
+    "date": "2025-10-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "DOPPIA COTTURA - LAVORAZIONI DIFFICILI (BORDO TORO E RIBASSO 2 CM) ",
+    "description": "isola 2000 x 1000 divisa in 2 pezzi, con foro lavandino e 3 fori rubinetti, 4 cm di spessore con bordo standard",
+    "quote_number": "test simulazioni",
+    "client_name": "",
+    "date": "2025-10-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "SINGOLA COTTURA - LAVORAZIONI DIFFICILI (BORDO TORO E RIBASSO 2 CM) ",
+    "description": "isola 2000 x 1000 divisa in 2 pezzi, con foro lavandino e 3 fori rubinetti, 4 cm di spessore con bordo standard",
+    "quote_number": "test simulazioni",
+    "client_name": "",
+    "date": "2025-10-14T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "Atelier Hspitality srl",
+    "quote_number": "ATELIER HOSPITALITY",
+    "client_name": "",
+    "date": "2025-10-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "top cucina",
+    "quote_number": "FAB 154/25",
+    "client_name": "",
+    "date": "2025-10-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02",
+    "description": "TOP CUCINA 2",
+    "quote_number": "FAB 154/25",
+    "client_name": "",
+    "date": "2025-10-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.03",
+    "description": "ISOLA PICCOLA",
+    "quote_number": "FAB 154/25",
+    "client_name": "",
+    "date": "2025-10-13T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "rivestimento formato 800 x 150 x 20",
+    "quote_number": "THOMAS BOITANI sf",
+    "client_name": "",
+    "date": "2025-10-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02",
+    "description": "rivestimento formato 1100 x 55 x 20",
+    "quote_number": "THOMAS BOITANI sf",
+    "client_name": "",
+    "date": "2025-10-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "Island counter top in glazed lava stone - Finish: Deep - Colour: Custom Red - Dims: L 5944 x W 1067 x T 30 mm, divided into 4 pieces - Standard glazed edges",
+    "quote_number": "MUKA",
+    "client_name": "",
+    "date": "2025-10-10T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "tavolo",
+    "quote_number": "PREV-1759996869832",
+    "client_name": "",
+    "date": "2025-10-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02",
+    "description": "tavolo",
+    "quote_number": "PREV-1759996869832",
+    "client_name": "",
+    "date": "2025-10-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "ID.01 - Kitchen counter top in glazed lava stone - Finish: Deep - Colour: Golden brown- Dims:Various x T 20 mm -  divided into 10 top elements to be assembled on site, as per drawing provided - Standard glazed edge, with 50 mm glazing return below",
+    "quote_number": "Molteni - LA M&C-Bespoke-5750/2024",
+    "client_name": "",
+    "date": "2025-10-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID02",
+    "description": "ID.02 - Kitchen ISLAND top in glazed lava stone - Finish: Deep - Colour: Golden brown - Dims: L 2160 x W1917 x T 30 mm, divided into 4 elements to be assembled on site - Standard glazed edge",
+    "quote_number": "Molteni - LA M&C-Bespoke-5750/2024",
+    "client_name": "",
+    "date": "2025-10-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID 03",
+    "description": "ID.03 - table top in glazed lava stone - Finish: Citrus zest - Colour: Golden brown - Dims: L 5200 x W 1200  x T 20 mm, divided into 4 elements to be assembled on site - r20 rounded edge glazed",
+    "quote_number": "Molteni - LA M&C-Bespoke-5750/2024",
+    "client_name": "",
+    "date": "2025-10-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "ID.01 - Table top in glazed lava stone - Finish: Deep - Colour: TBD - Dims: L 1742 x W 922 x T 40 reduced to 20 mm - Shaped as per drawing - Full bull nose edge on the visible edges",
+    "quote_number": "STUDIO GDV",
+    "client_name": "",
+    "date": "2025-10-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02",
+    "description": "ID.02 - Table top in glazed lava stone - Finish: Deep - Colour: TBD - Dims: L 621 x W 368 x T 40 reduced to 20 mm - Shaped as per drawing - Full bull nose edge on the visible edges",
+    "quote_number": "STUDIO GDV",
+    "client_name": "",
+    "date": "2025-10-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01",
+    "description": "Fireplace vertical cladding in glazed lava stone - FInish: Deep - Colour: Black TBD - OV. Dims:  H 5450 x W 2600 x D 820 x T 30 mm",
+    "quote_number": "Marble Crafters - 22 Downing St. New York City",
+    "client_name": "",
+    "date": "2025-10-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01 DIA. 600",
+    "description": "ID.01 - Circular Table Top in glazed lava stone - Finish: Deep - Colour: Light blue TBC - Dims: DIA 600 x T 20 mm - Edge",
+    "quote_number": "PREV-1760017561596",
+    "client_name": "",
+    "date": "2025-10-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02 DIA. 700",
+    "description": "ID.02 - Circular Table Top in glazed lava stone - Finish: Deep - Colour: Light blue TBC - Dims: DIA 700 x T 20 mm - Edge",
+    "quote_number": "PREV-1760017561596",
+    "client_name": "",
+    "date": "2025-10-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01 DIA. 600",
+    "description": "ID.01 - Circular Table Top in glazed lava stone - Finish: Deep - Colour: Light blue TBC - Dims: DIA 600 x T 20 mm - Edge",
+    "quote_number": "Avroko - baby blue tables top",
+    "client_name": "",
+    "date": "2025-10-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02 DIA. 700",
+    "description": "ID.02 - Circular Table Top in glazed lava stone - Finish: Deep - Colour: Light blue TBC - Dims: DIA 700 x T 20 mm - Edge",
+    "quote_number": "Avroko - baby blue tables top",
+    "client_name": "",
+    "date": "2025-10-09T00:00:00+00:00"
+  },
+  {
+    "section_name": "id.01",
+    "description": "ID.01 - Back Kitchen cladding in glazed lava stone - Finish: Deep - Colour: Red tbd- Dims: L 4990 x W 700x T 20 mm, divided into 9 elements to be assembled on site - Standard glazed edge",
+    "quote_number": "CAR 558/25 - BUDGET",
+    "client_name": "",
+    "date": "2025-10-08T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02",
+    "description": "ID.01 - Back Kitchen cladding in glazed lava stone - Finish: Deep - Colour: Red tbd- Dims: L 4990 x W 700x T 20 mm, divided into 9 elements to be assembled on site - Standard glazed edge",
+    "quote_number": "CAR 558/25 - BUDGET",
+    "client_name": "",
+    "date": "2025-10-08T00:00:00+00:00"
+  },
+  {
+    "section_name": "Progetto Principale",
+    "description": "ID.01 - Vanity units in glazed lava stone - Finish: Deep - Colour: Custom Orange - Ov. Dims: L 1134 x D 530 x H 400 x T 20 mm - composed by: 1 top, 1 downstand, 1 backsplash to be assembled on site - Sink cut-out and 2 faucet dril holes included",
+    "quote_number": "andreina villaverde",
+    "client_name": "",
+    "date": "2025-10-07T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.01 - Service Top",
+    "description": "ID.01 - Service Top in glazed lava stone - Finish: Deep - Colour: Custom Blue TBD - L 3275 x W 500 x T 80 reduced to 40 mm, divided into 3 pieces - R7 & R3 round edge where visible",
+    "quote_number": "HYLEY TERRY",
+    "client_name": "ETHICAL STONE",
+    "date": "2025-10-07T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.02 - Work top",
+    "description": "ID.02 - Work Top in glazed lava stone - Finish: Deep - Colour: Custom Blue TBD - L 3275 x W 500 x T 40 , divided into 3 pieces - R7 & R3 round edge where visible. with 42 drill holes inlcuded",
+    "quote_number": "HYLEY TERRY",
+    "client_name": "ETHICAL STONE",
+    "date": "2025-10-07T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.03 - vertical cladding",
+    "description": "ID.03 - Vertical cladding in glazed lava stone - Finish: Deep - Colour: Custom Blue TBD - L 3275 x H 870 x  T 40 , divided into 3 pieces and 2 Side panels H 830 x W 900 x T 40 -   R7 & R3 round edge where visible",
+    "quote_number": "HYLEY TERRY",
+    "client_name": "ETHICAL STONE",
+    "date": "2025-10-07T00:00:00+00:00"
+  },
+  {
+    "section_name": "ID.04 - Underside panels",
+    "description": "ID.04 - Underside panels in glazed lava stone - Finish: Deep - Colour: Custom Blue TBD - L 3275  x W 181 T 10 , divided into 4 pieces",
+    "quote_number": "HYLEY TERRY",
+    "client_name": "ETHICAL STONE",
+    "date": "2025-10-07T00:00:00+00:00"
+  },
+  {
+    "section_name": "id.01 kitchen top",
+    "description": "ID.01 - Kitchen Table top in glazed lava stone - Finish: Deep - Colour: Marsala TBC - Dims:  L 1330 x W 1300 x T 40 mm - With R10 round edge on the visible edge",
+    "quote_number": "Yovanovitch Kitchen table",
+    "client_name": "Chloe Diegel",
+    "date": "2025-10-07T00:00:00+00:00"
+  }
+]
