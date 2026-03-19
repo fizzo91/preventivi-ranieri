@@ -158,6 +158,7 @@ export type Database = {
           client_vat_number: string | null
           created_at: string | null
           date: string
+          enamel_data: Json | null
           id: string
           notes: string | null
           payment_terms: string | null
@@ -180,6 +181,7 @@ export type Database = {
           client_vat_number?: string | null
           created_at?: string | null
           date: string
+          enamel_data?: Json | null
           id?: string
           notes?: string | null
           payment_terms?: string | null
@@ -202,6 +204,7 @@ export type Database = {
           client_vat_number?: string | null
           created_at?: string | null
           date?: string
+          enamel_data?: Json | null
           id?: string
           notes?: string | null
           payment_terms?: string | null
