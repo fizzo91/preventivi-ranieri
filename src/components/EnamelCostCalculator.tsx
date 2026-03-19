@@ -143,7 +143,7 @@ export function EnamelCostCalculator() {
 
       {/* Scrollable table */}
       <div className="flex-1 overflow-auto">
-        <table className="border-collapse min-w-[1600px] w-full text-foreground">
+        <table className="border-collapse min-w-[1400px] w-full text-foreground">
           <thead>
             {/* Column group headers */}
             <tr>
