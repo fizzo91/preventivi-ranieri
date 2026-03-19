@@ -215,8 +215,9 @@ const NewQuote = () => {
   const [stoneCalculatorSectionId, setStoneCalculatorSectionId] = useState<string | null>(null)
   const [activeSuggestion, setActiveSuggestion] = useState<{ sectionId: string; itemId: string; productId: string; productName: string } | null>(null)
   const suggestions = useProductSuggestions(activeSuggestion?.productId || null)
-  const [enamelData, setEnamelData] = useState<EnamelPieceRow[]>([])
+  const [enamelDataMap, setEnamelDataMap] = useState<Record<string, EnamelPieceRow[]>>({})
   const [enamelDialogOpen, setEnamelDialogOpen] = useState(false)
+  const [enamelDialogSectionId, setEnamelDialogSectionId] = useState<string | null>(null)
 
   const getSectionPriceWarning = (section: QuoteSection): PriceWarning | null => {
     const pietra = section.items.find(item => item.productName?.match(/^PIETRA/i))
