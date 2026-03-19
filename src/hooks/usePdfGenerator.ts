@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf'
+import { calcRow, type EnamelPieceRow } from '@/components/EnamelCostCalculator'
 
 interface QuoteData {
   quoteNumber: string
@@ -11,6 +12,7 @@ interface QuoteData {
   }
   sections: any[]
   totalAmount: number
+  enamelData?: EnamelPieceRow[] | null
 }
 
 export const usePdfGenerator = () => {
