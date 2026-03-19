@@ -23,6 +23,7 @@ export interface Quote {
   status: string;
   created_at: string;
   updated_at: string;
+  enamel_data: any | null;
 }
 
 export const useQuotes = () => {
