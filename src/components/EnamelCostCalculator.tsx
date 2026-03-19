@@ -21,7 +21,7 @@ export interface EnamelPieceRow {
   altre_costo: number
 }
 
-const defaultRow = (id: number): PieceRow => ({
+const defaultRow = (id: number): EnamelPieceRow => ({
   id,
   descrizione: "",
   finitura_colore: "",
