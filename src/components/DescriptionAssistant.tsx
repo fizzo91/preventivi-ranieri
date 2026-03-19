@@ -7,41 +7,6 @@ import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { supabase } from "@/integrations/supabase/client"
 
-const TEMPLATES: { category: string; templates: string[] }[] = [
-  {
-    category: "Fornitura e posa",
-    templates: [
-      "Fornitura e posa in opera di rivestimento in {materiale} {finitura}, spessore {spessore} cm, compreso taglio, lavorazione bordi e sigillatura giunti.",
-      "Fornitura e posa in opera di pavimentazione in {materiale} {finitura} formato {formato}, posato a colla su massetto, compresa stuccatura e pulizia finale.",
-      "Fornitura e posa in opera di top cucina in {materiale} {finitura}, spessore {spessore} cm, completo di foro lavello, foro rubinetto e bisellatura bordi a vista.",
-    ],
-  },
-  {
-    category: "Lavorazioni speciali",
-    templates: [
-      "Lavorazione di taglio a misura, fresatura profilo {profilo} sui bordi a vista e lucidatura/levigatura delle superfici lavorate.",
-      "Esecuzione di fori, scansi e sagomature per alloggiamento apparecchiature, compresi sfridi e lavorazioni accessorie.",
-      "Incollaggio e rinforzo di lastre per formazione spessore maggiorato da {spessore_da} a {spessore_a} cm, con rete in fibra di vetro.",
-    ],
-  },
-  {
-    category: "Trattamenti",
-    templates: [
-      "Trattamento protettivo idro-oleorepellente su tutte le superfici in pietra naturale, applicato in due mani a rullo/pennello.",
-      "Stuccatura e resinatura di fessurazioni e porosità naturali con resina epossidica bicomponente in tinta.",
-      "Levigatura e rilucidatura in opera di pavimentazione esistente in {materiale}, con abrasivi diamantati a grana progressiva.",
-    ],
-  },
-  {
-    category: "Elementi architettonici",
-    templates: [
-      "Fornitura e posa di soglie/davanzali in {materiale} {finitura}, spessore {spessore} cm, con gocciolatoio fresato e bordi lavorati.",
-      "Fornitura e posa di zoccolini/battiscopa in {materiale} {finitura}, altezza {altezza} cm, con bordo superiore arrotondato.",
-      "Fornitura e posa di scalini in {materiale} {finitura} formato pedata + alzata, con bordo antiscivolo e profilo toro.",
-    ],
-  },
-]
-
 export function DescriptionAssistant() {
   const [sectionName, setSectionName] = useState("")
   const [result, setResult] = useState("")
@@ -77,10 +42,6 @@ export function DescriptionAssistant() {
     fetchDescriptions()
   }, [])
 
-  const handleTemplateClick = (template: string) => {
-    setResult(template)
-  }
-
   const handleCopy = () => {
     if (!result) return
     navigator.clipboard.writeText(result)
@@ -89,7 +50,7 @@ export function DescriptionAssistant() {
 
   const handleGenerate = async () => {
     if (!sectionName.trim()) {
-      toast.error("Inserisci il nome della sezione")
+      toast.error("Inserisci una descrizione generica")
       return
     }
     setIsLoading(true)
@@ -126,9 +87,9 @@ export function DescriptionAssistant() {
         </p>
         <div className="space-y-2">
           <div>
-            <Label className="text-xs">Nome sezione</Label>
+            <Label className="text-xs">Descrizione generica</Label>
             <Input
-              placeholder="es. Top cucina in marmo Calacatta"
+              placeholder="es. Tavolo top in pietra lavica smaltata Deep"
               value={sectionName}
               onChange={(e) => setSectionName(e.target.value)}
             />
@@ -143,28 +104,6 @@ export function DescriptionAssistant() {
           </Button>
         </div>
       </div>
-
-      {/* Templates */}
-      <div className="space-y-3">
-        <h3 className="text-sm font-semibold">Template predefiniti</h3>
-        {TEMPLATES.map((cat) => (
-          <div key={cat.category}>
-            <p className="text-xs font-medium text-muted-foreground mb-1.5">{cat.category}</p>
-            <div className="space-y-1.5">
-              {cat.templates.map((tpl, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleTemplateClick(tpl)}
-                  className="w-full text-left text-xs p-2.5 rounded-md border border-border bg-background hover:bg-accent transition-colors leading-relaxed"
-                >
-                  {tpl}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* Result */}
       {result && (
         <div className="space-y-2 p-4 rounded-lg border border-primary/30 bg-primary/5">
