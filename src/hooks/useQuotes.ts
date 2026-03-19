@@ -23,6 +23,7 @@ export interface Quote {
   status: string;
   created_at: string;
   updated_at: string;
+  enamel_data: any | null;
 }
 
 export const useQuotes = () => {
@@ -68,7 +69,7 @@ export const useCreateQuote = () => {
 
       const { data, error } = await supabase
         .from("quotes")
-        .insert({ ...quote, user_id: user.id })
+        .insert({ ...quote, user_id: user.id } as any)
         .select()
         .single();
 
@@ -100,7 +101,7 @@ export const useUpdateQuote = () => {
     mutationFn: async ({ id, ...quote }: Partial<Quote> & { id: string }) => {
       const { data, error } = await supabase
         .from("quotes")
-        .update(quote)
+        .update(quote as any)
         .eq("id", id)
         .select()
         .single();

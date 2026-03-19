@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
-import { Plus, Trash2, Save, Eye, GripVertical, Copy, Calculator, ImagePlus, X, AlertTriangle, TrendingDown } from "lucide-react"
+import { Plus, Trash2, Save, Eye, GripVertical, Copy, Calculator, ImagePlus, X, AlertTriangle, TrendingDown, Palette } from "lucide-react"
 import { StoneCalculator, StoneCalculatorResult } from "@/components/StoneCalculator"
 import { ProductSuggestions } from "@/components/ProductSuggestions"
 import { useToast } from "@/hooks/use-toast"
@@ -51,6 +51,8 @@ import { useSectionManager } from "@/hooks/useSectionManager"
 import { calculateGrandTotal } from "@/utils/quoteCalculations"
 import type { QuoteItem, QuoteSection, PriceWarning } from "@/types/quote"
 import type { Product } from "@/hooks/useProducts"
+import { EnamelCostDialog } from "@/components/EnamelCostDialog"
+import type { EnamelPieceRow } from "@/components/EnamelCostCalculator"
 
 // ── SortableItem (extracted inline component) ──────────────────────────
 
@@ -213,6 +215,8 @@ const NewQuote = () => {
   const [stoneCalculatorSectionId, setStoneCalculatorSectionId] = useState<string | null>(null)
   const [activeSuggestion, setActiveSuggestion] = useState<{ sectionId: string; itemId: string; productId: string; productName: string } | null>(null)
   const suggestions = useProductSuggestions(activeSuggestion?.productId || null)
+  const [enamelData, setEnamelData] = useState<EnamelPieceRow[]>([])
+  const [enamelDialogOpen, setEnamelDialogOpen] = useState(false)
 
   const getSectionPriceWarning = (section: QuoteSection): PriceWarning | null => {
     const pietra = section.items.find(item => item.productName?.match(/^PIETRA/i))
@@ -251,6 +255,9 @@ const NewQuote = () => {
         const sectionsWithRisks = editQuote.sections.map((section: any) => ({ ...section, risks: section.risks || [] }))
         const sectionsWithUrls = await regenerateSignedUrls(sectionsWithRisks)
         setSections(sectionsWithUrls)
+      }
+      if (editQuote.enamel_data && Array.isArray(editQuote.enamel_data)) {
+        setEnamelData(editQuote.enamel_data as EnamelPieceRow[])
       }
     }
     loadEditQuote()
@@ -323,6 +330,7 @@ const NewQuote = () => {
       client_address: clientData.address || null, client_vat_number: null, client_fiscal_code: null,
       sections, total_amount: totalAmount, status: quoteData.status,
       notes: quoteData.notes || null, payment_terms: null,
+      enamel_data: enamelData.length > 0 ? enamelData : null,
     }
 
     try {
@@ -346,9 +354,13 @@ const NewQuote = () => {
           <h1 className="text-3xl font-bold text-foreground">{editQuote ? 'Modifica Preventivo' : 'Nuovo Preventivo'}</h1>
           <p className="text-muted-foreground mt-1">Lavorazione Pietra Lavica Smaltata</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" className="gap-2"><Eye className="h-4 w-4" />Anteprima</Button>
-          <Button onClick={duplicateQuote} variant="outline" className="gap-2"><Copy className="h-4 w-4" />Duplica Preventivo</Button>
+          <Button onClick={() => setEnamelDialogOpen(true)} variant="outline" className="gap-2">
+            <Palette className="h-4 w-4" />Costi Smalto
+            {enamelData.length > 0 && <span className="ml-1 bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 text-[10px] font-bold">{enamelData.length}</span>}
+          </Button>
+          <Button onClick={duplicateQuote} variant="outline" className="gap-2"><Copy className="h-4 w-4" />Duplica</Button>
           <Button onClick={saveQuote} className="gap-2" disabled={createQuote.isPending || updateQuote.isPending}><Save className="h-4 w-4" />Salva</Button>
         </div>
       </div>
@@ -628,6 +640,7 @@ const NewQuote = () => {
       <StoneCalculator open={stoneCalculatorOpen} onOpenChange={setStoneCalculatorOpen} onConfirm={(result) => {
         if (stoneCalculatorSectionId) handleStoneCalculatorConfirm(stoneCalculatorSectionId, result)
       }} />
+      <EnamelCostDialog open={enamelDialogOpen} onOpenChange={setEnamelDialogOpen} value={enamelData} onChange={setEnamelData} />
     </div>
   )
 }

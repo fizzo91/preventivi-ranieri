@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 /* ───────── types ───────── */
-interface PieceRow {
+export interface EnamelPieceRow {
   id: number
   descrizione: string
   finitura_colore: string
@@ -21,7 +21,7 @@ interface PieceRow {
   altre_costo: number
 }
 
-const defaultRow = (id: number): PieceRow => ({
+const defaultRow = (id: number): EnamelPieceRow => ({
   id,
   descrizione: "",
   finitura_colore: "",
@@ -46,7 +46,7 @@ function getDefaultProfilo(spessore: number): number {
   return 4.2
 }
 
-function calcRow(r: PieceRow) {
+export function calcRow(r: EnamelPieceRow) {
   const mq_modulo = (r.lato1 * r.lato2) / 10000
   const quota_fissa =
     80 - r.listino * 25 + r.spessore * 20 + (r.finitura_code * 30 - r.listino * r.finitura_code * 10)
@@ -77,9 +77,20 @@ const fmtMq = (v: number) => v.toFixed(2).replace(".", ",")
 const fmtKg = (v: number) => Math.round(v).toString()
 
 /* ───────── component ───────── */
-export function EnamelCostCalculator() {
-  const [rows, setRows] = useState<PieceRow[]>([defaultRow(1)])
-  const [nextId, setNextId] = useState(2)
+interface EnamelCostCalculatorProps {
+  value?: EnamelPieceRow[]
+  onChange?: (rows: EnamelPieceRow[]) => void
+}
+
+export function EnamelCostCalculator({ value, onChange }: EnamelCostCalculatorProps = {}) {
+  const [internalRows, setInternalRows] = useState<EnamelPieceRow[]>([defaultRow(1)])
+  const rows = value ?? internalRows
+  const setRows = useCallback((updater: EnamelPieceRow[] | ((prev: EnamelPieceRow[]) => EnamelPieceRow[])) => {
+    const newRows = typeof updater === 'function' ? updater(rows) : updater
+    if (onChange) onChange(newRows)
+    else setInternalRows(newRows)
+  }, [onChange, rows])
+  const [nextId, setNextId] = useState(() => (rows.length > 0 ? Math.max(...rows.map(r => r.id)) + 1 : 2))
   const [sviluppato, setSviluppato] = useState("")
 
   const addRow = useCallback(() => {
@@ -96,7 +107,7 @@ export function EnamelCostCalculator() {
   )
 
   const updateRow = useCallback(
-    (idx: number, field: keyof PieceRow, value: string | number | null) => {
+    (idx: number, field: keyof EnamelPieceRow, value: string | number | null) => {
       setRows((prev) =>
         prev.map((r, i) => (i === idx ? { ...r, [field]: value } : r))
       )

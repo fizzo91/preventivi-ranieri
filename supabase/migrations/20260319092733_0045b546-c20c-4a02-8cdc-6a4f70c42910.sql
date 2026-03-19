@@ -1,0 +1,1 @@
+ALTER TABLE public.quotes ADD COLUMN enamel_data jsonb DEFAULT NULL;
