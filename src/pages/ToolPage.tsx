@@ -12,6 +12,7 @@ const toolMeta: Record<string, { title: string }> = {
   circle: { title: "Calcolo Cerchi" },
   descriptions: { title: "Assistente Descrizioni" },
   glossary: { title: "Glossario Pietra" },
+  vanity: { title: "Calcolo Vanity" },
 }
 
 const ToolPage = () => {
