@@ -4,6 +4,7 @@ import { ImperialConverter } from "@/components/ImperialConverter"
 import { CircleCalculator } from "@/components/CircleCalculator"
 import { DescriptionAssistant } from "@/components/DescriptionAssistant"
 import { Glossary } from "@/components/Glossary"
+import { VanityCalculator } from "@/components/VanityCalculator"
 import { MacWindowBar } from "@/components/MacWindowBar"
 
 const toolMeta: Record<string, { title: string }> = {
@@ -11,6 +12,7 @@ const toolMeta: Record<string, { title: string }> = {
   circle: { title: "Calcolo Cerchi" },
   descriptions: { title: "Assistente Descrizioni" },
   glossary: { title: "Glossario Pietra" },
+  vanity: { title: "Calcolo Vanity" },
 }
 
 const ToolPage = () => {
@@ -31,6 +33,8 @@ const ToolPage = () => {
         return <DescriptionAssistant />
       case "glossary":
         return <Glossary />
+      case "vanity":
+        return <VanityCalculator />
       default:
         return null
     }
