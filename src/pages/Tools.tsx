@@ -39,6 +39,15 @@ const tools = [
     shadow: "shadow-amber-500/25",
   },
   {
+    id: "vanity",
+    title: "Vanity",
+    subtitle: "Stima Costi",
+    icon: Bath,
+    available: true,
+    gradient: "from-teal-500 to-emerald-400",
+    shadow: "shadow-teal-500/25",
+  },
+  {
     id: "weight",
     title: "Peso",
     subtitle: "Calcolatore",

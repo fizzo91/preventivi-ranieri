@@ -33,6 +33,8 @@ const ToolPage = () => {
         return <DescriptionAssistant />
       case "glossary":
         return <Glossary />
+      case "vanity":
+        return <VanityCalculator />
       default:
         return null
     }
