@@ -4,6 +4,7 @@ import { ImperialConverter } from "@/components/ImperialConverter"
 import { CircleCalculator } from "@/components/CircleCalculator"
 import { DescriptionAssistant } from "@/components/DescriptionAssistant"
 import { Glossary } from "@/components/Glossary"
+import { VanityCalculator } from "@/components/VanityCalculator"
 import { MacWindowBar } from "@/components/MacWindowBar"
 
 const toolMeta: Record<string, { title: string }> = {
