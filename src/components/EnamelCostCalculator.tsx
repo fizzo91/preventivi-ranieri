@@ -297,16 +297,14 @@ export function EnamelCostCalculator({ value, onChange }: EnamelCostCalculatorPr
                   </td>
                   {/* SPESSORE */}
                   <td className={tdInput}>
-                    <select
-                      className={selectCls}
-                      value={row.spessore}
-                      onChange={(e) => updateRow(idx, "spessore", parseFloat(e.target.value))}
-                    >
-                      <option value={2}>2.0</option>
-                      <option value={3}>3.0</option>
-                      <option value={4}>4.0</option>
-                      <option value={5}>5.0</option>
-                    </select>
+                    <Input
+                      type="number"
+                      className={cellInput}
+                      value={row.spessore || ""}
+                      step="0.5"
+                      min="0.5"
+                      onChange={(e) => updateRow(idx, "spessore", e.target.value === "" ? 3 : parseFloat(e.target.value))}
+                    />
                   </td>
                   {/* LATO 1 */}
                   <td className={tdInput}>
