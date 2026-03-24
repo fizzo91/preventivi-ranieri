@@ -119,6 +119,13 @@ function calcRisksTotal(section: any): number {
   }, 0)
 }
 
+/** Get a descriptive risk percentage string like "15%" or "10%+5%" */
+function getRiskPercentageLabel(section: any): string {
+  const risks = section.risks || []
+  if (risks.length === 0) return ''
+  return risks.map((r: any) => `${r.percentage}%`).join('+')
+}
+
 /** Render the section cost summary box */
 function renderSectionCostSummary(
   ctx: ReturnType<typeof createPdfBase>,
