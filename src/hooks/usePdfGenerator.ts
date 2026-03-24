@@ -639,7 +639,7 @@ export const usePdfGenerator = () => {
 
       // Table header
       const cols = ['Sezione', 'Pietra', 'Lavoraz.', 'Rischio%', 'Rischio', 'Engobbio', 'Finitura', 'Totale']
-      const cw = [38, 20, 22, 18, 20, 20, 20, 22]
+      const cw = [34, 19, 20, 28, 20, 19, 19, 21]
       const cx: number[] = []
       let xp = margin
       for (const w of cw) { cx.push(xp); xp += w }
