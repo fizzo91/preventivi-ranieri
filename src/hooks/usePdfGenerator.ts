@@ -138,7 +138,7 @@ function renderSectionCostSummary(
   const { pietraTotal, lavorazioniTotal } = classifyItems(section.items || [])
   const rischio = calcRisksTotal(section)
   const engobbio = section.engobbio || 0
-  const smaltatura = getEnamelTotalForSection(section.id, enamelData)
+  const finitura = section.finitura || 0
 
   checkPageBreak(45)
 
@@ -158,7 +158,7 @@ function renderSectionCostSummary(
     { label: 'Lavorazioni', value: lavorazioniTotal },
     { label: riskLabel ? `Rischio (${riskLabel})` : 'Rischio', value: rischio },
     { label: 'Engobbio', value: engobbio },
-    { label: 'Smaltatura', value: smaltatura },
+    { label: 'Finitura', value: finitura },
   ]
 
   pdf.setFontSize(8)
