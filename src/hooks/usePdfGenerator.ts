@@ -632,42 +632,40 @@ export const usePdfGenerator = () => {
       ctx.setY(y)
 
       // Table header
-      const cols = ['Sezione', 'Pietra', 'Lavorazioni', 'Engobbio', 'Smaltatura', 'Totale']
-      const cw = [50, 24, 28, 24, 26, 28]
+      const cols = ['Sezione', 'Pietra', 'Lavoraz.', 'Rischio', 'Engobbio', 'Finitura', 'Smaltat.', 'Totale']
+      const cw = [38, 20, 22, 20, 20, 20, 20, 20]
       const cx: number[] = []
       let xp = margin
       for (const w of cw) { cx.push(xp); xp += w }
 
       pdf.setFillColor(30, 64, 175)
       pdf.rect(margin, y, contentWidth, 8, 'F')
-      pdf.setFontSize(8)
+      pdf.setFontSize(7)
       pdf.setFont('helvetica', 'bold')
       pdf.setTextColor(255, 255, 255)
-      for (let i = 0; i < cols.length; i++) { pdf.text(cols[i], cx[i] + 2, y + 5.5) }
+      for (let i = 0; i < cols.length; i++) { pdf.text(cols[i], cx[i] + 1, y + 5.5) }
       pdf.setTextColor(0, 0, 0)
       y += 8
 
-      let grandPietra = 0, grandLav = 0, grandEng = 0, grandSm = 0, grandTot = 0
+      let grandPietra = 0, grandLav = 0, grandRisk = 0, grandEng = 0, grandFin = 0, grandSm = 0, grandTot = 0
 
       for (let si = 0; si < quoteData.sections.length; si++) {
         const section = quoteData.sections[si]
         ctx.setY(y); checkPageBreak(18); y = ctx.getY()
 
         const { pietraTotal, lavorazioniTotal } = classifyItems(section.items || [])
+        const rischio = calcRisksTotal(section)
         const engobbio = section.engobbio || 0
+        const finitura = section.finitura || 0
         const smaltatura = getEnamelTotalForSection(section.id, quoteData.enamelData)
-        const sectionRisksTotal = (section.risks || []).reduce((sum: number, risk: any) => {
-          const itemsTotal = section.items.reduce((s: number, i: any) => s + (i.quantity * i.price), 0)
-          if (risk.appliedToItemId === 'SECTION_TOTAL') return sum + (itemsTotal * (risk.percentage / 100))
-          const t = section.items.find((item: any) => item.id === risk.appliedToItemId)
-          return sum + (t ? (t.quantity * t.price) * (risk.percentage / 100) : 0)
-        }, 0)
-        const rowTotal = (pietraTotal + lavorazioniTotal + sectionRisksTotal + engobbio + smaltatura) * (section.quantity || 1)
+        const rowTotal = (pietraTotal + lavorazioniTotal + rischio + engobbio + finitura + smaltatura) * (section.quantity || 1)
         const qty = section.quantity || 1
 
         grandPietra += pietraTotal * qty
-        grandLav += (lavorazioniTotal + sectionRisksTotal) * qty
+        grandLav += lavorazioniTotal * qty
+        grandRisk += rischio * qty
         grandEng += engobbio * qty
+        grandFin += finitura * qty
         grandSm += smaltatura * qty
         grandTot += rowTotal
 
@@ -675,7 +673,7 @@ export const usePdfGenerator = () => {
         if (section.description) {
           pdf.setFillColor(si % 2 === 0 ? 248 : 255, si % 2 === 0 ? 250 : 255, si % 2 === 0 ? 252 : 255)
           pdf.rect(margin, y, contentWidth, 5, 'F')
-          pdf.setFontSize(7)
+          pdf.setFontSize(6)
           pdf.setFont('helvetica', 'italic')
           pdf.setTextColor(100, 100, 100)
           const descTrunc = pdf.splitTextToSize(section.description, contentWidth - 4)[0]
@@ -687,17 +685,19 @@ export const usePdfGenerator = () => {
         // Data row
         pdf.setFillColor(si % 2 === 0 ? 248 : 255, si % 2 === 0 ? 250 : 255, si % 2 === 0 ? 252 : 255)
         pdf.rect(margin, y, contentWidth, 7, 'F')
-        pdf.setFontSize(8)
+        pdf.setFontSize(7)
         pdf.setFont('helvetica', 'bold')
         const nameLabel = qty > 1 ? `${section.name} (x${qty})` : section.name
-        pdf.text(pdf.splitTextToSize(nameLabel, cw[0] - 4)[0], cx[0] + 2, y + 5)
+        pdf.text(pdf.splitTextToSize(nameLabel, cw[0] - 3)[0], cx[0] + 1, y + 5)
         pdf.setFont('helvetica', 'normal')
-        pdf.text(`€ ${(pietraTotal * qty).toFixed(2)}`, cx[1] + 2, y + 5)
-        pdf.text(`€ ${((lavorazioniTotal + sectionRisksTotal) * qty).toFixed(2)}`, cx[2] + 2, y + 5)
-        pdf.text(`€ ${(engobbio * qty).toFixed(2)}`, cx[3] + 2, y + 5)
-        pdf.text(`€ ${(smaltatura * qty).toFixed(2)}`, cx[4] + 2, y + 5)
+        pdf.text(`€${(pietraTotal * qty).toFixed(0)}`, cx[1] + 1, y + 5)
+        pdf.text(`€${(lavorazioniTotal * qty).toFixed(0)}`, cx[2] + 1, y + 5)
+        pdf.text(`€${(rischio * qty).toFixed(0)}`, cx[3] + 1, y + 5)
+        pdf.text(`€${(engobbio * qty).toFixed(0)}`, cx[4] + 1, y + 5)
+        pdf.text(`€${(finitura * qty).toFixed(0)}`, cx[5] + 1, y + 5)
+        pdf.text(`€${(smaltatura * qty).toFixed(0)}`, cx[6] + 1, y + 5)
         pdf.setFont('helvetica', 'bold')
-        pdf.text(`€ ${rowTotal.toFixed(2)}`, cx[5] + 2, y + 5)
+        pdf.text(`€${rowTotal.toFixed(0)}`, cx[7] + 1, y + 5)
         y += 7
       }
 
@@ -705,15 +705,17 @@ export const usePdfGenerator = () => {
       y += 2
       pdf.setFillColor(30, 64, 175)
       pdf.rect(margin, y, contentWidth, 9, 'F')
-      pdf.setFontSize(9)
+      pdf.setFontSize(8)
       pdf.setFont('helvetica', 'bold')
       pdf.setTextColor(255, 255, 255)
-      pdf.text('TOTALE', cx[0] + 2, y + 6)
-      pdf.text(`€ ${grandPietra.toFixed(2)}`, cx[1] + 2, y + 6)
-      pdf.text(`€ ${grandLav.toFixed(2)}`, cx[2] + 2, y + 6)
-      pdf.text(`€ ${grandEng.toFixed(2)}`, cx[3] + 2, y + 6)
-      pdf.text(`€ ${grandSm.toFixed(2)}`, cx[4] + 2, y + 6)
-      pdf.text(`€ ${grandTot.toFixed(2)}`, cx[5] + 2, y + 6)
+      pdf.text('TOTALE', cx[0] + 1, y + 6)
+      pdf.text(`€${grandPietra.toFixed(0)}`, cx[1] + 1, y + 6)
+      pdf.text(`€${grandLav.toFixed(0)}`, cx[2] + 1, y + 6)
+      pdf.text(`€${grandRisk.toFixed(0)}`, cx[3] + 1, y + 6)
+      pdf.text(`€${grandEng.toFixed(0)}`, cx[4] + 1, y + 6)
+      pdf.text(`€${grandFin.toFixed(0)}`, cx[5] + 1, y + 6)
+      pdf.text(`€${grandSm.toFixed(0)}`, cx[6] + 1, y + 6)
+      pdf.text(`€${grandTot.toFixed(0)}`, cx[7] + 1, y + 6)
       pdf.setTextColor(0, 0, 0)
       y += 15
 
