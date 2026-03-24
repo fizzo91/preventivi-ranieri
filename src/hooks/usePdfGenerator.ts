@@ -109,7 +109,17 @@ function renderHeader(ctx: ReturnType<typeof createPdfBase>, quoteData: QuoteDat
   ctx.setY(y)
 }
 
-/** Render the section cost summary box (Pietra, Lavorazioni, Engobbio, Smaltatura) */
+/** Calculate risks total for a section */
+function calcRisksTotal(section: any): number {
+  const itemsTotal = (section.items || []).reduce((s: number, i: any) => s + (i.quantity * i.price), 0)
+  return (section.risks || []).reduce((sum: number, risk: any) => {
+    if (risk.appliedToItemId === 'SECTION_TOTAL') return sum + (itemsTotal * (risk.percentage / 100))
+    const t = section.items.find((item: any) => item.id === risk.appliedToItemId)
+    return sum + (t ? (t.quantity * t.price) * (risk.percentage / 100) : 0)
+  }, 0)
+}
+
+/** Render the section cost summary box */
 function renderSectionCostSummary(
   ctx: ReturnType<typeof createPdfBase>,
   section: any,
@@ -119,10 +129,12 @@ function renderSectionCostSummary(
   let y = ctx.getY()
 
   const { pietraTotal, lavorazioniTotal } = classifyItems(section.items || [])
+  const rischio = calcRisksTotal(section)
   const engobbio = section.engobbio || 0
+  const finitura = section.finitura || 0
   const smaltatura = getEnamelTotalForSection(section.id, enamelData)
 
-  checkPageBreak(35)
+  checkPageBreak(45)
 
   // Title
   pdf.setFillColor(240, 249, 255)
@@ -137,7 +149,9 @@ function renderSectionCostSummary(
   const summaryRows = [
     { label: 'Pietra', value: pietraTotal },
     { label: 'Lavorazioni', value: lavorazioniTotal },
+    { label: 'Rischio', value: rischio },
     { label: 'Engobbio', value: engobbio },
+    { label: 'Finitura', value: finitura },
     { label: 'Smaltatura', value: smaltatura },
   ]
 
