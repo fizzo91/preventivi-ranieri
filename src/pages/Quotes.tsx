@@ -151,6 +151,7 @@ const Quotes = () => {
                         onDuplicate={handleDuplicateQuote}
                         onDelete={handleDeleteQuote}
                         onGeneratePdf={handleGeneratePdf}
+                        onGenerateSyntheticPdf={handleGenerateSyntheticPdf}
                         onExportJson={handleExportJson}
                         isDuplicating={createQuote.isPending}
                         isDeleting={deleteQuote.isPending}
