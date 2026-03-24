@@ -138,7 +138,6 @@ function renderSectionCostSummary(
   const { pietraTotal, lavorazioniTotal } = classifyItems(section.items || [])
   const rischio = calcRisksTotal(section)
   const engobbio = section.engobbio || 0
-  const finitura = section.finitura || 0
   const smaltatura = getEnamelTotalForSection(section.id, enamelData)
 
   checkPageBreak(45)
