@@ -153,12 +153,12 @@ function renderSectionCostSummary(
   pdf.setTextColor(0, 0, 0)
   y += 8
 
+  const riskLabel = getRiskPercentageLabel(section)
   const summaryRows = [
     { label: 'Pietra', value: pietraTotal },
     { label: 'Lavorazioni', value: lavorazioniTotal },
-    { label: 'Rischio', value: rischio },
+    { label: riskLabel ? `Rischio (${riskLabel})` : 'Rischio', value: rischio },
     { label: 'Engobbio', value: engobbio },
-    { label: 'Finitura', value: finitura },
     { label: 'Smaltatura', value: smaltatura },
   ]
 
