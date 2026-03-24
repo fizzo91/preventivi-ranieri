@@ -1,17 +1,19 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Eye, FileDown, FileJson } from "lucide-react"
+import { Eye, FileDown, FileText, FileJson } from "lucide-react"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { getStatusColor } from "@/utils/quoteHelpers"
 import type { Quote } from "@/hooks/useQuotes"
 
 interface QuoteDetailDialogProps {
   quote: Quote
   onGeneratePdf: (quote: Quote) => void
+  onGenerateSyntheticPdf: (quote: Quote) => void
   onExportJson: (quote: Quote) => void
 }
 
-export const QuoteDetailDialog = ({ quote, onGeneratePdf, onExportJson }: QuoteDetailDialogProps) => (
+export const QuoteDetailDialog = ({ quote, onGeneratePdf, onGenerateSyntheticPdf, onExportJson }: QuoteDetailDialogProps) => (
   <Dialog>
     <DialogTrigger asChild>
       <Button variant="outline" size="sm">
@@ -23,9 +25,21 @@ export const QuoteDetailDialog = ({ quote, onGeneratePdf, onExportJson }: QuoteD
         <div className="flex items-center justify-between">
           <DialogTitle>Dettagli Preventivo {quote.quote_number}</DialogTitle>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => onGeneratePdf(quote)} className="gap-2">
-              <FileDown className="h-4 w-4" />PDF
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <FileDown className="h-4 w-4" />PDF
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onGeneratePdf(quote)}>
+                  <FileDown className="h-4 w-4 mr-2" />PDF Completo
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onGenerateSyntheticPdf(quote)}>
+                  <FileText className="h-4 w-4 mr-2" />PDF Sintetico
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="outline" size="sm" onClick={() => onExportJson(quote)} className="gap-2">
               <FileJson className="h-4 w-4" />JSON
             </Button>
