@@ -119,11 +119,12 @@ function calcRisksTotal(section: any): number {
   }, 0)
 }
 
-/** Get a descriptive risk percentage string like "15%" or "10%+5%" */
+/** Get a descriptive risk percentage string like "15%" or "10%+5%" — deduplicates equal values */
 function getRiskPercentageLabel(section: any): string {
   const risks = section.risks || []
   if (risks.length === 0) return ''
-  return risks.map((r: any) => `${r.percentage}%`).join('+')
+  const unique = [...new Set(risks.map((r: any) => r.percentage))]
+  return unique.map((p: number) => `${p}%`).join('+')
 }
 
 /** Render the section cost summary box */
