@@ -19,7 +19,7 @@ const Quotes = () => {
   const { data: quotes = [], isLoading } = useQuotes()
   const deleteQuote = useDeleteQuote()
   const createQuote = useCreateQuote()
-  const { generatePdf } = usePdfGenerator()
+  const { generatePdf, generateSyntheticPdf } = usePdfGenerator()
   const { toast } = useToast()
 
   const filteredQuotes = quotes.filter(quote =>
@@ -59,17 +59,27 @@ const Quotes = () => {
     toast({ title: "Preventivo Duplicato", description: "Il preventivo è stato duplicato con successo" })
   }
 
+  const buildQuotePayload = (quote: any) => ({
+    quoteNumber: quote.quote_number,
+    client: { name: quote.client_name, company: quote.client_company || '', email: quote.client_email || '', phone: quote.client_phone || '', address: quote.client_address || '' },
+    sections: quote.sections || [],
+    totalAmount: quote.total_amount,
+    enamelData: quote.enamel_data || null,
+  })
+
   const handleGeneratePdf = async (quote: any) => {
     try {
-      await generatePdf({
-        quoteNumber: quote.quote_number,
-        client: { name: quote.client_name, company: quote.client_company || '', email: quote.client_email || '', phone: quote.client_phone || '', address: quote.client_address || '' },
-        sections: quote.sections || [],
-        totalAmount: quote.total_amount,
-        enamelData: quote.enamel_data || null,
-      })
+      await generatePdf(buildQuotePayload(quote))
     } catch {
       toast({ title: "Errore", description: "Errore durante la generazione del PDF.", variant: "destructive" })
+    }
+  }
+
+  const handleGenerateSyntheticPdf = async (quote: any) => {
+    try {
+      await generateSyntheticPdf(buildQuotePayload(quote))
+    } catch {
+      toast({ title: "Errore", description: "Errore durante la generazione del PDF sintetico.", variant: "destructive" })
     }
   }
 
@@ -141,6 +151,7 @@ const Quotes = () => {
                         onDuplicate={handleDuplicateQuote}
                         onDelete={handleDeleteQuote}
                         onGeneratePdf={handleGeneratePdf}
+                        onGenerateSyntheticPdf={handleGenerateSyntheticPdf}
                         onExportJson={handleExportJson}
                         isDuplicating={createQuote.isPending}
                         isDeleting={deleteQuote.isPending}
