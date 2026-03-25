@@ -60,7 +60,7 @@ export const ClientResearch = () => {
         { icon: Globe, label: "Sito Web", value: result.website, isLink: true },
         { icon: Palette, label: "Area di Interesse", value: result.interest_area },
         { icon: Instagram, label: "Instagram", value: result.instagram_id ? `@${result.instagram_id}` : null, link: result.instagram_id ? `https://instagram.com/${result.instagram_id}` : undefined },
-        { icon: Users, label: "Follower IG", value: result.instagram_followers },
+        { icon: Users, label: "Follower IG", value: result.instagram_followers, note: "Dato stimato, potrebbe non essere aggiornato" },
       ]
     : []
 
@@ -98,18 +98,23 @@ export const ClientResearch = () => {
                 <div className="min-w-0">
                   <div className="text-xs text-muted-foreground">{f.label}</div>
                   {f.value ? (
-                    f.isLink || f.link ? (
-                      <a
-                        href={f.link || (f.value.startsWith("http") ? f.value : `https://${f.value}`)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-primary hover:underline break-all"
-                      >
-                        {f.value}
-                      </a>
-                    ) : (
-                      <div className="text-sm font-medium">{f.value}</div>
-                    )
+                    <>
+                      {f.isLink || f.link ? (
+                        <a
+                          href={f.link || (f.value.startsWith("http") ? f.value : `https://${f.value}`)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline break-all"
+                        >
+                          {f.value}
+                        </a>
+                      ) : (
+                        <div className="text-sm font-medium">{f.value}</div>
+                      )}
+                      {f.note && (
+                        <div className="text-xs text-muted-foreground italic mt-0.5">{f.note}</div>
+                      )}
+                    </>
                   ) : (
                     <div className="text-sm text-muted-foreground italic">Non trovato</div>
                   )}
