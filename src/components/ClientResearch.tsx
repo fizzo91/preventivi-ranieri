@@ -98,21 +98,23 @@ export const ClientResearch = () => {
                 <div className="min-w-0">
                   <div className="text-xs text-muted-foreground">{f.label}</div>
                   {f.value ? (
-                    f.isLink || f.link ? (
-                      <a
-                        href={f.link || (f.value.startsWith("http") ? f.value : `https://${f.value}`)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-primary hover:underline break-all"
-                      >
-                        {f.value}
-                      </a>
-                    ) : (
-                      <div className="text-sm font-medium">{f.value}</div>
-                    )}
-                    {f.note && f.value && (
-                      <div className="text-xs text-muted-foreground italic mt-0.5">{f.note}</div>
-                    )
+                    <>
+                      {f.isLink || f.link ? (
+                        <a
+                          href={f.link || (f.value.startsWith("http") ? f.value : `https://${f.value}`)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline break-all"
+                        >
+                          {f.value}
+                        </a>
+                      ) : (
+                        <div className="text-sm font-medium">{f.value}</div>
+                      )}
+                      {f.note && (
+                        <div className="text-xs text-muted-foreground italic mt-0.5">{f.note}</div>
+                      )}
+                    </>
                   ) : (
                     <div className="text-sm text-muted-foreground italic">Non trovato</div>
                   )}
