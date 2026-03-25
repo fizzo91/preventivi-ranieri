@@ -417,8 +417,6 @@ export const usePdfGenerator = () => {
           ctx.setY(y)
         }
 
-        // ── SECTION COST SUMMARY ──
-        renderSectionCostSummary(ctx, section, quoteData.enamelData)
         y = ctx.getY()
 
         // Section Total
@@ -454,45 +452,6 @@ export const usePdfGenerator = () => {
         y += 15
         ctx.setY(y)
       }
-
-      // Riepilogo Sezioni
-      y = ctx.getY()
-      checkPageBreak(20 + (quoteData.sections.length * 7))
-      y = ctx.getY()
-      y += 10
-      pdf.setFontSize(12)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('RIEPILOGO', margin, y)
-      y += 10
-
-      pdf.setFillColor(248, 249, 250)
-      pdf.rect(margin, y - 5, contentWidth, 7, 'F')
-      pdf.setFontSize(9)
-      pdf.text('Sezione', margin + 2, y)
-      pdf.text('Totale', margin + contentWidth - 2, y, { align: 'right' })
-      y += 7
-
-      pdf.setFont('helvetica', 'normal')
-      for (const section of quoteData.sections) {
-        const sit = section.items.reduce((sum: number, item: any) => sum + (item.quantity * item.price), 0)
-        const srt = (section.risks || []).reduce((sum: number, risk: any) => {
-          if (risk.appliedToItemId === 'SECTION_TOTAL') return sum + (sit * (risk.percentage / 100))
-          const t = section.items.find((item: any) => item.id === risk.appliedToItemId)
-          return sum + (t ? (t.quantity * t.price) * (risk.percentage / 100) : 0)
-        }, 0)
-        const eng = section.engobbio || 0
-        const fin = section.finitura || 0
-        const st = sit + srt + eng + fin
-        const sq = section.quantity || 1
-        const stq = st * sq
-
-        pdf.setFontSize(9)
-        const nl = sq > 1 ? `${section.name} (x${sq})` : section.name
-        pdf.text(nl, margin + 2, y)
-        pdf.text(`€ ${stq.toFixed(2)}`, margin + contentWidth - 2, y, { align: 'right' })
-        y += 6
-      }
-      y += 5
 
       // Grand Total
       checkPageBreak(20)
