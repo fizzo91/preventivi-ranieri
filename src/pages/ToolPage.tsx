@@ -37,6 +37,8 @@ const ToolPage = () => {
         return <Glossary />
       case "vanity":
         return <VanityCalculator />
+      case "client-research":
+        return <ClientResearch />
       default:
         return null
     }
