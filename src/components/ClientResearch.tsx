@@ -60,7 +60,7 @@ export const ClientResearch = () => {
         { icon: Globe, label: "Sito Web", value: result.website, isLink: true },
         { icon: Palette, label: "Area di Interesse", value: result.interest_area },
         { icon: Instagram, label: "Instagram", value: result.instagram_id ? `@${result.instagram_id}` : null, link: result.instagram_id ? `https://instagram.com/${result.instagram_id}` : undefined },
-        { icon: Users, label: "Follower IG", value: result.instagram_followers },
+        { icon: Users, label: "Follower IG", value: result.instagram_followers, note: "Dato stimato, potrebbe non essere aggiornato" },
       ]
     : []
 
