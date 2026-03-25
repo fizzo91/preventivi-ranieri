@@ -48,6 +48,15 @@ const tools = [
     shadow: "shadow-teal-500/25",
   },
   {
+    id: "client-research",
+    title: "Ricerca Cliente",
+    subtitle: "Info AI",
+    icon: UserSearch,
+    available: true,
+    gradient: "from-rose-500 to-pink-400",
+    shadow: "shadow-rose-500/25",
+  },
+  {
     id: "weight",
     title: "Peso",
     subtitle: "Calcolatore",
