@@ -417,8 +417,6 @@ export const usePdfGenerator = () => {
           ctx.setY(y)
         }
 
-        // ── SECTION COST SUMMARY ──
-        renderSectionCostSummary(ctx, section, quoteData.enamelData)
         y = ctx.getY()
 
         // Section Total
