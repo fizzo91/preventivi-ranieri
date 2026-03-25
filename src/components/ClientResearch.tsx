@@ -109,6 +109,9 @@ export const ClientResearch = () => {
                       </a>
                     ) : (
                       <div className="text-sm font-medium">{f.value}</div>
+                    )}
+                    {f.note && f.value && (
+                      <div className="text-xs text-muted-foreground italic mt-0.5">{f.note}</div>
                     )
                   ) : (
                     <div className="text-sm text-muted-foreground italic">Non trovato</div>
