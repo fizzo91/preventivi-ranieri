@@ -5,6 +5,7 @@ import { CircleCalculator } from "@/components/CircleCalculator"
 import { DescriptionAssistant } from "@/components/DescriptionAssistant"
 import { Glossary } from "@/components/Glossary"
 import { VanityCalculator } from "@/components/VanityCalculator"
+import { ClientResearch } from "@/components/ClientResearch"
 import { MacWindowBar } from "@/components/MacWindowBar"
 
 const toolMeta: Record<string, { title: string }> = {
@@ -13,6 +14,7 @@ const toolMeta: Record<string, { title: string }> = {
   descriptions: { title: "Assistente Descrizioni" },
   glossary: { title: "Glossario Pietra" },
   vanity: { title: "Calcolo Vanity" },
+  "client-research": { title: "Ricerca Cliente AI" },
 }
 
 const ToolPage = () => {
@@ -35,6 +37,8 @@ const ToolPage = () => {
         return <Glossary />
       case "vanity":
         return <VanityCalculator />
+      case "client-research":
+        return <ClientResearch />
       default:
         return null
     }
