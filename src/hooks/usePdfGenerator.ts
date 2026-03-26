@@ -263,6 +263,7 @@ export const usePdfGenerator = () => {
         pdf.text('Prezzo', colX[4] + 2, y + 5)
         pdf.text('Totale', colX[5] + 2, y + 5)
         y += 8
+        ctx.setY(y)
 
         // Items
         pdf.setFont('helvetica', 'normal')
@@ -366,6 +367,7 @@ export const usePdfGenerator = () => {
           pdf.text('%', margin + 120, y + 4)
           pdf.text('Importo', margin + 145, y + 4)
           y += 7
+          ctx.setY(y)
 
           pdf.setFont('helvetica', 'normal')
           for (const risk of section.risks) {
