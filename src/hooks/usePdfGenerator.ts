@@ -270,18 +270,20 @@ export const usePdfGenerator = () => {
         const stoneItems = section.items.filter((item: any) => item.category === 'Calcolatore Pietra')
 
         for (const item of section.items) {
-          checkPageBreak(10)
-          y = ctx.getY()
           pdf.setFontSize(8)
           const productName = pdf.splitTextToSize(item.productName || item.description || 'Prodotto', colWidths[0] - 4)
+          const categoryText = pdf.splitTextToSize(item.category || '-', colWidths[1] - 4)
+          const lines = Math.max(productName.length, 1)
+          const rowHeight = 4 + (lines * 3)
+          checkPageBreak(rowHeight + 2)
+          y = ctx.getY()
           pdf.text(productName, colX[0] + 2, y + 4)
-          pdf.text(item.category || '-', colX[1] + 2, y + 4)
+          pdf.text(categoryText[0] || '-', colX[1] + 2, y + 4)
           pdf.text(item.quantity.toFixed(2), colX[2] + 2, y + 4)
           pdf.text(item.unit || '-', colX[3] + 2, y + 4)
           pdf.text(`${item.price.toFixed(2)}`, colX[4] + 2, y + 4)
           pdf.text(`${item.total.toFixed(2)}`, colX[5] + 2, y + 4)
-          const lines = Math.max(productName.length, 1)
-          y += 4 + (lines * 3)
+          y += rowHeight
           ctx.setY(y)
         }
 
