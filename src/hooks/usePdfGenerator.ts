@@ -369,7 +369,7 @@ export const usePdfGenerator = () => {
 
           pdf.setFont('helvetica', 'normal')
           for (const risk of section.risks) {
-            checkPageBreak(8)
+            checkPageBreak(10)
             y = ctx.getY()
             let appliedToProduct = 'N/A'
             let riskAmount = 0
@@ -381,11 +381,19 @@ export const usePdfGenerator = () => {
               appliedToProduct = appliedToItem ? (appliedToItem.productName || appliedToItem.description || 'Prodotto') : 'N/A'
               riskAmount = appliedToItem ? (appliedToItem.quantity * appliedToItem.price) * (risk.percentage / 100) : 0
             }
-            pdf.text(pdf.splitTextToSize(risk.description, 55)[0], margin + 2, y + 4)
-            pdf.text(pdf.splitTextToSize(appliedToProduct, 55)[0], margin + 60, y + 4)
+            const riskDesc = pdf.splitTextToSize(risk.description || '', 55)
+            const riskProduct = pdf.splitTextToSize(appliedToProduct, 55)
+            const riskLines = Math.max(riskDesc.length, riskProduct.length, 1)
+            const riskRowHeight = Math.max(8, 2 + (riskLines * 4))
+            for (let li = 0; li < riskDesc.length; li++) {
+              pdf.text(riskDesc[li], margin + 2, y + 4 + (li * 4))
+            }
+            for (let li = 0; li < riskProduct.length; li++) {
+              pdf.text(riskProduct[li], margin + 60, y + 4 + (li * 4))
+            }
             pdf.text(`${risk.percentage}%`, margin + 120, y + 4)
             pdf.text(`€ ${riskAmount.toFixed(2)}`, margin + 145, y + 4)
-            y += 6
+            y += riskRowHeight
             ctx.setY(y)
           }
           y += 5
