@@ -273,12 +273,18 @@ export const usePdfGenerator = () => {
           pdf.setFontSize(8)
           const productName = pdf.splitTextToSize(item.productName || item.description || 'Prodotto', colWidths[0] - 4)
           const categoryText = pdf.splitTextToSize(item.category || '-', colWidths[1] - 4)
-          const lines = Math.max(productName.length, 1)
-          const rowHeight = 4 + (lines * 3)
+          const lines = Math.max(productName.length, categoryText.length, 1)
+          const rowHeight = Math.max(7, 2 + (lines * 4))
           checkPageBreak(rowHeight + 2)
           y = ctx.getY()
-          pdf.text(productName, colX[0] + 2, y + 4)
-          pdf.text(categoryText[0] || '-', colX[1] + 2, y + 4)
+          // Render each line of product name
+          for (let li = 0; li < productName.length; li++) {
+            pdf.text(productName[li], colX[0] + 2, y + 4 + (li * 4))
+          }
+          // Render each line of category
+          for (let li = 0; li < categoryText.length; li++) {
+            pdf.text(categoryText[li], colX[1] + 2, y + 4 + (li * 4))
+          }
           pdf.text(item.quantity.toFixed(2), colX[2] + 2, y + 4)
           pdf.text(item.unit || '-', colX[3] + 2, y + 4)
           pdf.text(`${item.price.toFixed(2)}`, colX[4] + 2, y + 4)
@@ -363,7 +369,7 @@ export const usePdfGenerator = () => {
 
           pdf.setFont('helvetica', 'normal')
           for (const risk of section.risks) {
-            checkPageBreak(8)
+            checkPageBreak(10)
             y = ctx.getY()
             let appliedToProduct = 'N/A'
             let riskAmount = 0
@@ -375,11 +381,19 @@ export const usePdfGenerator = () => {
               appliedToProduct = appliedToItem ? (appliedToItem.productName || appliedToItem.description || 'Prodotto') : 'N/A'
               riskAmount = appliedToItem ? (appliedToItem.quantity * appliedToItem.price) * (risk.percentage / 100) : 0
             }
-            pdf.text(pdf.splitTextToSize(risk.description, 55)[0], margin + 2, y + 4)
-            pdf.text(pdf.splitTextToSize(appliedToProduct, 55)[0], margin + 60, y + 4)
+            const riskDesc = pdf.splitTextToSize(risk.description || '', 55)
+            const riskProduct = pdf.splitTextToSize(appliedToProduct, 55)
+            const riskLines = Math.max(riskDesc.length, riskProduct.length, 1)
+            const riskRowHeight = Math.max(8, 2 + (riskLines * 4))
+            for (let li = 0; li < riskDesc.length; li++) {
+              pdf.text(riskDesc[li], margin + 2, y + 4 + (li * 4))
+            }
+            for (let li = 0; li < riskProduct.length; li++) {
+              pdf.text(riskProduct[li], margin + 60, y + 4 + (li * 4))
+            }
             pdf.text(`${risk.percentage}%`, margin + 120, y + 4)
             pdf.text(`€ ${riskAmount.toFixed(2)}`, margin + 145, y + 4)
-            y += 6
+            y += riskRowHeight
             ctx.setY(y)
           }
           y += 5
