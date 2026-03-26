@@ -327,7 +327,33 @@ export const usePdfGenerator = () => {
           y += 7
 
           pdf.setFont('helvetica', 'normal')
-... 
+          if (pietraItem) {
+            pdf.text('PIETRA', stoneColX[0] + 2, y + 4)
+            pdf.text(`${pietraItem.quantity.toFixed(2)}`, stoneColX[1] + 2, y + 4)
+            pdf.text(`€ ${pietraItem.price.toFixed(2)}`, stoneColX[2] + 2, y + 4)
+            pdf.text(`€ ${pietraItem.total.toFixed(2)}`, stoneColX[3] + 2, y + 4)
+            y += 6
+          }
+
+          const stoneTotalCalc = pietraItem?.total || 0
+          pdf.setFillColor(248, 249, 250)
+          pdf.rect(margin, y, contentWidth, 7, 'F')
+          pdf.setFont('helvetica', 'bold')
+          pdf.text('TOTALE', stoneColX[0] + 2, y + 5)
+          pdf.text(`€ ${stoneTotalCalc.toFixed(2)}`, stoneColX[3] + 2, y + 5)
+          y += 10
+          ctx.setY(y)
+        }
+
+        y = ctx.getY()
+        y += 5
+        ctx.setY(y)
+
+        // Risks
+        if (section.risks && section.risks.length > 0) {
+          checkPageBreak(20)
+          y = ctx.getY()
+
           pdf.setFontSize(10)
           pdf.setFont('helvetica', 'bold')
           pdf.text('Rischi Sezione', margin, y)
