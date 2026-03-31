@@ -73,8 +73,36 @@ export function ScientificCalculator() {
   const updateCalc = useUpdateCalculation()
   const deleteCalc = useDeleteCalculation()
   const clearCalcs = useClearCalculations()
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const handleButton = useCallback((btn: string) => {
+  // Keyboard support
+  useEffect(() => {
+    const keyMap: Record<string, string> = {
+      "0": "0", "1": "1", "2": "2", "3": "3", "4": "4",
+      "5": "5", "6": "6", "7": "7", "8": "8", "9": "9",
+      "+": "+", "-": "−", "*": "×", "/": "÷",
+      ".": ",", ",": ",",
+      "(": "(", ")": ")",
+      "^": "^",
+      "Enter": "=", "=": "=",
+      "Escape": "C", "Delete": "C", "Backspace": "C",
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't capture when editing note or linking
+      if (editingNote || linkingId) return
+      const btn = keyMap[e.key]
+      if (btn) {
+        e.preventDefault()
+        handleButton(btn)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [handleButton, editingNote, linkingId])
+
+
     setDisplay((prev) => {
       if (btn === "C") return "0"
       if (btn === "±") {
