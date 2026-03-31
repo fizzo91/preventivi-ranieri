@@ -6,13 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Trash2, MessageSquarePlus, Check, X, History, Link } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-import {
-  useCalculations,
-  useCreateCalculation,
-  useUpdateCalculation,
-  useDeleteCalculation,
-  useClearCalculations,
-} from "@/hooks/useCalculations"
+import { useCalcStorage } from "@/hooks/useCalcStorage"
 import { useQuotes } from "@/hooks/useQuotes"
 
 const evaluate = (expr: string): string => {
