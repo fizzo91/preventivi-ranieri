@@ -1,37 +1,22 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Trash2, MessageSquarePlus, Check, X, History, ChevronRight, ChevronLeft } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Trash2, MessageSquarePlus, Check, X, History, Link } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-
-interface HistoryEntry {
-  id: string
-  expression: string
-  result: string
-  timestamp: number
-  note?: string
-}
-
-const STORAGE_KEY = "scientific-calculator-history"
-
-const loadHistory = (): HistoryEntry[] => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch {
-    return []
-  }
-}
-
-const saveHistory = (entries: HistoryEntry[]) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries))
-}
+import {
+  useCalculations,
+  useCreateCalculation,
+  useUpdateCalculation,
+  useDeleteCalculation,
+  useClearCalculations,
+} from "@/hooks/useCalculations"
+import { useQuotes } from "@/hooks/useQuotes"
 
 const evaluate = (expr: string): string => {
   try {
-    // Replace display symbols with JS equivalents
     let sanitized = expr
       .replace(/×/g, "*")
       .replace(/÷/g, "/")
@@ -46,10 +31,8 @@ const evaluate = (expr: string): string => {
       .replace(/abs\(/g, "Math.abs(")
       .replace(/\^/g, "**")
 
-    // eslint-disable-next-line no-eval
     const result = Function(`"use strict"; return (${sanitized})`)()
     if (typeof result !== "number" || !isFinite(result)) return "Errore"
-    // Format nicely
     return Number.isInteger(result) ? result.toString() : parseFloat(result.toPrecision(12)).toString()
   } catch {
     return "Errore"
@@ -57,21 +40,17 @@ const evaluate = (expr: string): string => {
 }
 
 const buttons = [
-  // Row 1 - scientific
   ["sin(", "cos(", "tan(", "π"],
   ["log(", "ln(", "sqrt(", "^"],
-  // Row 2 - clear / ops
   ["C", "(", ")", "÷"],
-  // Row 3-5 - numbers
   ["7", "8", "9", "×"],
   ["4", "5", "6", "−"],
   ["1", "2", "3", "+"],
-  // Row 6
   ["0", ",", "±", "="],
 ]
 
 const getButtonStyle = (btn: string) => {
-  if (btn === "=") return "bg-primary/80 text-primary-foreground hover:bg-primary/90 backdrop-blur-sm col-span-1"
+  if (btn === "=") return "bg-primary/80 text-primary-foreground hover:bg-primary/90 backdrop-blur-sm"
   if (btn === "C") return "bg-destructive/60 text-destructive-foreground hover:bg-destructive/70 backdrop-blur-sm"
   if (["÷", "×", "−", "+", "^"].includes(btn))
     return "bg-accent/40 text-accent-foreground hover:bg-accent/60 backdrop-blur-sm"
@@ -82,15 +61,18 @@ const getButtonStyle = (btn: string) => {
 
 export function ScientificCalculator() {
   const [display, setDisplay] = useState("0")
-  const [history, setHistory] = useState<HistoryEntry[]>(loadHistory)
   const [editingNote, setEditingNote] = useState<string | null>(null)
   const [noteText, setNoteText] = useState("")
   const [showHistory, setShowHistory] = useState(false)
+  const [linkingId, setLinkingId] = useState<string | null>(null)
   const { toast } = useToast()
 
-  useEffect(() => {
-    saveHistory(history)
-  }, [history])
+  const { data: calculations = [], isLoading } = useCalculations()
+  const { data: quotes = [] } = useQuotes()
+  const createCalc = useCreateCalculation()
+  const updateCalc = useUpdateCalculation()
+  const deleteCalc = useDeleteCalculation()
+  const clearCalcs = useClearCalculations()
 
   const handleButton = useCallback((btn: string) => {
     setDisplay((prev) => {
@@ -102,13 +84,7 @@ export function ScientificCalculator() {
       if (btn === "=") {
         const result = evaluate(prev.replace(/−/g, "-").replace(/,/g, "."))
         if (result !== "Errore") {
-          const entry: HistoryEntry = {
-            id: crypto.randomUUID(),
-            expression: prev,
-            result,
-            timestamp: Date.now(),
-          }
-          setHistory((h) => [entry, ...h].slice(0, 100))
+          createCalc.mutate({ expression: prev, result })
         }
         return result
       }
@@ -119,28 +95,23 @@ export function ScientificCalculator() {
       }
       return prev + btn
     })
-  }, [])
+  }, [createCalc])
 
-  const deleteEntry = (id: string) => {
-    setHistory((h) => h.filter((e) => e.id !== id))
-  }
-
-  const clearHistory = () => {
-    setHistory([])
-    toast({ title: "Cronologia cancellata" })
-  }
-
-  const startEditNote = (entry: HistoryEntry) => {
-    setEditingNote(entry.id)
-    setNoteText(entry.note || "")
+  const startEditNote = (id: string, currentNote?: string | null) => {
+    setEditingNote(id)
+    setNoteText(currentNote || "")
   }
 
   const saveNote = (id: string) => {
-    setHistory((h) =>
-      h.map((e) => (e.id === id ? { ...e, note: noteText.trim() || undefined } : e))
-    )
+    updateCalc.mutate({ id, note: noteText.trim() || null })
     setEditingNote(null)
     setNoteText("")
+  }
+
+  const linkToQuote = (calcId: string, quoteId: string | null) => {
+    updateCalc.mutate({ id: calcId, quote_id: quoteId })
+    setLinkingId(null)
+    toast({ title: quoteId ? "Calcolo associato al preventivo" : "Associazione rimossa" })
   }
 
   const useResult = (result: string) => {
@@ -148,9 +119,15 @@ export function ScientificCalculator() {
     setShowHistory(false)
   }
 
-  const formatTime = (ts: number) => {
+  const formatTime = (ts: string) => {
     const d = new Date(ts)
-    return d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })
+    return d.toLocaleString("it-IT", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+  }
+
+  const getQuoteName = (quoteId: string | null) => {
+    if (!quoteId) return null
+    const q = quotes.find((q) => q.id === quoteId)
+    return q ? `#${q.quote_number}` : null
   }
 
   return (
@@ -187,7 +164,6 @@ export function ScientificCalculator() {
           </div>
         </div>
 
-        {/* Toggle history on mobile */}
         <Button
           variant="outline"
           size="sm"
@@ -196,9 +172,9 @@ export function ScientificCalculator() {
         >
           <History className="h-4 w-4" />
           {showHistory ? "Nascondi cronologia" : "Mostra cronologia"}
-          {history.length > 0 && (
+          {calculations.length > 0 && (
             <span className="ml-1 text-xs bg-primary/20 text-primary px-1.5 rounded-full">
-              {history.length}
+              {calculations.length}
             </span>
           )}
         </Button>
@@ -207,7 +183,7 @@ export function ScientificCalculator() {
       {/* History sidebar */}
       <div
         className={cn(
-          "w-56 rounded-2xl border border-border/50 bg-card/20 backdrop-blur-xl shadow-lg overflow-hidden flex flex-col",
+          "w-60 rounded-2xl border border-border/50 bg-card/20 backdrop-blur-xl shadow-lg overflow-hidden flex flex-col",
           "hidden sm:flex",
           showHistory && "!flex absolute right-0 top-0 bottom-0 z-10 sm:relative"
         )}
@@ -218,12 +194,12 @@ export function ScientificCalculator() {
             <History className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="text-xs font-semibold text-foreground">Cronologia</span>
           </div>
-          {history.length > 0 && (
+          {calculations.length > 0 && (
             <Button
               variant="ghost"
               size="icon"
               className="h-6 w-6 text-muted-foreground hover:text-destructive"
-              onClick={clearHistory}
+              onClick={() => clearCalcs.mutate(null)}
               title="Cancella tutto"
             >
               <Trash2 className="h-3 w-3" />
@@ -232,13 +208,15 @@ export function ScientificCalculator() {
         </div>
 
         <ScrollArea className="relative flex-1">
-          {history.length === 0 ? (
+          {isLoading ? (
+            <div className="p-4 text-center text-xs text-muted-foreground">Caricamento...</div>
+          ) : calculations.length === 0 ? (
             <div className="p-4 text-center text-xs text-muted-foreground">
               I calcoli appariranno qui
             </div>
           ) : (
             <div className="p-1.5 space-y-1">
-              {history.map((entry) => (
+              {calculations.map((entry) => (
                 <div
                   key={entry.id}
                   className="group rounded-lg bg-card/30 backdrop-blur-sm border border-border/20 p-2 hover:bg-card/50 transition-colors cursor-pointer"
@@ -254,10 +232,16 @@ export function ScientificCalculator() {
                         variant="ghost"
                         size="icon"
                         className="h-5 w-5"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          startEditNote(entry)
-                        }}
+                        onClick={(e) => { e.stopPropagation(); setLinkingId(linkingId === entry.id ? null : entry.id) }}
+                        title="Associa a preventivo"
+                      >
+                        <Link className={cn("h-3 w-3", entry.quote_id && "text-primary")} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5"
+                        onClick={(e) => { e.stopPropagation(); startEditNote(entry.id, entry.note) }}
                         title="Aggiungi nota"
                       >
                         <MessageSquarePlus className="h-3 w-3" />
@@ -266,10 +250,7 @@ export function ScientificCalculator() {
                         variant="ghost"
                         size="icon"
                         className="h-5 w-5 hover:text-destructive"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          deleteEntry(entry.id)
-                        }}
+                        onClick={(e) => { e.stopPropagation(); deleteCalc.mutate(entry.id) }}
                         title="Elimina"
                       >
                         <Trash2 className="h-3 w-3" />
@@ -277,7 +258,36 @@ export function ScientificCalculator() {
                     </div>
                   </div>
 
-                  {/* Note display or edit */}
+                  {/* Quote link selector */}
+                  {linkingId === entry.id && (
+                    <div className="mt-1.5" onClick={(e) => e.stopPropagation()}>
+                      <Select
+                        value={entry.quote_id || "none"}
+                        onValueChange={(v) => linkToQuote(entry.id, v === "none" ? null : v)}
+                      >
+                        <SelectTrigger className="h-7 text-[10px]">
+                          <SelectValue placeholder="Seleziona preventivo..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Nessun preventivo</SelectItem>
+                          {quotes.map((q) => (
+                            <SelectItem key={q.id} value={q.id}>
+                              #{q.quote_number} - {q.client_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {/* Quote badge */}
+                  {entry.quote_id && linkingId !== entry.id && (
+                    <div className="mt-1 text-[9px] bg-primary/10 text-primary rounded px-1.5 py-0.5 inline-block">
+                      🔗 {getQuoteName(entry.quote_id)}
+                    </div>
+                  )}
+
+                  {/* Note edit */}
                   {editingNote === entry.id ? (
                     <div className="mt-1.5 flex gap-1" onClick={(e) => e.stopPropagation()}>
                       <Input
@@ -298,16 +308,13 @@ export function ScientificCalculator() {
                   ) : entry.note ? (
                     <div
                       className="mt-1 text-[10px] text-muted-foreground italic bg-accent/20 rounded px-1.5 py-0.5"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        startEditNote(entry)
-                      }}
+                      onClick={(e) => { e.stopPropagation(); startEditNote(entry.id, entry.note) }}
                     >
                       📝 {entry.note}
                     </div>
                   ) : null}
 
-                  <div className="text-[9px] text-muted-foreground/60 mt-1">{formatTime(entry.timestamp)}</div>
+                  <div className="text-[9px] text-muted-foreground/60 mt-1">{formatTime(entry.created_at)}</div>
                 </div>
               ))}
             </div>

@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      calculations: {
+        Row: {
+          created_at: string | null
+          expression: string
+          id: string
+          note: string | null
+          quote_id: string | null
+          result: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          expression: string
+          id?: string
+          note?: string | null
+          quote_id?: string | null
+          result: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          expression?: string
+          id?: string
+          note?: string | null
+          quote_id?: string | null
+          result?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calculations_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           address: string | null

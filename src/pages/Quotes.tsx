@@ -8,6 +8,7 @@ import { Plus, Search, FileDown, FileJson } from "lucide-react"
 import { usePdfGenerator } from "@/hooks/usePdfGenerator"
 import { useToast } from "@/hooks/use-toast"
 import { useQuotes, useUpdateQuoteStatus, useDeleteQuote, useCreateQuote } from "@/hooks/useQuotes"
+import { useCalculations } from "@/hooks/useCalculations"
 import { LoadingSpinner } from "@/components/shared"
 import { QuoteStatsBar } from "@/components/quotes/QuoteStatsBar"
 import { QuoteListItem } from "@/components/quotes/QuoteListItem"
@@ -20,6 +21,7 @@ const Quotes = () => {
   const deleteQuote = useDeleteQuote()
   const createQuote = useCreateQuote()
   const { generatePdf, generateSyntheticPdf } = usePdfGenerator()
+  const { data: allCalculations = [] } = useCalculations()
   const { toast } = useToast()
 
   const filteredQuotes = quotes.filter(quote =>
@@ -69,7 +71,17 @@ const Quotes = () => {
 
   const handleGeneratePdf = async (quote: any) => {
     try {
-      await generatePdf(buildQuotePayload(quote))
+      const payload = buildQuotePayload(quote)
+      const quoteCalcs = allCalculations.filter(c => c.quote_id === quote.id)
+      await generatePdf({
+        ...payload,
+        calculations: quoteCalcs.map(c => ({
+          expression: c.expression,
+          result: c.result,
+          note: c.note,
+          created_at: c.created_at,
+        })),
+      })
     } catch {
       toast({ title: "Errore", description: "Errore durante la generazione del PDF.", variant: "destructive" })
     }
