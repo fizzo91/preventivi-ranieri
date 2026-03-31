@@ -91,7 +91,7 @@ export function ScientificCalculator({ defaultQuoteId, defaultQuoteName }: Scien
       }
       return prev + btn
     })
-  }, [addEntry])
+  }, [addEntry, defaultQuoteId])
 
   // Keyboard support
   useEffect(() => {
