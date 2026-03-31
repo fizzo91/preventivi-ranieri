@@ -7,6 +7,7 @@ import { Glossary } from "@/components/Glossary"
 import { VanityCalculator } from "@/components/VanityCalculator"
 import { ClientResearch } from "@/components/ClientResearch"
 import { ScientificCalculator } from "@/components/ScientificCalculator"
+import { cn } from "@/lib/utils"
 import { MacWindowBar } from "@/components/MacWindowBar"
 
 const toolMeta: Record<string, { title: string }> = {
