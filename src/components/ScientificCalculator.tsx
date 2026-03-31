@@ -75,33 +75,6 @@ export function ScientificCalculator() {
   const clearCalcs = useClearCalculations()
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Keyboard support
-  useEffect(() => {
-    const keyMap: Record<string, string> = {
-      "0": "0", "1": "1", "2": "2", "3": "3", "4": "4",
-      "5": "5", "6": "6", "7": "7", "8": "8", "9": "9",
-      "+": "+", "-": "−", "*": "×", "/": "÷",
-      ".": ",", ",": ",",
-      "(": "(", ")": ")",
-      "^": "^",
-      "Enter": "=", "=": "=",
-      "Escape": "C", "Delete": "C", "Backspace": "C",
-    }
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't capture when editing note or linking
-      if (editingNote || linkingId) return
-      const btn = keyMap[e.key]
-      if (btn) {
-        e.preventDefault()
-        handleButton(btn)
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [handleButton, editingNote, linkingId])
-
   const handleButton = useCallback((btn: string) => {
     setDisplay((prev) => {
       if (btn === "C") return "0"
@@ -124,6 +97,37 @@ export function ScientificCalculator() {
       return prev + btn
     })
   }, [createCalc])
+
+  // Keyboard support
+  useEffect(() => {
+    const keyMap: Record<string, string> = {
+      "0": "0", "1": "1", "2": "2", "3": "3", "4": "4",
+      "5": "5", "6": "6", "7": "7", "8": "8", "9": "9",
+      "+": "+", "-": "−", "*": "×", "/": "÷",
+      ".": ",", ",": ",",
+      "(": "(", ")": ")",
+      "^": "^",
+      "Enter": "=", "=": "=",
+      "Escape": "C", "Delete": "C",
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (editingNote || linkingId) return
+      if (e.key === "Backspace") {
+        e.preventDefault()
+        setDisplay((prev) => prev.length <= 1 || prev === "Errore" ? "0" : prev.slice(0, -1))
+        return
+      }
+      const btn = keyMap[e.key]
+      if (btn) {
+        e.preventDefault()
+        handleButton(btn)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [handleButton, editingNote, linkingId])
 
   const startEditNote = (id: string, currentNote?: string | null) => {
     setEditingNote(id)
