@@ -1,6 +1,13 @@
 import jsPDF from 'jspdf'
 import { calcRow, type EnamelPieceRow } from '@/components/EnamelCostCalculator'
 
+interface CalculationEntry {
+  expression: string
+  result: string
+  note?: string | null
+  created_at: string
+}
+
 interface QuoteData {
   quoteNumber: string
   client: {
@@ -13,6 +20,7 @@ interface QuoteData {
   sections: any[]
   totalAmount: number
   enamelData?: EnamelPieceRow[] | Record<string, EnamelPieceRow[]> | null
+  calculations?: CalculationEntry[]
 }
 
 /** Helper: classify items into Pietra and Lavorazioni */
