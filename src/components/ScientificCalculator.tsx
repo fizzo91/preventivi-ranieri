@@ -61,12 +61,8 @@ export function ScientificCalculator() {
   const [linkingId, setLinkingId] = useState<string | null>(null)
   const { toast } = useToast()
 
-  const { data: calculations = [], isLoading } = useCalculations()
+  const { entries: calculations, loading: isLoading, isAuthenticated, addEntry, updateEntry, deleteEntry, clearAll } = useCalcStorage()
   const { data: quotes = [] } = useQuotes()
-  const createCalc = useCreateCalculation()
-  const updateCalc = useUpdateCalculation()
-  const deleteCalc = useDeleteCalculation()
-  const clearCalcs = useClearCalculations()
   const containerRef = useRef<HTMLDivElement>(null)
 
   const handleButton = useCallback((btn: string) => {
@@ -79,7 +75,7 @@ export function ScientificCalculator() {
       if (btn === "=") {
         const result = evaluate(prev.replace(/−/g, "-").replace(/,/g, "."))
         if (result !== "Errore") {
-          createCalc.mutate({ expression: prev, result })
+          addEntry(prev, result)
         }
         return result
       }
@@ -90,7 +86,7 @@ export function ScientificCalculator() {
       }
       return prev + btn
     })
-  }, [createCalc])
+  }, [addEntry])
 
   // Keyboard support
   useEffect(() => {
