@@ -161,6 +161,15 @@ export function ScientificCalculator({ defaultQuoteId, defaultQuoteName }: Scien
     <div className="flex gap-3 w-full max-w-2xl mx-auto">
       {/* Calculator */}
       <div className="flex-1 space-y-3">
+        {/* Linked quote banner */}
+        {defaultQuoteId && (
+          <div className="flex items-center gap-2 rounded-xl bg-primary/10 border border-primary/30 px-3 py-2 text-sm">
+            <Link className="h-4 w-4 text-primary shrink-0" />
+            <span className="text-primary font-medium truncate">
+              Collegato a: {defaultQuoteName || getQuoteName(defaultQuoteId) || defaultQuoteId}
+            </span>
+          </div>
+        )}
         {/* Display */}
         <div className="relative rounded-2xl border border-border/50 bg-card/30 backdrop-blur-xl shadow-lg overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
