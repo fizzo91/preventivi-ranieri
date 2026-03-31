@@ -199,7 +199,7 @@ export function ScientificCalculator() {
               variant="ghost"
               size="icon"
               className="h-6 w-6 text-muted-foreground hover:text-destructive"
-              onClick={() => clearCalcs.mutate()}
+              onClick={() => clearCalcs.mutate(null)}
               title="Cancella tutto"
             >
               <Trash2 className="h-3 w-3" />
