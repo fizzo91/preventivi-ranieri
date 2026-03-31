@@ -80,7 +80,7 @@ export function ScientificCalculator({ defaultQuoteId, defaultQuoteName }: Scien
       if (btn === "=") {
         const result = evaluate(prev.replace(/−/g, "-").replace(/,/g, "."))
         if (result !== "Errore") {
-          addEntry(prev, result)
+          addEntry(prev, result, defaultQuoteId)
         }
         return result
       }
