@@ -586,6 +586,52 @@ export const usePdfGenerator = () => {
         }
       }
 
+      // ── Calculations Appendix ──
+      if (quoteData.calculations && quoteData.calculations.length > 0) {
+        pdf.addPage()
+        y = margin
+
+        pdf.setFontSize(16)
+        pdf.setFont('helvetica', 'bold')
+        pdf.text('ALLEGATO: CALCOLI', pageWidth / 2, y, { align: 'center' })
+        y += 12
+
+        // Table header
+        const calcCols = [margin, margin + 70, margin + 105]
+        
+        pdf.setFillColor(30, 64, 175)
+        pdf.rect(margin, y, contentWidth, 8, 'F')
+        pdf.setFontSize(7)
+        pdf.setFont('helvetica', 'bold')
+        pdf.setTextColor(255, 255, 255)
+        pdf.text('ESPRESSIONE', calcCols[0] + 2, y + 5)
+        pdf.text('RISULTATO', calcCols[1] + 2, y + 5)
+        pdf.text('NOTA', calcCols[2] + 2, y + 5)
+        pdf.setTextColor(0, 0, 0)
+        y += 8
+        ctx.setY(y)
+
+        for (let ci = 0; ci < quoteData.calculations.length; ci++) {
+          const calc = quoteData.calculations[ci]
+          ctx.setY(y); checkPageBreak(8); y = ctx.getY()
+
+          if (ci % 2 === 0) {
+            pdf.setFillColor(248, 250, 252)
+            pdf.rect(margin, y, contentWidth, 7, 'F')
+          }
+
+          pdf.setFontSize(7)
+          pdf.setFont('helvetica', 'normal')
+          pdf.text(calc.expression.substring(0, 40), calcCols[0] + 2, y + 5)
+          pdf.setFont('helvetica', 'bold')
+          pdf.text(calc.result, calcCols[1] + 2, y + 5)
+          pdf.setFont('helvetica', 'normal')
+          pdf.text((calc.note || '—').substring(0, 50), calcCols[2] + 2, y + 5)
+          y += 7
+        }
+        y += 5
+      }
+
       // Footer
       y += 15
       ctx.setY(y); checkPageBreak(15); y = ctx.getY()
