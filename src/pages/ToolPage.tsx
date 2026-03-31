@@ -6,6 +6,8 @@ import { DescriptionAssistant } from "@/components/DescriptionAssistant"
 import { Glossary } from "@/components/Glossary"
 import { VanityCalculator } from "@/components/VanityCalculator"
 import { ClientResearch } from "@/components/ClientResearch"
+import { ScientificCalculator } from "@/components/ScientificCalculator"
+import { cn } from "@/lib/utils"
 import { MacWindowBar } from "@/components/MacWindowBar"
 
 const toolMeta: Record<string, { title: string }> = {
@@ -15,6 +17,7 @@ const toolMeta: Record<string, { title: string }> = {
   glossary: { title: "Glossario Pietra" },
   vanity: { title: "Calcolo Vanity" },
   "client-research": { title: "Ricerca Cliente AI" },
+  calculator: { title: "Calcolatrice Scientifica" },
 }
 
 const ToolPage = () => {
@@ -39,6 +42,8 @@ const ToolPage = () => {
         return <VanityCalculator />
       case "client-research":
         return <ClientResearch />
+      case "calculator":
+        return <ScientificCalculator />
       default:
         return null
     }
@@ -64,7 +69,7 @@ const ToolPage = () => {
         }}
         isFullscreen={isFullscreen}
       />
-      <div className="flex-1 p-6 max-w-lg mx-auto w-full space-y-6">
+      <div className={cn("flex-1 p-6 mx-auto w-full space-y-6", toolId === "calculator" ? "max-w-2xl" : "max-w-lg")}>
         {renderTool()}
       </div>
     </div>

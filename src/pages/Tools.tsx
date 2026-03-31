@@ -1,4 +1,4 @@
-import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch } from "lucide-react"
+import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch, Calculator } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 const tools = [
@@ -57,6 +57,15 @@ const tools = [
     shadow: "shadow-rose-500/25",
   },
   {
+    id: "calculator",
+    title: "Calcolatrice",
+    subtitle: "Scientifica",
+    icon: Calculator,
+    available: true,
+    gradient: "from-indigo-500 to-blue-400",
+    shadow: "shadow-indigo-500/25",
+  },
+  {
     id: "weight",
     title: "Peso",
     subtitle: "Calcolatore",
@@ -87,6 +96,7 @@ const Tools = () => {
       glossary: [520, 700],
       vanity: [600, 850],
       "client-research": [500, 700],
+      calculator: [700, 750],
     }
     const [w, h] = sizes[toolId] || [480, 600]
     const left = (screen.width - w) / 2
