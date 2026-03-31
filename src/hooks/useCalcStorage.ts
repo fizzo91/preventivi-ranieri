@@ -13,7 +13,14 @@ export interface CalcEntry {
 
 const LS_KEY = "scientific-calculator-history"
 
-function loadLocal(): CalcEntry[] {
+function loadLocal(quoteId?: string | null): CalcEntry[] {
+  try {
+    const all: CalcEntry[] = JSON.parse(localStorage.getItem(LS_KEY) || "[]")
+    if (quoteId) return all.filter(e => e.quote_id === quoteId)
+    return all.filter(e => !e.quote_id)
+  } catch { return [] }
+}
+function loadAllLocal(): CalcEntry[] {
   try {
     return JSON.parse(localStorage.getItem(LS_KEY) || "[]")
   } catch { return [] }
@@ -22,10 +29,17 @@ function saveLocal(entries: CalcEntry[]) {
   localStorage.setItem(LS_KEY, JSON.stringify(entries))
 }
 
+interface UseCalcStorageOptions {
+  quoteId?: string | null
+}
+
 /**
  * Hybrid calculator storage: uses Supabase when authenticated, localStorage otherwise.
+ * When quoteId is provided, only shows calculations for that quote.
+ * When quoteId is not provided, shows only unlinked calculations.
  */
-export function useCalcStorage() {
+export function useCalcStorage(options?: UseCalcStorageOptions) {
+  const filterQuoteId = options?.quoteId
   const [userId, setUserId] = useState<string | null>(null)
   const [authChecked, setAuthChecked] = useState(false)
   const [entries, setEntries] = useState<CalcEntry[]>([])
@@ -40,42 +54,60 @@ export function useCalcStorage() {
     })
   }, [])
 
-  // Load data
+  // Load data filtered by quoteId
   useEffect(() => {
     if (!authChecked) return
 
     if (userId) {
-      supabase
+      let query = supabase
         .from("calculations")
         .select("*")
         .order("created_at", { ascending: false })
-        .then(({ data, error }) => {
-          if (!error && data) setEntries(data as CalcEntry[])
-          setLoading(false)
-        })
+
+      if (filterQuoteId) {
+        query = query.eq("quote_id", filterQuoteId)
+      } else {
+        query = query.is("quote_id", null)
+      }
+
+      query.then(({ data, error }) => {
+        if (!error && data) setEntries(data as CalcEntry[])
+        setLoading(false)
+      })
     } else {
-      setEntries(loadLocal())
+      setEntries(loadLocal(filterQuoteId))
       setLoading(false)
     }
-  }, [authChecked, userId])
+  }, [authChecked, userId, filterQuoteId])
 
   const refetch = useCallback(async () => {
     if (userId) {
-      const { data } = await supabase
+      let query = supabase
         .from("calculations")
         .select("*")
         .order("created_at", { ascending: false })
+
+      if (filterQuoteId) {
+        query = query.eq("quote_id", filterQuoteId)
+      } else {
+        query = query.is("quote_id", null)
+      }
+
+      const { data } = await query
       if (data) setEntries(data as CalcEntry[])
+    } else {
+      setEntries(loadLocal(filterQuoteId))
     }
-  }, [userId])
+  }, [userId, filterQuoteId])
 
   const addEntry = useCallback(async (expression: string, result: string, quoteId?: string | null) => {
+    const effectiveQuoteId = quoteId ?? filterQuoteId ?? null
     if (userId) {
       await supabase.from("calculations").insert({
         user_id: userId,
         expression,
         result,
-        quote_id: quoteId || null,
+        quote_id: effectiveQuoteId,
       } as any)
       await refetch()
     } else {
@@ -83,47 +115,60 @@ export function useCalcStorage() {
         id: crypto.randomUUID(),
         expression,
         result,
-        quote_id: quoteId || null,
+        quote_id: effectiveQuoteId,
         created_at: new Date().toISOString(),
       }
-      const updated = [entry, ...loadLocal()].slice(0, 100)
+      const all = loadAllLocal()
+      const updated = [entry, ...all].slice(0, 500)
       saveLocal(updated)
-      setEntries(updated)
+      setEntries(loadLocal(filterQuoteId))
     }
-  }, [userId, refetch])
+  }, [userId, refetch, filterQuoteId])
 
   const updateEntry = useCallback(async (id: string, updates: { note?: string | null; quote_id?: string | null }) => {
     if (userId) {
       await supabase.from("calculations").update(updates as any).eq("id", id)
       await refetch()
     } else {
-      const all = loadLocal().map(e => e.id === id ? { ...e, ...updates } : e)
+      const all = loadAllLocal().map(e => e.id === id ? { ...e, ...updates } : e)
       saveLocal(all)
-      setEntries(all)
+      setEntries(loadLocal(filterQuoteId))
     }
-  }, [userId, refetch])
+  }, [userId, refetch, filterQuoteId])
 
   const deleteEntry = useCallback(async (id: string) => {
     if (userId) {
       await supabase.from("calculations").delete().eq("id", id)
       await refetch()
     } else {
-      const all = loadLocal().filter(e => e.id !== id)
+      const all = loadAllLocal().filter(e => e.id !== id)
       saveLocal(all)
-      setEntries(all)
+      setEntries(loadLocal(filterQuoteId))
     }
-  }, [userId, refetch])
+  }, [userId, refetch, filterQuoteId])
 
   const clearAll = useCallback(async () => {
     if (userId) {
-      await supabase.from("calculations").delete().eq("user_id", userId)
+      let query = supabase.from("calculations").delete()
+      if (filterQuoteId) {
+        query = query.eq("quote_id", filterQuoteId)
+      } else {
+        query = query.eq("user_id", userId).is("quote_id", null)
+      }
+      await query
       setEntries([])
     } else {
-      saveLocal([])
+      if (filterQuoteId) {
+        const all = loadAllLocal().filter(e => e.quote_id !== filterQuoteId)
+        saveLocal(all)
+      } else {
+        const all = loadAllLocal().filter(e => !!e.quote_id)
+        saveLocal(all)
+      }
       setEntries([])
     }
     toast({ title: "Cronologia cancellata" })
-  }, [userId, toast])
+  }, [userId, filterQuoteId, toast])
 
   return { entries, loading, isAuthenticated: !!userId, addEntry, updateEntry, deleteEntry, clearAll }
 }

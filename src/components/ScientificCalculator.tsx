@@ -66,7 +66,7 @@ export function ScientificCalculator({ defaultQuoteId, defaultQuoteName }: Scien
   const [linkingId, setLinkingId] = useState<string | null>(null)
   const { toast } = useToast()
 
-  const { entries: calculations, loading: isLoading, isAuthenticated, addEntry, updateEntry, deleteEntry, clearAll } = useCalcStorage()
+  const { entries: calculations, loading: isLoading, isAuthenticated, addEntry, updateEntry, deleteEntry, clearAll } = useCalcStorage({ quoteId: defaultQuoteId })
   const { data: quotes = [] } = useQuotes()
   const containerRef = useRef<HTMLDivElement>(null)
 
