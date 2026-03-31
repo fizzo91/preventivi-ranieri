@@ -57,6 +57,15 @@ const tools = [
     shadow: "shadow-rose-500/25",
   },
   {
+    id: "calculator",
+    title: "Calcolatrice",
+    subtitle: "Scientifica",
+    icon: Calculator,
+    available: true,
+    gradient: "from-indigo-500 to-blue-400",
+    shadow: "shadow-indigo-500/25",
+  },
+  {
     id: "weight",
     title: "Peso",
     subtitle: "Calcolatore",
