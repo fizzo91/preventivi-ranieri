@@ -6,13 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Trash2, MessageSquarePlus, Check, X, History, Link } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-import {
-  useCalculations,
-  useCreateCalculation,
-  useUpdateCalculation,
-  useDeleteCalculation,
-  useClearCalculations,
-} from "@/hooks/useCalculations"
+import { useCalcStorage } from "@/hooks/useCalcStorage"
 import { useQuotes } from "@/hooks/useQuotes"
 
 const evaluate = (expr: string): string => {
@@ -67,12 +61,8 @@ export function ScientificCalculator() {
   const [linkingId, setLinkingId] = useState<string | null>(null)
   const { toast } = useToast()
 
-  const { data: calculations = [], isLoading } = useCalculations()
+  const { entries: calculations, loading: isLoading, isAuthenticated, addEntry, updateEntry, deleteEntry, clearAll } = useCalcStorage()
   const { data: quotes = [] } = useQuotes()
-  const createCalc = useCreateCalculation()
-  const updateCalc = useUpdateCalculation()
-  const deleteCalc = useDeleteCalculation()
-  const clearCalcs = useClearCalculations()
   const containerRef = useRef<HTMLDivElement>(null)
 
   const handleButton = useCallback((btn: string) => {
@@ -85,7 +75,7 @@ export function ScientificCalculator() {
       if (btn === "=") {
         const result = evaluate(prev.replace(/−/g, "-").replace(/,/g, "."))
         if (result !== "Errore") {
-          createCalc.mutate({ expression: prev, result })
+          addEntry(prev, result)
         }
         return result
       }
@@ -96,7 +86,7 @@ export function ScientificCalculator() {
       }
       return prev + btn
     })
-  }, [createCalc])
+  }, [addEntry])
 
   // Keyboard support
   useEffect(() => {
@@ -135,13 +125,13 @@ export function ScientificCalculator() {
   }
 
   const saveNote = (id: string) => {
-    updateCalc.mutate({ id, note: noteText.trim() || null })
+    updateEntry(id, { note: noteText.trim() || null })
     setEditingNote(null)
     setNoteText("")
   }
 
   const linkToQuote = (calcId: string, quoteId: string | null) => {
-    updateCalc.mutate({ id: calcId, quote_id: quoteId })
+    updateEntry(calcId, { quote_id: quoteId })
     setLinkingId(null)
     toast({ title: quoteId ? "Calcolo associato al preventivo" : "Associazione rimossa" })
   }
@@ -231,7 +221,7 @@ export function ScientificCalculator() {
               variant="ghost"
               size="icon"
               className="h-6 w-6 text-muted-foreground hover:text-destructive"
-              onClick={() => clearCalcs.mutate(null)}
+              onClick={() => clearAll()}
               title="Cancella tutto"
             >
               <Trash2 className="h-3 w-3" />
@@ -260,15 +250,17 @@ export function ScientificCalculator() {
                       <div className="text-sm font-bold text-foreground font-mono">= {entry.result}</div>
                     </div>
                     <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5"
-                        onClick={(e) => { e.stopPropagation(); setLinkingId(linkingId === entry.id ? null : entry.id) }}
-                        title="Associa a preventivo"
-                      >
-                        <Link className={cn("h-3 w-3", entry.quote_id && "text-primary")} />
-                      </Button>
+                      {isAuthenticated && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5"
+                          onClick={(e) => { e.stopPropagation(); setLinkingId(linkingId === entry.id ? null : entry.id) }}
+                          title="Associa a preventivo"
+                        >
+                          <Link className={cn("h-3 w-3", entry.quote_id && "text-primary")} />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"
@@ -282,7 +274,7 @@ export function ScientificCalculator() {
                         variant="ghost"
                         size="icon"
                         className="h-5 w-5 hover:text-destructive"
-                        onClick={(e) => { e.stopPropagation(); deleteCalc.mutate(entry.id) }}
+                        onClick={(e) => { e.stopPropagation(); deleteEntry(entry.id) }}
                         title="Elimina"
                       >
                         <Trash2 className="h-3 w-3" />
