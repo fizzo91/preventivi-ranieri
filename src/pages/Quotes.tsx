@@ -22,6 +22,7 @@ const Quotes = () => {
   const deleteQuote = useDeleteQuote()
   const createQuote = useCreateQuote()
   const { generatePdf, generateSyntheticPdf } = usePdfGenerator()
+  const { data: allCalculations = [] } = useCalculations()
   const { toast } = useToast()
 
   const filteredQuotes = quotes.filter(quote =>
