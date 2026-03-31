@@ -16,6 +16,7 @@ const toolMeta: Record<string, { title: string }> = {
   glossary: { title: "Glossario Pietra" },
   vanity: { title: "Calcolo Vanity" },
   "client-research": { title: "Ricerca Cliente AI" },
+  calculator: { title: "Calcolatrice Scientifica" },
 }
 
 const ToolPage = () => {
