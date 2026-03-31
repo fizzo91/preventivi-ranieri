@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useParams, Navigate } from "react-router-dom"
+import { useParams, useSearchParams, Navigate } from "react-router-dom"
 import { ImperialConverter } from "@/components/ImperialConverter"
 import { CircleCalculator } from "@/components/CircleCalculator"
 import { DescriptionAssistant } from "@/components/DescriptionAssistant"
@@ -22,7 +22,11 @@ const toolMeta: Record<string, { title: string }> = {
 
 const ToolPage = () => {
   const { toolId } = useParams<{ toolId: string }>()
+  const [searchParams] = useSearchParams()
   const [isFullscreen, setIsFullscreen] = useState(false)
+
+  const quoteId = searchParams.get("quoteId")
+  const quoteName = searchParams.get("quoteName")
 
   if (!toolId || !toolMeta[toolId]) {
     return <Navigate to="/tools" replace />
@@ -43,7 +47,7 @@ const ToolPage = () => {
       case "client-research":
         return <ClientResearch />
       case "calculator":
-        return <ScientificCalculator />
+        return <ScientificCalculator defaultQuoteId={quoteId} defaultQuoteName={quoteName} />
       default:
         return null
     }
@@ -52,10 +56,9 @@ const ToolPage = () => {
   return (
     <div className={`min-h-screen bg-background flex flex-col ${isFullscreen ? "" : ""}`}>
       <MacWindowBar
-        title={toolMeta[toolId].title}
+        title={toolMeta[toolId].title + (quoteName ? ` — ${quoteName}` : "")}
         onClose={() => window.close()}
         onMinimize={() => {
-          // Browser popup minimize isn't reliable, but we can try
           window.resizeTo(300, 40)
         }}
         onFullscreen={() => {
