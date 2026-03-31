@@ -53,7 +53,12 @@ const getButtonStyle = (btn: string) => {
   return "bg-card/40 text-card-foreground hover:bg-card/60 backdrop-blur-sm"
 }
 
-export function ScientificCalculator() {
+interface ScientificCalculatorProps {
+  defaultQuoteId?: string | null
+  defaultQuoteName?: string | null
+}
+
+export function ScientificCalculator({ defaultQuoteId, defaultQuoteName }: ScientificCalculatorProps = {}) {
   const [display, setDisplay] = useState("0")
   const [editingNote, setEditingNote] = useState<string | null>(null)
   const [noteText, setNoteText] = useState("")
