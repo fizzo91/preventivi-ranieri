@@ -68,7 +68,7 @@ const ToolPage = () => {
         }}
         isFullscreen={isFullscreen}
       />
-      <div className="flex-1 p-6 max-w-lg mx-auto w-full space-y-6">
+      <div className={cn("flex-1 p-6 mx-auto w-full space-y-6", toolId === "calculator" ? "max-w-2xl" : "max-w-lg")}>
         {renderTool()}
       </div>
     </div>
