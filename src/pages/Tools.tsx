@@ -1,4 +1,4 @@
-import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch } from "lucide-react"
+import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch, Calculator } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 const tools = [
