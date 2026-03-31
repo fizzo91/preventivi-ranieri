@@ -102,7 +102,7 @@ export function ScientificCalculator() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [handleButton, editingNote, linkingId])
 
-
+  const handleButton = useCallback((btn: string) => {
     setDisplay((prev) => {
       if (btn === "C") return "0"
       if (btn === "±") {
