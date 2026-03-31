@@ -72,7 +72,17 @@ const Quotes = () => {
 
   const handleGeneratePdf = async (quote: any) => {
     try {
-      await generatePdf(buildQuotePayload(quote))
+      const payload = buildQuotePayload(quote)
+      const quoteCalcs = allCalculations.filter(c => c.quote_id === quote.id)
+      await generatePdf({
+        ...payload,
+        calculations: quoteCalcs.map(c => ({
+          expression: c.expression,
+          result: c.result,
+          note: c.note,
+          created_at: c.created_at,
+        })),
+      })
     } catch {
       toast({ title: "Errore", description: "Errore durante la generazione del PDF.", variant: "destructive" })
     }
