@@ -272,7 +272,7 @@ export function ScientificCalculator() {
                         variant="ghost"
                         size="icon"
                         className="h-5 w-5 hover:text-destructive"
-                        onClick={(e) => { e.stopPropagation(); deleteCalc.mutate(entry.id) }}
+                        onClick={(e) => { e.stopPropagation(); deleteEntry(entry.id) }}
                         title="Elimina"
                       >
                         <Trash2 className="h-3 w-3" />
