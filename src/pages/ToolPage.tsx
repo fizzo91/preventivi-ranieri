@@ -41,6 +41,8 @@ const ToolPage = () => {
         return <VanityCalculator />
       case "client-research":
         return <ClientResearch />
+      case "calculator":
+        return <ScientificCalculator />
       default:
         return null
     }
