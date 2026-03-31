@@ -586,50 +586,93 @@ export const usePdfGenerator = () => {
         }
       }
 
-      // ── Calculations Appendix ──
+      // ── Calculations Receipt (Scontrino) ──
       if (quoteData.calculations && quoteData.calculations.length > 0) {
         pdf.addPage()
         y = margin
 
-        pdf.setFontSize(16)
-        pdf.setFont('helvetica', 'bold')
-        pdf.text('ALLEGATO: CALCOLI', pageWidth / 2, y, { align: 'center' })
-        y += 12
+        // Receipt-style centered layout
+        const receiptWidth = 80
+        const receiptX = (pageWidth - receiptWidth) / 2
 
-        // Table header
-        const calcCols = [margin, margin + 70, margin + 105]
-        
-        pdf.setFillColor(30, 64, 175)
-        pdf.rect(margin, y, contentWidth, 8, 'F')
-        pdf.setFontSize(7)
-        pdf.setFont('helvetica', 'bold')
-        pdf.setTextColor(255, 255, 255)
-        pdf.text('ESPRESSIONE', calcCols[0] + 2, y + 5)
-        pdf.text('RISULTATO', calcCols[1] + 2, y + 5)
-        pdf.text('NOTA', calcCols[2] + 2, y + 5)
-        pdf.setTextColor(0, 0, 0)
-        y += 8
-        ctx.setY(y)
+        // Dotted top border
+        pdf.setDrawColor(100, 100, 100)
+        pdf.setLineDashPattern([1, 1], 0)
+        pdf.line(receiptX, y, receiptX + receiptWidth, y)
+        y += 6
 
+        // Title
+        pdf.setFont('courier', 'bold')
+        pdf.setFontSize(12)
+        pdf.text('FOGLIO CALCOLI', pageWidth / 2, y, { align: 'center' })
+        y += 5
+        pdf.setFontSize(8)
+        pdf.setFont('courier', 'normal')
+        pdf.text(`Preventivo N. ${quoteData.quoteNumber}`, pageWidth / 2, y, { align: 'center' })
+        y += 4
+        pdf.text(new Date().toLocaleDateString('it-IT'), pageWidth / 2, y, { align: 'center' })
+        y += 5
+
+        // Dotted separator
+        pdf.line(receiptX, y, receiptX + receiptWidth, y)
+        y += 5
+
+        // Calculations list
         for (let ci = 0; ci < quoteData.calculations.length; ci++) {
           const calc = quoteData.calculations[ci]
-          ctx.setY(y); checkPageBreak(8); y = ctx.getY()
+          ctx.setY(y); checkPageBreak(14); y = ctx.getY()
 
-          if (ci % 2 === 0) {
-            pdf.setFillColor(248, 250, 252)
-            pdf.rect(margin, y, contentWidth, 7, 'F')
+          // Expression
+          pdf.setFont('courier', 'normal')
+          pdf.setFontSize(8)
+          const exprLines = pdf.splitTextToSize(calc.expression, receiptWidth - 4)
+          for (const line of exprLines) {
+            pdf.text(line, receiptX + 2, y)
+            y += 3.5
           }
 
-          pdf.setFontSize(7)
-          pdf.setFont('helvetica', 'normal')
-          pdf.text(calc.expression.substring(0, 40), calcCols[0] + 2, y + 5)
-          pdf.setFont('helvetica', 'bold')
-          pdf.text(calc.result, calcCols[1] + 2, y + 5)
-          pdf.setFont('helvetica', 'normal')
-          pdf.text((calc.note || '—').substring(0, 50), calcCols[2] + 2, y + 5)
-          y += 7
+          // Result (right-aligned, bold)
+          pdf.setFont('courier', 'bold')
+          pdf.setFontSize(10)
+          pdf.text(`= ${calc.result}`, receiptX + receiptWidth - 2, y, { align: 'right' })
+          y += 4
+
+          // Note if present
+          if (calc.note) {
+            pdf.setFont('courier', 'italic')
+            pdf.setFontSize(7)
+            pdf.setTextColor(100, 100, 100)
+            const noteLines = pdf.splitTextToSize(calc.note, receiptWidth - 4)
+            for (const line of noteLines) {
+              pdf.text(line, receiptX + 2, y)
+              y += 3
+            }
+            pdf.setTextColor(0, 0, 0)
+          }
+
+          // Dotted line between entries
+          y += 2
+          pdf.setLineDashPattern([0.5, 1], 0)
+          pdf.line(receiptX + 5, y, receiptX + receiptWidth - 5, y)
+          y += 4
         }
+
+        // Total count
+        y += 2
+        pdf.setLineDashPattern([1, 1], 0)
+        pdf.line(receiptX, y, receiptX + receiptWidth, y)
         y += 5
+        pdf.setFont('courier', 'bold')
+        pdf.setFontSize(8)
+        pdf.text(`Tot. calcoli: ${quoteData.calculations.length}`, pageWidth / 2, y, { align: 'center' })
+        y += 5
+
+        // Dotted bottom border
+        pdf.line(receiptX, y, receiptX + receiptWidth, y)
+        y += 3
+
+        // Reset dash pattern
+        pdf.setLineDashPattern([], 0)
       }
 
       // Footer
