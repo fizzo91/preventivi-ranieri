@@ -131,7 +131,7 @@ export function ScientificCalculator() {
   }
 
   const linkToQuote = (calcId: string, quoteId: string | null) => {
-    updateCalc.mutate({ id: calcId, quote_id: quoteId })
+    updateEntry(calcId, { quote_id: quoteId })
     setLinkingId(null)
     toast({ title: quoteId ? "Calcolo associato al preventivo" : "Associazione rimossa" })
   }
