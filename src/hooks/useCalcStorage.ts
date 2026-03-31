@@ -69,12 +69,13 @@ export function useCalcStorage() {
     }
   }, [userId])
 
-  const addEntry = useCallback(async (expression: string, result: string) => {
+  const addEntry = useCallback(async (expression: string, result: string, quoteId?: string | null) => {
     if (userId) {
       await supabase.from("calculations").insert({
         user_id: userId,
         expression,
         result,
+        quote_id: quoteId || null,
       } as any)
       await refetch()
     } else {
@@ -82,6 +83,7 @@ export function useCalcStorage() {
         id: crypto.randomUUID(),
         expression,
         result,
+        quote_id: quoteId || null,
         created_at: new Date().toISOString(),
       }
       const updated = [entry, ...loadLocal()].slice(0, 100)

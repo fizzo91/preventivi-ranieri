@@ -366,6 +366,18 @@ const NewQuote = () => {
           <p className="text-muted-foreground mt-1">Lavorazione Pietra Lavica Smaltata</p>
         </div>
          <div className="flex flex-wrap gap-2">
+          <Button onClick={() => {
+            const quoteId = editQuote?.id || ""
+            const quoteName = quoteData.number || ""
+            const w = 700, h = 750
+            const left = (screen.width - w) / 2
+            const top = (screen.height - h) / 2
+            window.open(
+              `/tool/calculator?quoteId=${encodeURIComponent(quoteId)}&quoteName=${encodeURIComponent(quoteName)}`,
+              `tool-calculator-${quoteId}`,
+              `width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no`
+            )
+          }} variant="outline" className="gap-2" disabled={!editQuote?.id} title={!editQuote?.id ? "Salva prima il preventivo per usare la calcolatrice" : "Apri calcolatrice collegata"}><Calculator className="h-4 w-4" />Calcolatrice</Button>
           <Button onClick={duplicateQuote} variant="outline" className="gap-2"><Copy className="h-4 w-4" />Duplica</Button>
           <Button onClick={saveQuote} className="gap-2" disabled={createQuote.isPending || updateQuote.isPending}><Save className="h-4 w-4" />Salva</Button>
         </div>
