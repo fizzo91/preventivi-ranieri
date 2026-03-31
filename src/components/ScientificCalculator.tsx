@@ -125,7 +125,7 @@ export function ScientificCalculator() {
   }
 
   const saveNote = (id: string) => {
-    updateCalc.mutate({ id, note: noteText.trim() || null })
+    updateEntry(id, { note: noteText.trim() || null })
     setEditingNote(null)
     setNoteText("")
   }
