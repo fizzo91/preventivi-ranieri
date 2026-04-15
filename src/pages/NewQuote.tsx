@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -69,7 +69,7 @@ interface SortableItemProps {
 
 function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpdateItem, onRemoveItem, canRemove, onAddProduct }: SortableItemProps) {
   const [isAddProductOpen, setIsAddProductOpen] = useState(false)
-  const [newProduct, setNewProduct] = useState({ name: "", description: "", price_em: 0, price_dt: 0, category: "", unit: "mq" })
+  const [newProduct, setNewProduct] = useState({ name: "", description: "", price_em: 0, price_dt: 0, category: "LAVORAZIONE", unit: "mq" })
 
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id })
   const style = { transform: CSS.Transform.toString(transform), transition }
@@ -77,9 +77,9 @@ function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpd
   const productOptions = products.map(p => ({ value: p.id, label: p.name, unit: p.unit }))
 
   const handleAddProduct = () => {
-    if (newProduct.name && (newProduct.price_em > 0 || newProduct.price_dt > 0)) {
+    if (newProduct.name && newProduct.category && (newProduct.price_em > 0 || newProduct.price_dt > 0)) {
       onAddProduct(newProduct)
-      setNewProduct({ name: "", description: "", price_em: 0, price_dt: 0, category: "", unit: "mq" })
+      setNewProduct({ name: "", description: "", price_em: 0, price_dt: 0, category: "LAVORAZIONE", unit: "mq" })
       setIsAddProductOpen(false)
     }
   }
@@ -131,7 +131,16 @@ function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpd
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="category">Categoria</Label>
-                    <Input id="category" value={newProduct.category} onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })} placeholder="es. Pietra" />
+                    <Select value={newProduct.category} onValueChange={(val) => setNewProduct({ ...newProduct, category: val })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleziona categoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PRODUCT_CATEGORIES.map(cat => (
+                          <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="unit">Unità</Label>
