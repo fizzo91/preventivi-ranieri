@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, FileText, Plus, Settings, Calculator, Image, Wrench, AlignLeft } from "lucide-react"
+import { Home, FileText, Plus, Settings, Calculator, Image, Wrench, AlignLeft, BookOpen } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
 import {
@@ -23,6 +23,7 @@ const items = [
   { title: "Descrizioni", url: "/descriptions", icon: AlignLeft },
   { title: "Prodotti", url: "/products", icon: Calculator },
   { title: "Strumenti", url: "/tools", icon: Wrench },
+  { title: "Guida", url: "/guide", icon: BookOpen },
   { title: "Impostazioni", url: "/settings", icon: Settings },
 ]
 

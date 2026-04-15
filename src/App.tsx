@@ -15,6 +15,7 @@ import Descriptions from "./pages/Descriptions";
 import Settings from "./pages/Settings";
 import Tools from "./pages/Tools";
 import ToolPage from "./pages/ToolPage";
+import Guide from "./pages/Guide";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -43,6 +44,7 @@ const App = () => (
                       <Route path="/descriptions" element={<Descriptions />} />
                       <Route path="/products" element={<Products />} />
                       <Route path="/tools" element={<Tools />} />
+                      <Route path="/guide" element={<Guide />} />
                       <Route path="/settings" element={<Settings />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>

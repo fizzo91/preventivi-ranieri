@@ -111,7 +111,7 @@ export function Combobox({
       <PopoverContent className="w-full p-0" align="start">
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
-          <CommandList>
+          <CommandList className="max-h-[300px]">
             <CommandEmpty>Nessun prodotto trovato.</CommandEmpty>
             {recentOptions.length > 0 && (
               <CommandGroup heading="Usati di recente">
