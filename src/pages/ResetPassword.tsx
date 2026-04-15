@@ -70,6 +70,7 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [ready, setReady] = useState(false);
+  const [expired, setExpired] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
@@ -78,12 +79,25 @@ const ResetPassword = () => {
       }
     });
 
-    // Also check if we already have a recovery session
+    // Check if we already have a recovery session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setReady(true);
+      if (session) {
+        setReady(true);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    // Timeout: if no session after 5 seconds, show expired message
+    const timeout = setTimeout(() => {
+      setExpired((prev) => {
+        // Only expire if not ready
+        return !ready ? true : prev;
+      });
+    }, 5000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
