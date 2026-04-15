@@ -126,8 +126,21 @@ const ResetPassword = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
         <Card className="w-full max-w-md text-center">
           <CardContent className="pt-8 pb-8 space-y-4">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-            <p className="text-muted-foreground">Verifica sessione in corso...</p>
+            {expired ? (
+              <>
+                <ShieldCheck className="h-8 w-8 mx-auto text-muted-foreground" />
+                <p className="text-foreground font-medium">Link scaduto o non valido</p>
+                <p className="text-sm text-muted-foreground">Richiedi un nuovo link di recupero dalla pagina di login.</p>
+                <Button variant="outline" onClick={() => navigate("/auth")} className="mt-2">
+                  Torna al login
+                </Button>
+              </>
+            ) : (
+              <>
+                <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+                <p className="text-muted-foreground">Verifica sessione in corso...</p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
