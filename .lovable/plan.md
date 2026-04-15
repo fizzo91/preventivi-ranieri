@@ -1,72 +1,53 @@
 
-# Barra a 3 segmenti con fallback mq
 
-## Cosa cambia
+## Piano di Implementazione
 
-Il grafico "Costo Medio per Spessore" passera' da una singola barra blu a **3 segmenti colorati sovrapposti**, con la logica di fallback per i mq.
+### 1. Rinominare le sezioni con formato ID.01, ID.02, ...
 
-### Visualizzazione
+**Situazione attuale:** La prima sezione si chiama "Progetto Principale", le successive "Sezione 2", "Sezione 3", ecc.
 
-```text
-50 mm  |████████████████░░░░░░░▓▓▓▓|
-        Pietra+Lavoraz.  Rischio Finitura
+**Modifiche:**
+- In `src/hooks/useSectionManager.ts`: cambiare il nome iniziale da `"Progetto Principale"` a `"ID.01"` e la funzione `addSection` per generare `"ID.02"`, `"ID.03"`, ecc. (basato sulla posizione corrente).
+- In `src/hooks/useSectionManager.ts` → `duplicateSection`: il nome della copia segue la numerazione progressiva (es. `"ID.03"` se ci sono già 2 sezioni), non `"... (Copia)"`.
+- In `src/hooks/useSectionManager.ts` → `loadFromTemplate`: stessa logica per i template caricati.
+- Il campo nome resta editabile, quindi l'utente potrà sempre personalizzarlo.
 
-30 mm  |████████░░░▓▓|
-```
+### 2. Creare una guida d'uso
 
-| Segmento | Contenuto | Colore |
-|----------|-----------|--------|
-| Pietra e Lavorazioni | Somma di tutti gli `item.total` | Blu (primary) |
-| Rischio | Somma dei costi calcolati dai `risks` | Arancione |
-| Finitura | `engobbio` + `finitura` | Verde |
+**Approccio:** Aggiungere una nuova pagina `/guide` accessibile dalla sidebar con una guida completa che spiega:
+- Come creare un preventivo (sezioni, prodotti, rischi, smalto, calcolatore pietra)
+- Come gestire prodotti e catalogo
+- Come usare la calcolatrice collegata al preventivo
+- Come esportare/stampare il PDF con foglio calcoli
+- Come gestire i template di sezione
+- Come funzionano i tag, complessità e rischio
 
-### Logica mq (fallback a 3 livelli)
+**File da creare/modificare:**
+- Nuovo: `src/pages/Guide.tsx` — pagina con accordion/sezioni espandibili
+- `src/App.tsx` — aggiungere rotta `/guide`
+- `src/components/app-sidebar.tsx` — aggiungere voce "Guida" nella sidebar
 
-1. `section.mqTotali` -- se compilato e > 0
-2. Quantita' della voce "2 taglio" -- se presente
-3. Quantita' della voce PIETRA -- ultima risorsa
+### 3. Verificare che tutti i prodotti siano selezionabili nei preventivi
 
-Se nessuno e' disponibile o > 0, la sezione viene saltata.
+**Analisi:** Il Combobox usa `option.label` (il nome del prodotto) come valore di ricerca con il componente `Command` (cmdk). Il matching è fuzzy sul `label`. Non ci sono filtri per categoria nel selettore prodotti del preventivo, quindi tutti i prodotti dovrebbero essere disponibili.
 
-### Tooltip
+**Possibile problema:** Il componente `CommandList` di cmdk ha un limite di rendering virtuale. Se ci sono molti prodotti, alcuni potrebbero non apparire nella lista. Anche il matching fuzzy potrebbe non trovare prodotti con nomi particolari (caratteri speciali, numeri).
 
-Al passaggio del mouse:
-- Spessore
-- Pietra e Lavorazioni: X euro/mq
-- Rischio: X euro/mq
-- Finitura: X euro/mq
-- Totale: X euro/mq
-- N sezioni, N mq totali
+**Azioni:**
+- Verificare nel database quanti prodotti ci sono e se qualcuno ha nomi problematici
+- Testare il Combobox con l'elenco completo
+- Se necessario, aggiungere un filtro per categoria nel selettore prodotti del preventivo per facilitare la ricerca
+- Aumentare il limite di `CommandList` se necessario (aggiungere prop `cmdk-list-sizer` o rimuovere virtualizzazione)
 
-## Dettagli tecnici
+### Dettagli tecnici
 
-### File: `src/pages/Dashboard.tsx`
+**File coinvolti:**
+| File | Modifica |
+|------|----------|
+| `src/hooks/useSectionManager.ts` | Numerazione sezioni ID.01, ID.02... |
+| `src/utils/quoteCalculations.ts` | Aggiornare `createEmptySection` se serve |
+| `src/pages/Guide.tsx` | Nuova pagina guida |
+| `src/App.tsx` | Rotta `/guide` |
+| `src/components/app-sidebar.tsx` | Voce sidebar "Guida" |
+| `src/components/ui/combobox.tsx` | Eventuale fix per prodotti non trovabili |
 
-**1. Aggiornare l'interfaccia `ThicknessCost`:**
-
-Aggiungere i campi `avgPietraPerMq`, `avgRischioPerMq`, `avgFinituraPerMq`.
-
-**2. Aggiornare il `useMemo` di `thicknessCosts`:**
-
-- Il `thicknessMap` accumulera' 4 valori separati per spessore: `totalPietra`, `totalRischio`, `totalFinitura`, `totalMq`, `count`.
-- Per ogni sezione con PIETRA:
-  - Determina mq con fallback: `mqTotali` -> quantita' "2 taglio" -> quantita' PIETRA.
-  - `pietraLavorazioni` = somma di tutti `item.total` nella sezione.
-  - `rischio` = per ogni risk: se `appliedToItemId === 'SECTION_TOTAL'`, applica percentuale su itemsTotal; altrimenti applica su item specifico.
-  - `finitura` = `section.engobbio + section.finitura`.
-  - Moltiplica tutto per `section.quantity || 1`.
-- Alla fine, divide ogni totale accumulato per `totalMq` per ottenere i costi al mq.
-
-**3. Aggiornare il grafico:**
-
-Sostituire la singola `<Bar>` con 3 barre stacked:
-
-```tsx
-<Bar dataKey="avgPietraPerMq" stackId="cost" fill="hsl(var(--primary))" name="Pietra e Lavorazioni" radius={[0, 0, 0, 0]} />
-<Bar dataKey="avgRischioPerMq" stackId="cost" fill="#f97316" name="Rischio" radius={[0, 0, 0, 0]} />
-<Bar dataKey="avgFinituraPerMq" stackId="cost" fill="#22c55e" name="Finitura" radius={[0, 4, 4, 0]} />
-```
-
-**4. Aggiornare il tooltip custom** per mostrare i 3 valori con i colori corrispondenti e il totale complessivo.
-
-Nessun altro file viene modificato.
