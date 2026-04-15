@@ -70,6 +70,7 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [ready, setReady] = useState(false);
+  const [expired, setExpired] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
@@ -78,12 +79,25 @@ const ResetPassword = () => {
       }
     });
 
-    // Also check if we already have a recovery session
+    // Check if we already have a recovery session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setReady(true);
+      if (session) {
+        setReady(true);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    // Timeout: if no session after 5 seconds, show expired message
+    const timeout = setTimeout(() => {
+      setExpired((prev) => {
+        // Only expire if not ready
+        return !ready ? true : prev;
+      });
+    }, 5000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,8 +126,21 @@ const ResetPassword = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
         <Card className="w-full max-w-md text-center">
           <CardContent className="pt-8 pb-8 space-y-4">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-            <p className="text-muted-foreground">Verifica sessione in corso...</p>
+            {expired ? (
+              <>
+                <ShieldCheck className="h-8 w-8 mx-auto text-muted-foreground" />
+                <p className="text-foreground font-medium">Link scaduto o non valido</p>
+                <p className="text-sm text-muted-foreground">Richiedi un nuovo link di recupero dalla pagina di login.</p>
+                <Button variant="outline" onClick={() => navigate("/auth")} className="mt-2">
+                  Torna al login
+                </Button>
+              </>
+            ) : (
+              <>
+                <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+                <p className="text-muted-foreground">Verifica sessione in corso...</p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
