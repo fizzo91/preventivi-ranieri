@@ -18,8 +18,8 @@ import {
   roundUp,
 } from "@/utils"
 
-  const getNextSectionName = (currentSections: QuoteSection[]) =>
-    `ID.${String(currentSections.length + 1).padStart(2, '0')}`
+const getNextSectionName = (currentSections: QuoteSection[]) =>
+  `ID.${String(currentSections.length + 1).padStart(2, '0')}`
 
 export function useSectionManager(initialSections?: QuoteSection[]) {
   const { toast } = useToast()
