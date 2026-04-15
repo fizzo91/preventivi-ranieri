@@ -48,11 +48,14 @@ import { useThicknessAverages } from "@/hooks/useThicknessAverages"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { LoadingSpinner } from "@/components/shared"
 import { useSectionManager } from "@/hooks/useSectionManager"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { calculateGrandTotal } from "@/utils/quoteCalculations"
 import type { QuoteItem, QuoteSection, PriceWarning } from "@/types/quote"
 import type { Product } from "@/hooks/useProducts"
 import { EnamelCostDialog } from "@/components/EnamelCostDialog"
 import type { EnamelPieceRow } from "@/components/EnamelCostCalculator"
+
+const PRODUCT_CATEGORIES = ["PIETRA", "LAVORAZIONE", "PRODOTTO COMPLETTO"] as const
 
 // ── SortableItem (extracted inline component) ──────────────────────────
 
