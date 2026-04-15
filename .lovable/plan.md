@@ -1,53 +1,46 @@
 
 
-## Piano di Implementazione
+## Piano: Miglioramento Reset Password
 
-### 1. Rinominare le sezioni con formato ID.01, ID.02, ...
+### Problema attuale
+L'errore "Auth session missing" indica che il flusso di reset password non funziona. Il bug principale: nella pagina `/auth?mode=reset`, il redirect `if (session && mode !== "update")` si esegue **prima** che l'`useEffect` imposti `mode` su `"update"`, causando un redirect immediato a `/` e perdendo la sessione di recovery.
 
-**Situazione attuale:** La prima sezione si chiama "Progetto Principale", le successive "Sezione 2", "Sezione 3", ecc.
+### Soluzione
 
-**Modifiche:**
-- In `src/hooks/useSectionManager.ts`: cambiare il nome iniziale da `"Progetto Principale"` a `"ID.01"` e la funzione `addSection` per generare `"ID.02"`, `"ID.03"`, ecc. (basato sulla posizione corrente).
-- In `src/hooks/useSectionManager.ts` → `duplicateSection`: il nome della copia segue la numerazione progressiva (es. `"ID.03"` se ci sono già 2 sezioni), non `"... (Copia)"`.
-- In `src/hooks/useSectionManager.ts` → `loadFromTemplate`: stessa logica per i template caricati.
-- Il campo nome resta editabile, quindi l'utente potrà sempre personalizzarlo.
+**1. Creare una pagina dedicata `/reset-password`** (nuova rotta pubblica)
+- Separare completamente il flusso di aggiornamento password dal login
+- La pagina intercetta l'evento `PASSWORD_RECOVERY` da `onAuthStateChange`
+- Validazione password robusta: minimo 8 caratteri, almeno una maiuscola, un numero, un carattere speciale
+- Indicatore visivo della forza password (debole/media/forte)
+- Toggle mostra/nascondi password
+- Dopo il successo, redirect al login con messaggio di conferma
 
-### 2. Creare una guida d'uso
+**2. Aggiornare AuthContext**
+- Il `resetPassword` usa `redirectTo: window.location.origin + '/reset-password'` (invece di `/auth?mode=reset`)
 
-**Approccio:** Aggiungere una nuova pagina `/guide` accessibile dalla sidebar con una guida completa che spiega:
-- Come creare un preventivo (sezioni, prodotti, rischi, smalto, calcolatore pietra)
-- Come gestire prodotti e catalogo
-- Come usare la calcolatrice collegata al preventivo
-- Come esportare/stampare il PDF con foglio calcoli
-- Come gestire i template di sezione
-- Come funzionano i tag, complessità e rischio
+**3. Aggiornare Auth.tsx**
+- Rimuovere la modalità "update" e tutta la logica `mode=reset` dal URL
+- Semplificare: solo login + recupera password
 
-**File da creare/modificare:**
-- Nuovo: `src/pages/Guide.tsx` — pagina con accordion/sezioni espandibili
-- `src/App.tsx` — aggiungere rotta `/guide`
-- `src/components/app-sidebar.tsx` — aggiungere voce "Guida" nella sidebar
+**4. Aggiornare App.tsx**
+- Aggiungere rotta pubblica `/reset-password`
 
-### 3. Verificare che tutti i prodotti siano selezionabili nei preventivi
+**5. Aggiungere cambio password nelle Impostazioni**
+- Sezione "Sicurezza" nella pagina Settings con form per cambiare password (password attuale non richiesta da Supabase, ma nuova + conferma con stesse regole di validazione)
 
-**Analisi:** Il Combobox usa `option.label` (il nome del prodotto) come valore di ricerca con il componente `Command` (cmdk). Il matching è fuzzy sul `label`. Non ci sono filtri per categoria nel selettore prodotti del preventivo, quindi tutti i prodotti dovrebbero essere disponibili.
+### Regole validazione password
+- Minimo 8 caratteri
+- Almeno una lettera maiuscola
+- Almeno un numero
+- Almeno un carattere speciale (!@#$%^&*)
+- Indicatore visivo: rosso (debole), giallo (media), verde (forte)
 
-**Possibile problema:** Il componente `CommandList` di cmdk ha un limite di rendering virtuale. Se ci sono molti prodotti, alcuni potrebbero non apparire nella lista. Anche il matching fuzzy potrebbe non trovare prodotti con nomi particolari (caratteri speciali, numeri).
-
-**Azioni:**
-- Verificare nel database quanti prodotti ci sono e se qualcuno ha nomi problematici
-- Testare il Combobox con l'elenco completo
-- Se necessario, aggiungere un filtro per categoria nel selettore prodotti del preventivo per facilitare la ricerca
-- Aumentare il limite di `CommandList` se necessario (aggiungere prop `cmdk-list-sizer` o rimuovere virtualizzazione)
-
-### Dettagli tecnici
-
-**File coinvolti:**
+### File coinvolti
 | File | Modifica |
 |------|----------|
-| `src/hooks/useSectionManager.ts` | Numerazione sezioni ID.01, ID.02... |
-| `src/utils/quoteCalculations.ts` | Aggiornare `createEmptySection` se serve |
-| `src/pages/Guide.tsx` | Nuova pagina guida |
-| `src/App.tsx` | Rotta `/guide` |
-| `src/components/app-sidebar.tsx` | Voce sidebar "Guida" |
-| `src/components/ui/combobox.tsx` | Eventuale fix per prodotti non trovabili |
+| `src/pages/ResetPassword.tsx` | Nuova pagina dedicata |
+| `src/pages/Auth.tsx` | Rimuovere modalità update |
+| `src/contexts/AuthContext.tsx` | Aggiornare redirectTo |
+| `src/App.tsx` | Aggiungere rotta `/reset-password` |
+| `src/pages/Settings.tsx` | Aggiungere sezione cambio password |
 
