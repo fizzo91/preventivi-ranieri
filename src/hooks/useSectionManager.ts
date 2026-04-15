@@ -18,12 +18,15 @@ import {
   roundUp,
 } from "@/utils"
 
+  const getNextSectionName = (currentSections: QuoteSection[]) =>
+    `ID.${String(currentSections.length + 1).padStart(2, '0')}`
+
 export function useSectionManager(initialSections?: QuoteSection[]) {
   const { toast } = useToast()
   const { user } = useAuth()
 
   const [sections, setSections] = useState<QuoteSection[]>(
-    initialSections || [createEmptySection("Progetto Principale", "main")]
+    initialSections || [createEmptySection("ID.01", "main")]
   )
 
   // Recalculate section totals when items/risks change
@@ -62,7 +65,7 @@ export function useSectionManager(initialSections?: QuoteSection[]) {
   }, [])
 
   const addSection = useCallback(() => {
-    setSections(prev => [...prev, createEmptySection(`Sezione ${prev.length + 1}`)])
+    setSections(prev => [...prev, createEmptySection(getNextSectionName(prev))])
   }, [])
 
   const removeSection = useCallback((sectionId: string) => {
@@ -78,7 +81,7 @@ export function useSectionManager(initialSections?: QuoteSection[]) {
       const copy: QuoteSection = {
         ...source,
         id: ts.toString(),
-        name: `${source.name} (Copia)`,
+        name: getNextSectionName(prev),
         items: source.items.map((item, i) => ({ ...item, id: `${ts}-item-${i}` })),
         risks: source.risks.map((risk, i) => ({ ...risk, id: `${ts}-risk-${i}` })),
       }
@@ -239,15 +242,17 @@ export function useSectionManager(initialSections?: QuoteSection[]) {
 
   const loadFromTemplate = useCallback((template: SectionTemplate) => {
     const ts = Date.now()
-    const newSection: QuoteSection = {
-      ...createEmptySection(template.name, ts.toString()),
-      description: template.description || "",
-      items: template.items.map((item: any, i: number) => ({ ...item, id: `${ts}-item-${i}` })),
-      tags: template.tags || [],
-      complexity: template.complexity || undefined,
-      risk: template.risk || undefined,
-    }
-    setSections(prev => [...prev, newSection])
+    setSections(prev => {
+      const newSection: QuoteSection = {
+        ...createEmptySection(getNextSectionName(prev), ts.toString()),
+        description: template.description || "",
+        items: template.items.map((item: any, i: number) => ({ ...item, id: `${ts}-item-${i}` })),
+        tags: template.tags || [],
+        complexity: template.complexity || undefined,
+        risk: template.risk || undefined,
+      }
+      return [...prev, newSection]
+    })
     toast({ title: "Template caricato", description: `Sezione "${template.name}" creata dal template` })
   }, [toast])
 
