@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button"
-import { Edit, Trash2, Copy, FileDown, FileText } from "lucide-react"
+import { Edit, Trash2, Copy, FileDown, FileText, User } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { QuoteDetailDialog } from "./QuoteDetailDialog"
+import { useAuth } from "@/contexts/AuthContext"
 import type { Quote } from "@/hooks/useQuotes"
 
 interface QuoteListItemProps {
@@ -20,6 +21,8 @@ export const QuoteListItem = ({
   quote, onDuplicate, onDelete, onGeneratePdf, onGenerateSyntheticPdf, onExportJson, isDuplicating, isDeleting
 }: QuoteListItemProps) => {
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const isOwner = user?.id === quote.user_id
 
   return (
     <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -28,9 +31,13 @@ export const QuoteListItem = ({
         <p className="text-sm text-muted-foreground">
           {quote.client_name} {quote.client_company && `• ${quote.client_company}`}
         </p>
-        <p className="text-xs text-muted-foreground">
-          {new Date(quote.date).toLocaleDateString('it-IT')}
-        </p>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span>{new Date(quote.date).toLocaleDateString('it-IT')}</span>
+          <span className="inline-flex items-center gap-1 bg-muted px-2 py-0.5 rounded-full">
+            <User className="h-3 w-3" />
+            {quote.owner_name || 'Utente'}
+          </span>
+        </div>
       </div>
       <div className="flex items-center gap-4">
         <div className="text-right">
@@ -55,15 +62,19 @@ export const QuoteListItem = ({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" size="sm" onClick={() => navigate('/new-quote', { state: { editQuote: quote } })}>
-            <Edit className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => onDuplicate(quote)} disabled={isDuplicating}>
-            <Copy className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => onDelete(quote.id)} disabled={isDeleting}>
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          {isOwner && (
+            <>
+              <Button variant="outline" size="sm" onClick={() => navigate('/new-quote', { state: { editQuote: quote } })}>
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => onDuplicate(quote)} disabled={isDuplicating}>
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => onDelete(quote.id)} disabled={isDeleting}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>
