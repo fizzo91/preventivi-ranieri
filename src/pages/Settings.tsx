@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { Save, X, Plus, RotateCcw, ShieldCheck, Eye, EyeOff, Loader2 } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Save, X, Plus, RotateCcw, ShieldCheck, Eye, EyeOff, Loader2, LogOut, Camera } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { PasswordStrengthIndicator, validatePassword } from "@/pages/ResetPassword"
 import { useAuth } from "@/contexts/AuthContext"
@@ -15,10 +16,14 @@ import { useProducts } from "@/hooks/useProducts"
 import { useClients } from "@/hooks/useClients"
 import { useTags } from "@/hooks/useTags"
 import { LoadingSpinner, StatCard } from "@/components/shared"
+import { supabase } from "@/integrations/supabase/client"
+import { validateImageFile } from "@/lib/fileValidation"
+import { useNavigate } from "react-router-dom"
 
 const Settings = () => {
   const { toast } = useToast()
-  const { profile, updateProfile, updatePassword } = useAuth()
+  const navigate = useNavigate()
+  const { profile, user, updateProfile, updatePassword, signOut, refreshProfile } = useAuth()
   const { data: quotes = [] } = useQuotes()
   const { data: products = [] } = useProducts()
   const { data: clients = [] } = useClients()
@@ -27,6 +32,8 @@ const Settings = () => {
   const [settings, setSettings] = useState({
     company_name: "", address: "", phone: "", website: "", vat_number: "", tax_code: "", notes: ""
   })
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (profile) {
@@ -39,6 +46,51 @@ const Settings = () => {
     }
   }, [profile])
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !user) return
+
+    const validation = await validateImageFile(file)
+    if (!validation.valid) {
+      toast({ title: "Errore", description: validation.error, variant: "destructive" })
+      return
+    }
+
+    setUploadingAvatar(true)
+    try {
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg'
+      const filePath = `${user.id}/avatar.${ext}`
+
+      // Remove old avatar files
+      const { data: existingFiles } = await supabase.storage.from('avatars').list(user.id)
+      if (existingFiles?.length) {
+        await supabase.storage.from('avatars').remove(existingFiles.map(f => `${user.id}/${f.name}`))
+      }
+
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true })
+      if (uploadError) throw uploadError
+
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath)
+      
+      // Add cache buster
+      const urlWithCacheBust = `${publicUrl}?t=${Date.now()}`
+      await updateProfile({ logo: urlWithCacheBust })
+      await refreshProfile()
+
+      toast({ title: "Foto aggiornata", description: "La foto profilo è stata caricata con successo." })
+    } catch (error: any) {
+      toast({ title: "Errore", description: error.message || "Errore durante il caricamento", variant: "destructive" })
+    } finally {
+      setUploadingAvatar(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const handleLogout = async () => {
+    await signOut()
+    navigate("/auth")
+  }
+
   const saveSettings = async () => {
     try {
       await updateProfile(settings)
@@ -50,12 +102,57 @@ const Settings = () => {
 
   if (!profile) return <LoadingSpinner />
 
+  const initials = profile.full_name
+    ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    : profile.email[0].toUpperCase()
+
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Impostazioni</h1>
-        <p className="text-muted-foreground mt-1">Configura l'azienda e visualizza le statistiche dei dati</p>
-      </div>
+      {/* Profile Header */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            <div className="relative group">
+              <Avatar className="h-24 w-24 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                <AvatarImage src={profile.logo || undefined} alt={profile.full_name || 'Avatar'} />
+                <AvatarFallback className="text-2xl font-semibold bg-primary/10 text-primary">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingAvatar}
+                className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                {uploadingAvatar ? (
+                  <Loader2 className="h-6 w-6 text-white animate-spin" />
+                ) : (
+                  <Camera className="h-6 w-6 text-white" />
+                )}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                onChange={handleAvatarUpload}
+              />
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <h1 className="text-2xl font-bold text-foreground">{profile.full_name || 'Utente'}</h1>
+              <p className="text-muted-foreground">{profile.email}</p>
+              {profile.company_name && (
+                <p className="text-sm text-muted-foreground mt-1">{profile.company_name}</p>
+              )}
+            </div>
+            <Button variant="outline" onClick={handleLogout} className="gap-2 text-destructive hover:text-destructive">
+              <LogOut className="h-4 w-4" />
+              Esci
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Company Settings */}
       <Card>
@@ -135,6 +232,8 @@ const Settings = () => {
       <SecuritySection updatePassword={updatePassword} />
 
       <Separator />
+
+      {/* Stats */}
       <Card>
         <CardHeader><CardTitle>Statistiche Dati</CardTitle></CardHeader>
         <CardContent className="space-y-6">
