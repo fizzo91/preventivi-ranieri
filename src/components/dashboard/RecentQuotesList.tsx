@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
+import { User } from "lucide-react"
 import type { Quote } from "@/hooks/useQuotes"
 
 interface RecentQuotesListProps {
@@ -21,6 +22,9 @@ export const RecentQuotesList = ({ quotes }: RecentQuotesListProps) => (
                 <p className="font-medium">{quote.quote_number}</p>
                 <p className="text-sm text-muted-foreground">
                   {quote.client_name} {quote.client_company && `• ${quote.client_company}`}
+                </p>
+                <p className="text-xs text-muted-foreground inline-flex items-center gap-1">
+                  <User className="h-3 w-3" />{quote.owner_name || 'Utente'}
                 </p>
               </div>
               <div className="text-right space-y-1">
