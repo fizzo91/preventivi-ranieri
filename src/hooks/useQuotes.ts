@@ -33,14 +33,25 @@ export const useQuotes = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("quotes")
-        .select("*, profiles:user_id(full_name)")
+        .select("*")
         .order("date", { ascending: false });
 
       if (error) throw error;
+
+      // Get unique user_ids to fetch owner names
+      const userIds = [...new Set((data as any[]).map((q) => q.user_id))];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", userIds);
+
+      const profileMap = new Map(
+        (profiles || []).map((p) => [p.id, p.full_name || "Utente"])
+      );
+
       return (data as any[]).map((q) => ({
         ...q,
-        owner_name: q.profiles?.full_name || 'Utente',
-        profiles: undefined,
+        owner_name: profileMap.get(q.user_id) || "Utente",
       })) as Quote[];
     },
   });
