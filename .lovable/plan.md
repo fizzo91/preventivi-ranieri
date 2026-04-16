@@ -1,46 +1,38 @@
 
 
-## Piano: Miglioramento Reset Password
+## Piano: Ristrutturazione pagina Impostazioni → Profilo Utente
 
-### Problema attuale
-L'errore "Auth session missing" indica che il flusso di reset password non funziona. Il bug principale: nella pagina `/auth?mode=reset`, il redirect `if (session && mode !== "update")` si esegue **prima** che l'`useEffect` imposti `mode` su `"update"`, causando un redirect immediato a `/` e perdendo la sessione di recovery.
+### Obiettivo
+Trasformare la pagina Impostazioni in una pagina profilo personale con: foto profilo, cambio password, statistiche e logout. I dati aziendali e la gestione tag restano nella stessa pagina ma riorganizzati.
 
-### Soluzione
+### Modifiche
 
-**1. Creare una pagina dedicata `/reset-password`** (nuova rotta pubblica)
-- Separare completamente il flusso di aggiornamento password dal login
-- La pagina intercetta l'evento `PASSWORD_RECOVERY` da `onAuthStateChange`
-- Validazione password robusta: minimo 8 caratteri, almeno una maiuscola, un numero, un carattere speciale
-- Indicatore visivo della forza password (debole/media/forte)
-- Toggle mostra/nascondi password
-- Dopo il successo, redirect al login con messaggio di conferma
+**1. Creare bucket storage `avatars`** (migrazione SQL)
+- Bucket pubblico per le foto profilo
+- RLS: utenti autenticati possono caricare/aggiornare/eliminare solo i propri file (path basato su `auth.uid()`)
 
-**2. Aggiornare AuthContext**
-- Il `resetPassword` usa `redirectTo: window.location.origin + '/reset-password'` (invece di `/auth?mode=reset`)
+**2. Ristrutturare `src/pages/Settings.tsx`**
+- **Header profilo** in cima: avatar circolare con upload/cambio foto (click per selezionare file), nome utente, email, pulsante Logout
+- Upload foto: salva nel bucket `avatars`, aggiorna campo `logo` nel profilo con l'URL pubblico
+- **Sezioni sotto** (nell'ordine):
+  1. Dati Azienda (come ora)
+  2. Gestione Tag (come ora)
+  3. Sicurezza / Cambio Password (come ora)
+  4. Statistiche Dati (come ora)
+- Pulsante **Logout** ben visibile nell'header del profilo
 
-**3. Aggiornare Auth.tsx**
-- Rimuovere la modalità "update" e tutta la logica `mode=reset` dal URL
-- Semplificare: solo login + recupera password
+**3. Aggiornare `src/contexts/AuthContext.tsx`**
+- Aggiungere campo `avatar_url` al tipo Profile (opzionale, possiamo usare il campo `logo` già esistente)
 
-**4. Aggiornare App.tsx**
-- Aggiungere rotta pubblica `/reset-password`
+### Dettagli tecnici
 
-**5. Aggiungere cambio password nelle Impostazioni**
-- Sezione "Sicurezza" nella pagina Settings con form per cambiare password (password attuale non richiesta da Supabase, ma nuova + conferma con stesse regole di validazione)
-
-### Regole validazione password
-- Minimo 8 caratteri
-- Almeno una lettera maiuscola
-- Almeno un numero
-- Almeno un carattere speciale (!@#$%^&*)
-- Indicatore visivo: rosso (debole), giallo (media), verde (forte)
-
-### File coinvolti
 | File | Modifica |
 |------|----------|
-| `src/pages/ResetPassword.tsx` | Nuova pagina dedicata |
-| `src/pages/Auth.tsx` | Rimuovere modalità update |
-| `src/contexts/AuthContext.tsx` | Aggiornare redirectTo |
-| `src/App.tsx` | Aggiungere rotta `/reset-password` |
-| `src/pages/Settings.tsx` | Aggiungere sezione cambio password |
+| Migrazione SQL | Creare bucket `avatars` + policy RLS |
+| `src/pages/Settings.tsx` | Aggiungere sezione avatar con upload, pulsante logout, riorganizzare layout |
+| `src/lib/fileValidation.ts` | Riutilizzare validazione esistente per immagini |
+
+**Upload avatar**: validazione magic bytes (JPEG/PNG/WebP), max 2MB, upload a `avatars/{user_id}/avatar.{ext}`, salvataggio URL pubblico nel campo `logo` della tabella `profiles`.
+
+**Logout**: usa `signOut()` già disponibile da `useAuth()`, con redirect a `/auth`.
 
