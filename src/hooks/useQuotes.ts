@@ -24,6 +24,7 @@ export interface Quote {
   created_at: string;
   updated_at: string;
   enamel_data: any | null;
+  owner_name?: string;
 }
 
 export const useQuotes = () => {
@@ -32,11 +33,15 @@ export const useQuotes = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("quotes")
-        .select("*")
+        .select("*, profiles:user_id(full_name)")
         .order("date", { ascending: false });
 
       if (error) throw error;
-      return data as Quote[];
+      return (data as any[]).map((q) => ({
+        ...q,
+        owner_name: q.profiles?.full_name || 'Utente',
+        profiles: undefined,
+      })) as Quote[];
     },
   });
 };
