@@ -19,6 +19,8 @@ import { LoadingSpinner, StatCard } from "@/components/shared"
 import { supabase } from "@/integrations/supabase/client"
 import { validateImageFile } from "@/lib/fileValidation"
 import { useNavigate } from "react-router-dom"
+import { useIsAdmin } from "@/hooks/useAccessRequests"
+import { AccessRequestsPanel } from "@/components/admin/AccessRequestsPanel"
 
 const Settings = () => {
   const { toast } = useToast()
@@ -28,6 +30,7 @@ const Settings = () => {
   const { data: products = [] } = useProducts()
   const { data: clients = [] } = useClients()
   const { tags: suggestedTags, addTag, removeTag: removeTagFromList, resetToDefaults } = useTags()
+  const { isAdmin } = useIsAdmin()
   const [newTag, setNewTag] = useState("")
   const [settings, setSettings] = useState({
     company_name: "", address: "", phone: "", website: "", vat_number: "", tax_code: "", notes: ""
@@ -227,6 +230,14 @@ const Settings = () => {
       </Card>
 
       <Separator />
+
+      {/* Admin: Access Requests */}
+      {isAdmin && (
+        <>
+          <AccessRequestsPanel />
+          <Separator />
+        </>
+      )}
 
       {/* Security - Change Password */}
       <SecuritySection updatePassword={updatePassword} />
