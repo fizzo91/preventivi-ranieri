@@ -12,7 +12,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { LogOut, Settings } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
+import { HelpChatWidget } from "@/components/HelpChatWidget"
+
+const CHAT_ENABLED_ROUTES = ["/new-quote", "/tools", "/guide", "/bug-report"];
 
 interface LayoutProps {
   children: ReactNode
@@ -21,6 +24,10 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const showChat = CHAT_ENABLED_ROUTES.some((p) =>
+    p === "/" ? location.pathname === "/" : location.pathname.startsWith(p)
+  );
 
   const getInitials = (name: string | null) => {
     if (!name) return "U";
@@ -84,6 +91,7 @@ export function Layout({ children }: LayoutProps) {
             {children}
           </main>
         </div>
+        {showChat && <HelpChatWidget />}
       </div>
     </SidebarProvider>
   )
