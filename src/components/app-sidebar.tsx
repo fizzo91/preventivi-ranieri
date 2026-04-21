@@ -34,7 +34,7 @@ export function AppSidebar() {
   const location = useLocation()
   const currentPath = location.pathname
   const pendingCount = usePendingRequestsCount()
-  const { data: isAdmin } = useIsAdmin()
+  const { isAdmin } = useIsAdmin()
   const pendingBugs = usePendingBugsCount()
 
   const isActive = (path: string) => currentPath === path
