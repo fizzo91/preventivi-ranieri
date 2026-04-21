@@ -1,4 +1,4 @@
-import { Home, FileText, Plus, Settings, Calculator, Image, Wrench, AlignLeft, BookOpen } from "lucide-react"
+import { Home, FileText, Plus, Settings, Calculator, Image, Wrench, AlignLeft, BookOpen, Bug } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
 import {
@@ -13,7 +13,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Badge } from "@/components/ui/badge"
-import { usePendingRequestsCount } from "@/hooks/useAccessRequests"
+import { usePendingRequestsCount, useIsAdmin } from "@/hooks/useAccessRequests"
+import { usePendingBugsCount } from "@/hooks/useBugReports"
 
 const items = [
   { title: "Dashboard", url: "/", icon: Home },
@@ -24,6 +25,7 @@ const items = [
   { title: "Prodotti", url: "/products", icon: Calculator },
   { title: "Strumenti", url: "/tools", icon: Wrench },
   { title: "Guida", url: "/guide", icon: BookOpen },
+  { title: "Segnala bug", url: "/bug-report", icon: Bug },
   { title: "Impostazioni", url: "/settings", icon: Settings },
 ]
 
@@ -32,6 +34,8 @@ export function AppSidebar() {
   const location = useLocation()
   const currentPath = location.pathname
   const pendingCount = usePendingRequestsCount()
+  const { isAdmin } = useIsAdmin()
+  const pendingBugs = usePendingBugsCount()
 
   const isActive = (path: string) => currentPath === path
 
@@ -50,16 +54,19 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
-                const showBadge = item.url === "/settings" && pendingCount > 0
+                let badgeCount = 0
+                if (item.url === "/settings" && (pendingCount > 0 || (isAdmin && pendingBugs > 0))) {
+                  badgeCount = pendingCount + (isAdmin ? pendingBugs : 0)
+                }
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={isActive(item.url)}>
                       <NavLink to={item.url} end>
                         <item.icon className="h-4 w-4" />
                         <span className="flex-1">{item.title}</span>
-                        {showBadge && state === "expanded" && (
+                        {badgeCount > 0 && state === "expanded" && (
                           <Badge variant="destructive" className="h-5 min-w-5 px-1.5 text-xs">
-                            {pendingCount}
+                            {badgeCount}
                           </Badge>
                         )}
                       </NavLink>

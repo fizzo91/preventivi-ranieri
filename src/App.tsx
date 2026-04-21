@@ -16,6 +16,7 @@ import Settings from "./pages/Settings";
 import Tools from "./pages/Tools";
 import ToolPage from "./pages/ToolPage";
 import Guide from "./pages/Guide";
+import BugReport from "./pages/BugReport";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -47,6 +48,7 @@ const App = () => (
                       <Route path="/products" element={<Products />} />
                       <Route path="/tools" element={<Tools />} />
                       <Route path="/guide" element={<Guide />} />
+                      <Route path="/bug-report" element={<BugReport />} />
                       <Route path="/settings" element={<Settings />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>

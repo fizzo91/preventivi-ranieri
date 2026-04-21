@@ -21,6 +21,7 @@ import { validateImageFile } from "@/lib/fileValidation"
 import { useNavigate } from "react-router-dom"
 import { useIsAdmin } from "@/hooks/useAccessRequests"
 import { AccessRequestsPanel } from "@/components/admin/AccessRequestsPanel"
+import { BugReportsPanel } from "@/components/admin/BugReportsPanel"
 
 const Settings = () => {
   const { toast } = useToast()
@@ -235,6 +236,8 @@ const Settings = () => {
       {isAdmin && (
         <>
           <AccessRequestsPanel />
+          <Separator />
+          <BugReportsPanel />
           <Separator />
         </>
       )}
