@@ -6,6 +6,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Search, Globe, MapPin, Palette, Instagram, Users, Loader2, AlertCircle } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
+import { getErrorMessage } from "@/lib/errors"
+
+const MIN_QUERY_LENGTH = 2
 
 interface ClientInfo {
   name: string
