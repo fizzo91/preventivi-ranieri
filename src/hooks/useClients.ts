@@ -58,10 +58,10 @@ export const useCreateClient = () => {
         description: "Il cliente è stato aggiunto con successo.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast({
         title: "Errore",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     },
@@ -91,10 +91,10 @@ export const useUpdateClient = () => {
         description: "Le modifiche sono state salvate.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast({
         title: "Errore",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     },
@@ -121,10 +121,10 @@ export const useDeleteClient = () => {
         description: "Il cliente è stato rimosso.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast({
         title: "Errore",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     },

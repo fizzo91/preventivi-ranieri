@@ -27,8 +27,8 @@ export const ClientResearch = () => {
   const { toast } = useToast()
 
   const handleSearch = async () => {
-    if (query.trim().length < 2) {
-      toast({ title: "Inserisci almeno 2 caratteri", variant: "destructive" })
+    if (query.trim().length < MIN_QUERY_LENGTH) {
+      toast({ title: `Inserisci almeno ${MIN_QUERY_LENGTH} caratteri`, variant: "destructive" })
       return
     }
 
@@ -48,9 +48,10 @@ export const ClientResearch = () => {
       } else {
         setError("Nessuna informazione trovata")
       }
-    } catch (e: any) {
-      setError(e.message || "Errore nella ricerca")
-      toast({ title: "Errore", description: e.message, variant: "destructive" })
+    } catch (e: unknown) {
+      const message = getErrorMessage(e, "Errore nella ricerca")
+      setError(message)
+      toast({ title: "Errore", description: message, variant: "destructive" })
     } finally {
       setLoading(false)
     }

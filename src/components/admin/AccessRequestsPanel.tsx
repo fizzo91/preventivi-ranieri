@@ -21,11 +21,17 @@ import {
   type AccessRequest,
 } from "@/hooks/useAccessRequests";
 import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/errors";
 
-const generatePassword = () => {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$";
-  return Array.from({ length: 14 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-};
+const PASSWORD_CHARSET = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$";
+const GENERATED_PASSWORD_LENGTH = 14;
+const MIN_PASSWORD_LENGTH = 8;
+
+const generatePassword = () =>
+  Array.from(
+    { length: GENERATED_PASSWORD_LENGTH },
+    () => PASSWORD_CHARSET[Math.floor(Math.random() * PASSWORD_CHARSET.length)],
+  ).join("");
 
 export const AccessRequestsPanel = () => {
   const { data: requests = [], isLoading } = useAccessRequests();
