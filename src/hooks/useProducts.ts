@@ -23,10 +23,22 @@ export const useProducts = () => {
         .from("products")
         .select("*")
         .order("category")
-        .order("name");
+        .order("name")
+        .order("updated_at", { ascending: false });
 
       if (error) throw error;
-      return data as Product[];
+
+      // Deduplica per nome+categoria (case-insensitive, trim)
+      // mantenendo il più recentemente aggiornato
+      const seen = new Map<string, Product>();
+      for (const p of (data as Product[])) {
+        const key = `${p.category.trim().toLowerCase()}::${p.name.trim().toLowerCase()}`;
+        if (!seen.has(key)) seen.set(key, p);
+      }
+      return Array.from(seen.values()).sort((a, b) => {
+        const c = a.category.localeCompare(b.category);
+        return c !== 0 ? c : a.name.localeCompare(b.name);
+      });
     },
   });
 };
