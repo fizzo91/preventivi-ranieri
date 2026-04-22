@@ -237,7 +237,7 @@ export const AccessRequestsPanel = () => {
               </Button>
               <Button
                 onClick={handleApprove}
-                disabled={approving || password.length < 8}
+                disabled={approving || password.length < MIN_PASSWORD_LENGTH}
                 className="gap-1"
               >
                 {approving && <Loader2 className="h-4 w-4 animate-spin" />}
