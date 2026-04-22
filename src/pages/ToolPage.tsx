@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useParams, useSearchParams, Navigate } from "react-router-dom"
+import { useParams, useSearchParams, Navigate, useNavigate } from "react-router-dom"
 import { ImperialConverter } from "@/components/ImperialConverter"
 import { CircleCalculator } from "@/components/CircleCalculator"
 import { DescriptionAssistant } from "@/components/DescriptionAssistant"
@@ -23,6 +23,7 @@ const toolMeta: Record<string, { title: string }> = {
 const ToolPage = () => {
   const { toolId } = useParams<{ toolId: string }>()
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [isFullscreen, setIsFullscreen] = useState(false)
 
   const quoteId = searchParams.get("quoteId")
@@ -57,7 +58,11 @@ const ToolPage = () => {
     <div className={`min-h-screen bg-background flex flex-col ${isFullscreen ? "" : ""}`}>
       <MacWindowBar
         title={toolMeta[toolId].title + (quoteName ? ` — ${quoteName}` : "")}
-        onClose={() => window.close()}
+        onClose={() => {
+          // Se aperto in popup, prova a chiudere; altrimenti torna agli strumenti
+          if (window.opener) window.close()
+          else navigate("/tools")
+        }}
         onMinimize={() => {
           window.resizeTo(300, 40)
         }}
