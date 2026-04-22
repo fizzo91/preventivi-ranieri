@@ -89,40 +89,9 @@ const Tools = () => {
   const navigate = useNavigate()
 
   const handleToolClick = (toolId: string) => {
-    const url = `/tool/${toolId}`
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-    const isStandalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      // @ts-ignore iOS Safari
-      window.navigator.standalone === true
-
-    // On mobile or PWA, in-app navigation is more reliable than popups
-    if (isMobile || isStandalone) {
-      navigate(url)
-      return
-    }
-
-    const sizes: Record<string, [number, number]> = {
-      imperial: [480, 600],
-      circle: [480, 650],
-      descriptions: [560, 800],
-      glossary: [520, 700],
-      vanity: [600, 850],
-      "client-research": [500, 700],
-      calculator: [700, 750],
-    }
-    const [w, h] = sizes[toolId] || [480, 600]
-    const left = (screen.width - w) / 2
-    const top = (screen.height - h) / 2
-    const popup = window.open(
-      url,
-      `tool-${toolId}`,
-      `width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no`
-    )
-    // Fallback if popup is blocked (e.g. inside iframe preview)
-    if (!popup || popup.closed || typeof popup.closed === "undefined") {
-      navigate(url)
-    }
+    // Naviga sempre in-app: i popup vengono spesso bloccati dai browser
+    // (specie su mobile, PWA o iframe) causando una pagina bianca.
+    navigate(`/tool/${toolId}`)
   }
 
   return (
