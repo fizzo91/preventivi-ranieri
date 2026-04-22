@@ -51,7 +51,7 @@ export const AccessRequestsPanel = () => {
   };
 
   const handleApprove = async () => {
-    if (!selected || password.length < 8) return;
+    if (!selected || password.length < MIN_PASSWORD_LENGTH) return;
     setApproving(true);
     try {
       await approve.mutateAsync({ request_id: selected.id, password });
@@ -61,10 +61,10 @@ export const AccessRequestsPanel = () => {
       });
       setSelected(null);
       setPassword("");
-    } catch (e: any) {
+    } catch (e: unknown) {
       toast({
         title: "Errore",
-        description: e.message || "Impossibile approvare la richiesta",
+        description: getErrorMessage(e, "Impossibile approvare la richiesta"),
         variant: "destructive",
       });
     } finally {
@@ -77,8 +77,8 @@ export const AccessRequestsPanel = () => {
     try {
       await reject.mutateAsync(req.id);
       toast({ title: "Richiesta rifiutata" });
-    } catch (e: any) {
-      toast({ title: "Errore", description: e.message, variant: "destructive" });
+    } catch (e: unknown) {
+      toast({ title: "Errore", description: getErrorMessage(e), variant: "destructive" });
     }
   };
 
