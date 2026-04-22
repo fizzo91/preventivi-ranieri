@@ -21,11 +21,17 @@ import {
   type AccessRequest,
 } from "@/hooks/useAccessRequests";
 import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/errors";
 
-const generatePassword = () => {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$";
-  return Array.from({ length: 14 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-};
+const PASSWORD_CHARSET = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$";
+const GENERATED_PASSWORD_LENGTH = 14;
+const MIN_PASSWORD_LENGTH = 8;
+
+const generatePassword = () =>
+  Array.from(
+    { length: GENERATED_PASSWORD_LENGTH },
+    () => PASSWORD_CHARSET[Math.floor(Math.random() * PASSWORD_CHARSET.length)],
+  ).join("");
 
 export const AccessRequestsPanel = () => {
   const { data: requests = [], isLoading } = useAccessRequests();
@@ -45,7 +51,7 @@ export const AccessRequestsPanel = () => {
   };
 
   const handleApprove = async () => {
-    if (!selected || password.length < 8) return;
+    if (!selected || password.length < MIN_PASSWORD_LENGTH) return;
     setApproving(true);
     try {
       await approve.mutateAsync({ request_id: selected.id, password });
@@ -55,10 +61,10 @@ export const AccessRequestsPanel = () => {
       });
       setSelected(null);
       setPassword("");
-    } catch (e: any) {
+    } catch (e: unknown) {
       toast({
         title: "Errore",
-        description: e.message || "Impossibile approvare la richiesta",
+        description: getErrorMessage(e, "Impossibile approvare la richiesta"),
         variant: "destructive",
       });
     } finally {
@@ -71,8 +77,8 @@ export const AccessRequestsPanel = () => {
     try {
       await reject.mutateAsync(req.id);
       toast({ title: "Richiesta rifiutata" });
-    } catch (e: any) {
-      toast({ title: "Errore", description: e.message, variant: "destructive" });
+    } catch (e: unknown) {
+      toast({ title: "Errore", description: getErrorMessage(e), variant: "destructive" });
     }
   };
 
@@ -231,7 +237,7 @@ export const AccessRequestsPanel = () => {
               </Button>
               <Button
                 onClick={handleApprove}
-                disabled={approving || password.length < 8}
+                disabled={approving || password.length < MIN_PASSWORD_LENGTH}
                 className="gap-1"
               >
                 {approving && <Loader2 className="h-4 w-4 animate-spin" />}

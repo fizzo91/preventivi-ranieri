@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,22 +7,31 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Layout } from "@/components/layout";
-import Dashboard from "./pages/Dashboard";
-import NewQuote from "./pages/NewQuote";
-import Quotes from "./pages/Quotes";
-import Products from "./pages/Products";
-import Gallery from "./pages/Gallery";
-import Descriptions from "./pages/Descriptions";
-import Settings from "./pages/Settings";
-import Tools from "./pages/Tools";
-import ToolPage from "./pages/ToolPage";
-import Guide from "./pages/Guide";
-import BugReport from "./pages/BugReport";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
+// Lazy-loaded routes — keeps the initial bundle small.
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const NewQuote = lazy(() => import("./pages/NewQuote"));
+const Quotes = lazy(() => import("./pages/Quotes"));
+const Products = lazy(() => import("./pages/Products"));
+const Gallery = lazy(() => import("./pages/Gallery"));
+const Descriptions = lazy(() => import("./pages/Descriptions"));
+const Settings = lazy(() => import("./pages/Settings"));
+const Tools = lazy(() => import("./pages/Tools"));
+const ToolPage = lazy(() => import("./pages/ToolPage"));
+const Guide = lazy(() => import("./pages/Guide"));
+const BugReport = lazy(() => import("./pages/BugReport"));
+
 const queryClient = new QueryClient();
+
+const RouteFallback = () => (
+  <div className="flex h-[60vh] items-center justify-center">
+    <LoadingSpinner />
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -37,7 +47,9 @@ const App = () => (
               path="/tool/:toolId"
               element={
                 <ProtectedRoute>
-                  <ToolPage />
+                  <Suspense fallback={<RouteFallback />}>
+                    <ToolPage />
+                  </Suspense>
                 </ProtectedRoute>
               }
             />
@@ -46,19 +58,21 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Layout>
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/new-quote" element={<NewQuote />} />
-                      <Route path="/quotes" element={<Quotes />} />
-                      <Route path="/gallery" element={<Gallery />} />
-                      <Route path="/descriptions" element={<Descriptions />} />
-                      <Route path="/products" element={<Products />} />
-                      <Route path="/tools" element={<Tools />} />
-                      <Route path="/guide" element={<Guide />} />
-                      <Route path="/bug-report" element={<BugReport />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
+                    <Suspense fallback={<RouteFallback />}>
+                      <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/new-quote" element={<NewQuote />} />
+                        <Route path="/quotes" element={<Quotes />} />
+                        <Route path="/gallery" element={<Gallery />} />
+                        <Route path="/descriptions" element={<Descriptions />} />
+                        <Route path="/products" element={<Products />} />
+                        <Route path="/tools" element={<Tools />} />
+                        <Route path="/guide" element={<Guide />} />
+                        <Route path="/bug-report" element={<BugReport />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </Suspense>
                   </Layout>
                 </ProtectedRoute>
               }

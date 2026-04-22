@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/errors";
 
 export interface Client {
   id: string;
@@ -57,10 +58,10 @@ export const useCreateClient = () => {
         description: "Il cliente è stato aggiunto con successo.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast({
         title: "Errore",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     },
@@ -90,10 +91,10 @@ export const useUpdateClient = () => {
         description: "Le modifiche sono state salvate.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast({
         title: "Errore",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     },
@@ -120,10 +121,10 @@ export const useDeleteClient = () => {
         description: "Il cliente è stato rimosso.",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast({
         title: "Errore",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     },
