@@ -13,7 +13,6 @@ import { PasswordStrengthIndicator, validatePassword } from "@/pages/ResetPasswo
 import { useAuth } from "@/contexts/AuthContext"
 import { useQuotes } from "@/hooks/useQuotes"
 import { useProducts } from "@/hooks/useProducts"
-import { useClients } from "@/hooks/useClients"
 import { useTags } from "@/hooks/useTags"
 import { LoadingSpinner, StatCard } from "@/components/shared"
 import { supabase } from "@/integrations/supabase/client"
@@ -29,7 +28,7 @@ const Settings = () => {
   const { profile, user, updateProfile, updatePassword, signOut, refreshProfile } = useAuth()
   const { data: quotes = [] } = useQuotes()
   const { data: products = [] } = useProducts()
-  const { data: clients = [] } = useClients()
+  
   const { tags: suggestedTags, addTag, removeTag: removeTagFromList, resetToDefaults } = useTags()
   const { isAdmin } = useIsAdmin()
   const [newTag, setNewTag] = useState("")
