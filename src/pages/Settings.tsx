@@ -13,7 +13,6 @@ import { PasswordStrengthIndicator, validatePassword } from "@/pages/ResetPasswo
 import { useAuth } from "@/contexts/AuthContext"
 import { useQuotes } from "@/hooks/useQuotes"
 import { useProducts } from "@/hooks/useProducts"
-import { useClients } from "@/hooks/useClients"
 import { useTags } from "@/hooks/useTags"
 import { LoadingSpinner, StatCard } from "@/components/shared"
 import { supabase } from "@/integrations/supabase/client"
@@ -29,7 +28,7 @@ const Settings = () => {
   const { profile, user, updateProfile, updatePassword, signOut, refreshProfile } = useAuth()
   const { data: quotes = [] } = useQuotes()
   const { data: products = [] } = useProducts()
-  const { data: clients = [] } = useClients()
+  
   const { tags: suggestedTags, addTag, removeTag: removeTagFromList, resetToDefaults } = useTags()
   const { isAdmin } = useIsAdmin()
   const [newTag, setNewTag] = useState("")
@@ -251,10 +250,9 @@ const Settings = () => {
       <Card>
         <CardHeader><CardTitle>Statistiche Dati</CardTitle></CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <StatCard title="Preventivi" value={quotes.length} className="text-primary" />
             <StatCard title="Prodotti" value={products.length} className="text-success" />
-            <StatCard title="Clienti" value={clients.length} className="text-warning" />
           </div>
           <div className="text-center text-muted-foreground">
             <p className="text-sm">I tuoi dati sono sincronizzati in tempo reale e accessibili da qualsiasi dispositivo.</p>
