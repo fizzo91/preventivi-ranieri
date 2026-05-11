@@ -289,6 +289,7 @@ const NewQuote = () => {
       notes: quoteData.notes || null,
       payment_terms: null,
       enamel_data: Object.keys(enamelDataMap).length > 0 ? enamelDataMap : null,
+      project_id: editQuote ? (editQuote as any).project_id ?? null : projectIdFromUrl ?? null,
     }
 
     try {
@@ -297,7 +298,9 @@ const NewQuote = () => {
       } else {
         await createQuote.mutateAsync(payload)
       }
-      navigate("/quotes")
+      const targetProjectId =
+        (editQuote as any)?.project_id ?? projectIdFromUrl ?? null
+      navigate(targetProjectId ? `/projects/${targetProjectId}` : "/quotes")
     } catch {
       toast({ title: "Errore", description: "Si è verificato un errore durante il salvataggio", variant: "destructive" })
     }
