@@ -19,6 +19,7 @@ import {
 } from "@dnd-kit/sortable"
 import { useProducts, useCreateProduct } from "@/hooks/useProducts"
 import { useCreateQuote, useUpdateQuote, useQuote } from "@/hooks/useQuotes"
+import { useProject } from "@/hooks/useProjects"
 import { useRecentProductIds } from "@/hooks/useRecentProducts"
 import { useProductSuggestions } from "@/hooks/useProductSuggestions"
 import { TagInput } from "@/components/TagInput"
