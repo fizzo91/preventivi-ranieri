@@ -19,6 +19,7 @@ import {
 } from "@dnd-kit/sortable"
 import { useProducts, useCreateProduct } from "@/hooks/useProducts"
 import { useCreateQuote, useUpdateQuote, useQuote } from "@/hooks/useQuotes"
+import { useProject } from "@/hooks/useProjects"
 import { useRecentProductIds } from "@/hooks/useRecentProducts"
 import { useProductSuggestions } from "@/hooks/useProductSuggestions"
 import { TagInput } from "@/components/TagInput"
@@ -89,9 +90,11 @@ const NewQuote = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const editIdFromUrl = searchParams.get("edit")
+  const projectIdFromUrl = searchParams.get("projectId")
   const editQuoteFromState = location.state?.editQuote
   const { data: editQuoteFromDb } = useQuote(editIdFromUrl || "")
   const editQuote = editQuoteFromState || editQuoteFromDb
+  const { data: linkedProject } = useProject(projectIdFromUrl || undefined)
 
   const { data: products = [], isLoading: productsLoading } = useProducts()
   const recentProductIds = useRecentProductIds()
@@ -180,6 +183,19 @@ const NewQuote = () => {
     loadEditQuote()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editQuote])
+
+  // Prefill client from a linked project (when arriving via /new-quote?projectId=...)
+  useEffect(() => {
+    if (!editQuote && linkedProject) {
+      setClientData({
+        name: linkedProject.client_name ?? "",
+        email: linkedProject.client_email ?? "",
+        phone: linkedProject.client_phone ?? "",
+        address: linkedProject.client_address ?? "",
+        company: linkedProject.client_company ?? "",
+      })
+    }
+  }, [editQuote, linkedProject])
 
   const handleSelectProduct = (sectionId: string, itemId: string, productId: string) => {
     const product = products.find((p) => p.id === productId)
@@ -273,6 +289,7 @@ const NewQuote = () => {
       notes: quoteData.notes || null,
       payment_terms: null,
       enamel_data: Object.keys(enamelDataMap).length > 0 ? enamelDataMap : null,
+      project_id: editQuote ? (editQuote as any).project_id ?? null : projectIdFromUrl ?? null,
     }
 
     try {
@@ -281,7 +298,9 @@ const NewQuote = () => {
       } else {
         await createQuote.mutateAsync(payload)
       }
-      navigate("/quotes")
+      const targetProjectId =
+        (editQuote as any)?.project_id ?? projectIdFromUrl ?? null
+      navigate(targetProjectId ? `/projects/${targetProjectId}` : "/quotes")
     } catch {
       toast({ title: "Errore", description: "Si è verificato un errore durante il salvataggio", variant: "destructive" })
     }
