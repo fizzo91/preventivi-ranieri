@@ -67,8 +67,7 @@ export const QuotesTab = ({ project }: { project: Project }) => {
       {quotes.length === 0 ? (
         <EmptyState
           icon={FileText}
-          title="Nessun preventivo collegato"
-          description="Crea un nuovo preventivo o collega uno esistente a questo progetto."
+          message="Nessun preventivo collegato. Creane uno nuovo o collegane uno esistente."
         />
       ) : (
         <div className="space-y-2">
