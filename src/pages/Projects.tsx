@@ -63,14 +63,9 @@ const Projects = () => {
       {projects.length === 0 ? (
         <EmptyState
           icon={FolderKanban}
-          title="Nessun progetto"
-          description="Crea il primo progetto per organizzare scope, preventivi e conferma ordine."
-          action={
-            <Button onClick={handleNew} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Nuovo progetto
-            </Button>
-          }
+          message="Nessun progetto. Crea il primo per organizzare scope, preventivi e conferma ordine."
+          actionLabel="Nuovo progetto"
+          onAction={handleNew}
         />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
