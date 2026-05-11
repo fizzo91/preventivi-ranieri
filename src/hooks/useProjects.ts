@@ -102,10 +102,9 @@ export const useProjectQuotes = (projectId: string | undefined) =>
   useQuery({
     queryKey: ["projects", projectId, "quotes"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("quotes")
+      const { data, error } = await (supabase.from("quotes") as any)
         .select("*")
-        .eq("project_id" as any, projectId!)
+        .eq("project_id", projectId)
         .order("date", { ascending: false })
       if (error) throw error
       return data as any[]
