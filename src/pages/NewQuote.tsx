@@ -184,6 +184,19 @@ const NewQuote = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editQuote])
 
+  // Prefill client from a linked project (when arriving via /new-quote?projectId=...)
+  useEffect(() => {
+    if (!editQuote && linkedProject) {
+      setClientData({
+        name: linkedProject.client_name ?? "",
+        email: linkedProject.client_email ?? "",
+        phone: linkedProject.client_phone ?? "",
+        address: linkedProject.client_address ?? "",
+        company: linkedProject.client_company ?? "",
+      })
+    }
+  }, [editQuote, linkedProject])
+
   const handleSelectProduct = (sectionId: string, itemId: string, productId: string) => {
     const product = products.find((p) => p.id === productId)
     if (product) selectProductInSection(sectionId, itemId, product)
