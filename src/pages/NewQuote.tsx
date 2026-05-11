@@ -89,9 +89,11 @@ const NewQuote = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const editIdFromUrl = searchParams.get("edit")
+  const projectIdFromUrl = searchParams.get("projectId")
   const editQuoteFromState = location.state?.editQuote
   const { data: editQuoteFromDb } = useQuote(editIdFromUrl || "")
   const editQuote = editQuoteFromState || editQuoteFromDb
+  const { data: linkedProject } = useProject(projectIdFromUrl || undefined)
 
   const { data: products = [], isLoading: productsLoading } = useProducts()
   const recentProductIds = useRecentProductIds()
