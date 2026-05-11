@@ -16,6 +16,8 @@ import NotFound from "./pages/NotFound";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NewQuote = lazy(() => import("./pages/NewQuote"));
 const Quotes = lazy(() => import("./pages/Quotes"));
+const Projects = lazy(() => import("./pages/Projects"));
+const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 const Products = lazy(() => import("./pages/Products"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const Descriptions = lazy(() => import("./pages/Descriptions"));
@@ -63,6 +65,8 @@ const App = () => (
                         <Route path="/" element={<Dashboard />} />
                         <Route path="/new-quote" element={<NewQuote />} />
                         <Route path="/quotes" element={<Quotes />} />
+                        <Route path="/projects" element={<Projects />} />
+                        <Route path="/projects/:id" element={<ProjectDetail />} />
                         <Route path="/gallery" element={<Gallery />} />
                         <Route path="/descriptions" element={<Descriptions />} />
                         <Route path="/products" element={<Products />} />

@@ -1,4 +1,4 @@
-import { Home, FileText, Plus, Settings, Calculator, Image, Wrench, AlignLeft, BookOpen, Bug } from "lucide-react"
+import { Home, FileText, Plus, Settings, Calculator, Image, Wrench, AlignLeft, BookOpen, Bug, FolderKanban } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
 import {
@@ -18,6 +18,7 @@ import { usePendingBugsCount } from "@/hooks/useBugReports"
 
 const items = [
   { title: "Dashboard", url: "/", icon: Home },
+  { title: "Progetti", url: "/projects", icon: FolderKanban },
   { title: "Nuovo Preventivo", url: "/new-quote", icon: Plus },
   { title: "Preventivi", url: "/quotes", icon: FileText },
   { title: "Galleria", url: "/gallery", icon: Image },
