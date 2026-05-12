@@ -234,6 +234,101 @@ export type Database = {
         }
         Relationships: []
       }
+      counters: {
+        Row: {
+          chiave: string
+          valore: number
+        }
+        Insert: {
+          chiave: string
+          valore?: number
+        }
+        Update: {
+          chiave?: string
+          valore?: number
+        }
+        Relationships: []
+      }
+      fornitori: {
+        Row: {
+          categoria: string | null
+          created_at: string
+          email: string | null
+          id: string
+          pagamento_default: string | null
+          piva: string | null
+          ragione_sociale: string
+          referente: string | null
+          telefono: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          categoria?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          pagamento_default?: string | null
+          piva?: string | null
+          ragione_sociale: string
+          referente?: string | null
+          telefono?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          categoria?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          pagamento_default?: string | null
+          piva?: string | null
+          ragione_sociale?: string
+          referente?: string | null
+          telefono?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      oda_righe: {
+        Row: {
+          created_at: string
+          descrizione: string
+          id: string
+          oda_id: string
+          prezzo_unitario: number
+          quantita: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descrizione: string
+          id?: string
+          oda_id: string
+          prezzo_unitario?: number
+          quantita?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          descrizione?: string
+          id?: string
+          oda_id?: string
+          prezzo_unitario?: number
+          quantita?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oda_righe_oda_id_fkey"
+            columns: ["oda_id"]
+            isOneToOne: false
+            referencedRelation: "ordini_acquisto"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_confirmations: {
         Row: {
           created_at: string
@@ -263,6 +358,60 @@ export type Database = {
           {
             foreignKeyName: "order_confirmations_project_id_fkey"
             columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ordini_acquisto: {
+        Row: {
+          created_at: string
+          created_by: string
+          fornitore_id: string | null
+          id: string
+          note: string | null
+          numero_oda: number
+          progetto_id: string | null
+          stato: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          fornitore_id?: string | null
+          id?: string
+          note?: string | null
+          numero_oda: number
+          progetto_id?: string | null
+          stato?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          fornitore_id?: string | null
+          id?: string
+          note?: string | null
+          numero_oda?: number
+          progetto_id?: string | null
+          stato?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ordini_acquisto_fornitore_id_fkey"
+            columns: ["fornitore_id"]
+            isOneToOne: false
+            referencedRelation: "fornitori"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ordini_acquisto_progetto_id_fkey"
+            columns: ["progetto_id"]
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
@@ -598,6 +747,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      incrementa_oda_counter: { Args: never; Returns: number }
     }
     Enums: {
       app_role: "admin" | "user"
