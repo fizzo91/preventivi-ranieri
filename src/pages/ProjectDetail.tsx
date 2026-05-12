@@ -10,6 +10,7 @@ import { ProjectFormDialog } from "@/features/projects/ProjectFormDialog"
 import { ScopeTab } from "@/features/projects/tabs/ScopeTab"
 import { QuotesTab } from "@/features/projects/tabs/QuotesTab"
 import { OrderConfirmationTab } from "@/features/projects/tabs/OrderConfirmationTab"
+import { OrdiniAcquistoTab } from "@/features/projects/tabs/OrdiniAcquistoTab"
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>()
