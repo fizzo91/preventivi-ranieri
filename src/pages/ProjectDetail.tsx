@@ -62,6 +62,7 @@ const ProjectDetail = () => {
         <TabsList>
           <TabsTrigger value="scope">Project Scope</TabsTrigger>
           <TabsTrigger value="quotes">Preventivi</TabsTrigger>
+          <TabsTrigger value="oda">Ordini di acquisto</TabsTrigger>
           <TabsTrigger value="order">Conferma Ordine</TabsTrigger>
         </TabsList>
         <TabsContent value="scope" className="mt-6">
@@ -69,6 +70,9 @@ const ProjectDetail = () => {
         </TabsContent>
         <TabsContent value="quotes" className="mt-6">
           <QuotesTab project={project} />
+        </TabsContent>
+        <TabsContent value="oda" className="mt-6">
+          <OrdiniAcquistoTab project={project} />
         </TabsContent>
         <TabsContent value="order" className="mt-6">
           <OrderConfirmationTab project={project} />
