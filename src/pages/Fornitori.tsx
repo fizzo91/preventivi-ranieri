@@ -105,7 +105,7 @@ export default function Fornitori() {
       <PageHeader
         title="Fornitori"
         description="Gestisci l'anagrafica dei fornitori"
-        action={
+        actions={
           <Button onClick={openNew}>
             <Plus className="mr-2 h-4 w-4" /> Nuovo fornitore
           </Button>
@@ -127,8 +127,9 @@ export default function Fornitori() {
       ) : filtered.length === 0 ? (
         <EmptyState
           icon={Truck}
-          title={search ? "Nessun risultato" : "Nessun fornitore"}
-          description={search ? "Prova a modificare la ricerca" : "Aggiungi il primo fornitore"}
+          message={search ? "Nessun fornitore corrisponde alla ricerca" : "Nessun fornitore. Aggiungi il primo!"}
+          actionLabel={search ? undefined : "Nuovo fornitore"}
+          onAction={search ? undefined : openNew}
         />
       ) : (
         <div className="grid gap-3">
