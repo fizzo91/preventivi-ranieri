@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link, useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { ArrowLeft, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
@@ -9,12 +9,16 @@ import { useProject } from "@/hooks/useProjects"
 import { ProjectFormDialog } from "@/features/projects/ProjectFormDialog"
 import { ScopeTab } from "@/features/projects/tabs/ScopeTab"
 import { QuotesTab } from "@/features/projects/tabs/QuotesTab"
-import { OrderConfirmationTab } from "@/features/projects/tabs/OrderConfirmationTab"
-import { OrdiniAcquistoTab } from "@/features/projects/tabs/OrdiniAcquistoTab"
+import { TrattativaTab } from "@/features/projects/tabs/TrattativaTab"
+
+const VALID_TABS = new Set(["scope", "quotes", "trattativa"])
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const tabParam = searchParams.get("tab")
+  const initialTab = tabParam && VALID_TABS.has(tabParam) ? tabParam : "scope"
   const { data: project, isLoading } = useProject(id)
   const [editOpen, setEditOpen] = useState(false)
 
@@ -33,6 +37,12 @@ const ProjectDetail = () => {
 
   const statusLabel =
     project.status === "closed" ? "Chiuso" : project.status === "archived" ? "Archiviato" : "Attivo"
+
+  const handleTabChange = (value: string) => {
+    const next = new URLSearchParams(searchParams)
+    next.set("tab", value)
+    setSearchParams(next, { replace: true })
+  }
 
   return (
     <div className="space-y-6">
@@ -58,12 +68,11 @@ const ProjectDetail = () => {
         </Button>
       </div>
 
-      <Tabs defaultValue="scope">
+      <Tabs value={initialTab} onValueChange={handleTabChange}>
         <TabsList>
           <TabsTrigger value="scope">Project Scope</TabsTrigger>
-          <TabsTrigger value="quotes">Preventivi</TabsTrigger>
-          <TabsTrigger value="oda">Ordini di acquisto</TabsTrigger>
-          <TabsTrigger value="order">Conferma Ordine</TabsTrigger>
+          <TabsTrigger value="quotes">Preventivo</TabsTrigger>
+          <TabsTrigger value="trattativa">Trattativa</TabsTrigger>
         </TabsList>
         <TabsContent value="scope" className="mt-6">
           <ScopeTab project={project} />
@@ -71,11 +80,8 @@ const ProjectDetail = () => {
         <TabsContent value="quotes" className="mt-6">
           <QuotesTab project={project} />
         </TabsContent>
-        <TabsContent value="oda" className="mt-6">
-          <OrdiniAcquistoTab project={project} />
-        </TabsContent>
-        <TabsContent value="order" className="mt-6">
-          <OrderConfirmationTab project={project} />
+        <TabsContent value="trattativa" className="mt-6">
+          <TrattativaTab project={project} />
         </TabsContent>
       </Tabs>
 

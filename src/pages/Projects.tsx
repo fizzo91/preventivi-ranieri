@@ -1,18 +1,17 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
-import { Plus, FolderKanban, Trash2, Pencil } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
+import { Plus, FolderKanban, Trash2, Pencil, ClipboardList, FileText, Handshake } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner"
 import { EmptyState } from "@/components/shared/EmptyState"
-import {
-  useProjects,
-  useDeleteProject,
-} from "@/hooks/useProjects"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { useProjects, useDeleteProject } from "@/hooks/useProjects"
+import { useProjectsOverview } from "@/hooks/useProjectsOverview"
 import { ProjectFormDialog } from "@/features/projects/ProjectFormDialog"
 import type { Project } from "@/hooks/useProjects"
+import { cn } from "@/lib/utils"
 
 const statusVariant = (status: string) => {
   if (status === "closed") return "secondary"
@@ -24,21 +23,15 @@ const statusLabel = (status: string) =>
   status === "closed" ? "Chiuso" : status === "archived" ? "Archiviato" : "Attivo"
 
 const Projects = () => {
+  const navigate = useNavigate()
   const { data: projects = [], isLoading } = useProjects()
+  const { data: overview } = useProjectsOverview(projects.map((p) => p.id))
   const deleteProject = useDeleteProject()
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<Project | null>(null)
 
-  const handleEdit = (p: Project) => {
-    setEditing(p)
-    setOpen(true)
-  }
-
-  const handleNew = () => {
-    setEditing(null)
-    setOpen(true)
-  }
-
+  const handleEdit = (p: Project) => { setEditing(p); setOpen(true) }
+  const handleNew = () => { setEditing(null); setOpen(true) }
   const handleDelete = (p: Project) => {
     if (window.confirm(`Eliminare il progetto "${p.name}"? I preventivi collegati restano disponibili.`)) {
       deleteProject.mutate(p.id)
@@ -47,11 +40,42 @@ const Projects = () => {
 
   if (isLoading) return <LoadingSpinner />
 
+  const renderIcon = (
+    Icon: typeof ClipboardList,
+    active: boolean,
+    label: string,
+    onClick: () => void,
+    badge?: number,
+  ) => (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          onClick={(e) => { e.stopPropagation(); onClick() }}
+          className={cn(
+            "relative h-9 w-9 inline-flex items-center justify-center rounded-md border transition-colors",
+            active
+              ? "bg-primary/10 border-primary text-primary hover:bg-primary/20"
+              : "border-muted text-muted-foreground hover:bg-muted hover:text-foreground",
+          )}
+          aria-label={label}
+        >
+          <Icon className="h-4 w-4" />
+          {typeof badge === "number" && badge > 0 && (
+            <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground rounded-full text-[10px] h-4 min-w-4 px-1 inline-flex items-center justify-center">
+              {badge}
+            </span>
+          )}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
+  )
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Progetti"
-        description="Contenitore per scope, preventivi e conferma ordine"
+        description="Contenitore per scope, preventivi e trattativa"
         actions={
           <Button onClick={handleNew} className="gap-2">
             <Plus className="h-4 w-4" />
@@ -63,34 +87,54 @@ const Projects = () => {
       {projects.length === 0 ? (
         <EmptyState
           icon={FolderKanban}
-          message="Nessun progetto. Crea il primo per organizzare scope, preventivi e conferma ordine."
+          message="Nessun progetto. Crea il primo per organizzare scope, preventivi e trattativa."
           actionLabel="Nuovo progetto"
           onAction={handleNew}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects.map((p) => (
-            <Card key={p.id} className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between gap-2">
-                  <CardTitle className="text-lg">
-                    <Link to={`/projects/${p.id}`} className="hover:underline">
+        <div className="border rounded-lg divide-y">
+          {projects.map((p) => {
+            const flags = overview?.[p.id]
+            return (
+              <div
+                key={p.id}
+                className="flex items-center gap-4 p-4 hover:bg-muted/40 transition-colors"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Link to={`/projects/${p.id}`} className="font-semibold hover:underline truncate">
                       {p.name}
                     </Link>
-                  </CardTitle>
-                  <Badge variant={statusVariant(p.status)}>{statusLabel(p.status)}</Badge>
+                    <Badge variant={statusVariant(p.status)}>{statusLabel(p.status)}</Badge>
+                  </div>
+                  <div className="text-sm text-muted-foreground truncate">
+                    {[p.client_name, p.client_company].filter(Boolean).join(" · ") || "Nessun cliente"}
+                  </div>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="text-sm text-muted-foreground space-y-1">
-                  {p.client_name && <div>{p.client_name}</div>}
-                  {p.client_company && <div>{p.client_company}</div>}
-                  {!p.client_name && !p.client_company && <div className="italic">Nessun cliente</div>}
+
+                <div className="flex items-center gap-2">
+                  {renderIcon(
+                    ClipboardList,
+                    !!flags?.hasScope,
+                    "Scope",
+                    () => navigate(`/projects/${p.id}?tab=scope`),
+                  )}
+                  {renderIcon(
+                    FileText,
+                    (flags?.quotesCount ?? 0) > 0,
+                    "Preventivo",
+                    () => navigate(`/projects/${p.id}?tab=quotes`),
+                    flags?.quotesCount,
+                  )}
+                  {renderIcon(
+                    Handshake,
+                    !!flags?.hasTrattativa,
+                    "Trattativa",
+                    () => navigate(`/projects/${p.id}?tab=trattativa`),
+                  )}
                 </div>
-                <div className="flex gap-2 pt-2">
-                  <Button asChild variant="outline" size="sm" className="flex-1">
-                    <Link to={`/projects/${p.id}`}>Apri</Link>
-                  </Button>
+
+                <div className="flex gap-1">
                   <Button variant="ghost" size="icon" onClick={() => handleEdit(p)} aria-label="Modifica">
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -98,9 +142,9 @@ const Projects = () => {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+              </div>
+            )
+          })}
         </div>
       )}
 
