@@ -1,5 +1,6 @@
 import { calcRow, type EnamelPieceRow } from '@/components/EnamelCostCalculator'
 import { createPdfBase, renderHeader, type QuoteData } from './pdfBase'
+import { renderSyntheticContent } from './generateSyntheticPdf'
 
 /**
  * Generate the full, detailed PDF for a quote
@@ -461,6 +462,11 @@ export async function generateFullPdf(quoteData: QuoteData) {
   pdf.text(`Preventivo generato il ${new Date().toLocaleDateString('it-IT')}`, pageWidth / 2, y, { align: 'center' })
   y += 5
   pdf.text('Questo preventivo è valido per 30 giorni dalla data di emissione.', pageWidth / 2, y, { align: 'center' })
+
+  // ── Synthetic Summary Appendix ──
+  pdf.addPage()
+  ctx.setY(20)
+  renderSyntheticContent(ctx, quoteData)
 
   addPageNumbers()
   pdf.save(`preventivo-${quoteData.quoteNumber}.pdf`)
