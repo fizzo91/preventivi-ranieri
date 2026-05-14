@@ -20,7 +20,7 @@ const Quotes = () => {
   const { data: quotes = [], isLoading } = useQuotes()
   const deleteQuote = useDeleteQuote()
   const createQuote = useCreateQuote()
-  const { generatePdf, generateSyntheticPdf } = usePdfGenerator()
+  const { generatePdf } = usePdfGenerator()
   const { data: allCalculations = [] } = useCalculations()
   const { toast } = useToast()
 
@@ -84,14 +84,6 @@ const Quotes = () => {
       })
     } catch {
       toast({ title: "Errore", description: "Errore durante la generazione del PDF.", variant: "destructive" })
-    }
-  }
-
-  const handleGenerateSyntheticPdf = async (quote: any) => {
-    try {
-      await generateSyntheticPdf(buildQuotePayload(quote))
-    } catch {
-      toast({ title: "Errore", description: "Errore durante la generazione del PDF sintetico.", variant: "destructive" })
     }
   }
 
@@ -163,7 +155,6 @@ const Quotes = () => {
                         onDuplicate={handleDuplicateQuote}
                         onDelete={handleDeleteQuote}
                         onGeneratePdf={handleGeneratePdf}
-                        onGenerateSyntheticPdf={handleGenerateSyntheticPdf}
                         onExportJson={handleExportJson}
                         isDuplicating={createQuote.isPending}
                         isDeleting={deleteQuote.isPending}

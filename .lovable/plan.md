@@ -1,94 +1,119 @@
-# Progetti — Piano di implementazione
 
 ## Obiettivo
-Aggiungere una sezione **Progetti** che funge da contenitore. Ogni progetto ha tre schede: **Project Scope**, **Preventivi**, **Conferma Ordine**. Scope e Conferma Ordine partono da moduli template e generano un PDF stampabile, coerente con il PDF preventivi esistente.
 
-## Modello dati (Supabase)
+Riorganizzare l'app intorno al concetto di **Progetto** come contenitore di 3 sotto-sezioni: Scope, Preventivo, Trattativa. Rimuovere flussi non più necessari (ODA, calcolatori embedded) e unificare l'export PDF.
 
-Tre nuove tabelle, tutte con RLS `auth.uid() = user_id`:
+---
 
-- **`projects`** — `id`, `user_id`, `name`, `client_name`, `client_company`, `client_email`, `client_phone`, `client_address`, `status` (attivo/chiuso/archiviato), `notes`, `created_at`, `updated_at`.
-- **`project_scopes`** — `id`, `user_id`, `project_id`, `data` (jsonb, contiene tutti i campi del modulo scope, struttura definita quando passi i campi), `created_at`, `updated_at`. Uno per progetto.
-- **`order_confirmations`** — `id`, `user_id`, `project_id`, `data` (jsonb), `created_at`, `updated_at`. Uno per progetto (o multipli se serve).
+## 1. Rinomina "Conferma Ordine" → "Trattativa"
 
-Sulla tabella **`quotes`** esistente: aggiungere colonna nullable `project_id uuid` + indice. I preventivi possono esistere senza progetto (collegamento opzionale).
+- Tab nel `ProjectDetail` rinominata da "Conferma Ordine" a "Trattativa".
+- Riuso della tabella esistente `order_confirmations` (campo `data` JSONB già flessibile) — nessuna migration di rename necessaria. Il nome tabella resta interno.
+- Nuovo schema della Trattativa (`trattativaSchema.ts`) basato su **righe negoziate per fornitore**:
+  - Campo `righe[]` con: descrizione, quantità, prezzo unitario negoziato, fornitore (`fornitore_id` da select), note.
+  - Campi testata: data trattativa, note generali.
+- Hook rinominato: `useOrderConfirmation` → `useTrattativa` (mantiene query alla stessa tabella).
+- File: `src/features/projects/tabs/TrattativaTab.tsx` (sostituisce `OrderConfirmationTab.tsx`).
 
-## Navigazione e UI
+### Calcolo % differenza
 
-- Nuova voce sidebar **"Progetti"** (icona `FolderKanban`), posizionata sopra "Preventivi".
-- `/projects` → lista progetti (card con nome, cliente, stato, n° preventivi, valore totale) + pulsante "Nuovo progetto".
-- `/projects/:id` → dettaglio progetto con tabs shadcn:
-  - **Scope** — form template; se vuoto mostra "Compila scope"; pulsante "Genera PDF".
-  - **Preventivi** — lista preventivi collegati + pulsante "Nuovo preventivo" che porta a `/new-quote?projectId=...` precompilando il cliente. Possibilità di "Collega preventivo esistente" via dialog di selezione.
-  - **Conferma Ordine** — form template; pulsante "Genera PDF".
-- Dalla pagina `/quotes` aggiungere un piccolo badge/link al progetto se `project_id` è valorizzato.
-- `NewQuote` legge `?projectId=` dalla query: precompila cliente, salva con `project_id`, e dopo il salvataggio torna alla scheda Preventivi del progetto.
+- Caricato il totale del/dei preventivi associati al progetto (`useQuotes` filtrato per `project_id`).
+- `Totale Trattativa = somma(riga.qta × riga.prezzo)`.
+- `% diff = (Totale Trattativa − Totale Preventivo) / Totale Preventivo × 100`.
+- Visualizzata in un badge in cima alla tab + accanto al totale (verde se < 0, rosso se > 0).
+- Se ci sono più preventivi nel progetto, somma di tutti.
 
-## Form template Scope / Conferma Ordine
+### Select fornitore nelle righe
 
-I campi specifici li passi tu nel prossimo messaggio. Per ora struttura:
-- Componente generico `<TemplateForm schema={...} value={...} onChange={...} />` che renderizza i campi dallo schema (text/textarea/number/date/select/lista ripetibile).
-- Schema separato per Scope e per Conferma Ordine, in `src/features/projects/templates/`.
-- Salvataggio in `data` jsonb → facile evolvere senza migrazioni.
+- Combobox con ricerca che carica `fornitori` dell'utente.
+- Possibilità di righe con fornitori diversi (raggruppamento visivo opzionale per fornitore).
 
-## Generazione PDF
+---
 
-Riusare lo stile del PDF preventivi esistente:
-- Nuovi file in `src/utils/pdf/`:
-  - `generateScopePdf.ts`
-  - `generateOrderConfirmationPdf.ts`
-- Entrambi usano `createPdfBase()` e un nuovo `renderProjectHeader(ctx, project)` derivato da `renderHeader` (stesso font, margini, footer pagine).
-- Sezioni del PDF popolate dai campi del template; totalmente coerenti tipograficamente con il PDF preventivi (Helvetica, header centrato, blocco cliente).
-- Pulsanti "Genera PDF" nelle rispettive tab.
+## 2. Rimozione ODA
 
-## File principali da creare
+- Eliminata tab "Ordini di Acquisto" da `ProjectDetail.tsx`.
+- Eliminati: `src/features/projects/tabs/OrdiniAcquistoTab.tsx`, `src/hooks/useOrdiniAcquisto.ts`.
+- **Mantenuti** in DB: `ordini_acquisto`, `oda_righe`, `counters`, RPC `incrementa_oda_counter` (nessuna migration distruttiva, evitiamo perdita dati). Le tabelle restano orfane ma non visibili.
+- **Mantenuta** sezione Fornitori in sidebar (serve per la select in Trattativa).
 
+---
+
+## 3. Vista Progetti come elenco a linee
+
+Refactor `src/pages/Projects.tsx`:
+
+- Layout a lista (non card grid). Ogni riga mostra:
+  ```text
+  [Nome progetto] [Cliente]                   [📋 Scope] [💰 Preventivi] [🤝 Trattativa]   [⋯]
+  ```
+- Le 3 icone:
+  - Cliccabili → `navigate(`/projects/${id}?tab=scope|quotes|trattativa`)`.
+  - Stato visivo (colore pieno/outline) in base a se la sezione contiene dati. Per evitare N+1 query: aggiungere una vista o usare query aggregata (`project_scopes`, `quotes` count, `order_confirmations` per project_id) — soluzione semplice: una `useProjectsOverview` che fa 3 SELECT `project_id` su quelle tabelle e mappa in memoria.
+- `ProjectDetail.tsx`: leggere `?tab=` da `useSearchParams` e impostare il tab attivo.
+
+---
+
+## 4. Rimozione strumenti dal Preventivo
+
+Nel `NewQuote.tsx` e componenti di sezione:
+- Rimuovere bottoni/dialog "Calcolatore Pietra" (StoneCalculator) e "Calcolatore Smaltatura" (EnamelCostCalculator/Dialog) **dall'interno della pagina preventivo**.
+- I componenti `StoneCalculator.tsx` e `EnamelCostCalculator.tsx` restano disponibili come tool standalone nella pagina `/tools` (già esistono lì).
+- Logica PDF stone summary e enamel appendix nel `generateFullPdf`: lasciata invariata se i dati esistono già su preventivi vecchi (retro-compatibilità). Per i nuovi preventivi semplicemente non verranno popolati.
+
+---
+
+## 5. PDF unificato
+
+- Rimuovere il bottone "PDF Sintetico" dall'UI preventivo.
+- Modificare `generateFullPdf.ts`: dopo l'appendice calcoli, **chiamare la logica di rendering sintetico** (estratta da `generateSyntheticPdf.ts`) come ulteriore appendice ("Riepilogo Sintetico").
+- Refactor: estrarre la funzione `renderSyntheticContent(ctx, quoteData)` da `generateSyntheticPdf.ts` in modo che sia richiamabile sia standalone (per backward-compat se necessario) sia come appendice.
+- `usePdfGenerator`: espone solo `generatePdf` (rimosso `generateSyntheticPdf` dall'interfaccia pubblica).
+
+---
+
+## Migration DB
+
+Una sola migration leggera:
+
+```sql
+-- nessun rename tabella; la tabella order_confirmations resta ma rappresenta semanticamente la Trattativa
+-- aggiungo solo indice su project_id se non esiste
+CREATE INDEX IF NOT EXISTS idx_order_confirmations_project ON public.order_confirmations(project_id);
 ```
-src/pages/Projects.tsx                       — lista
-src/pages/ProjectDetail.tsx                  — tabs Scope/Preventivi/Conferma
-src/features/projects/
-  ProjectForm.tsx                            — crea/modifica progetto
-  ProjectCard.tsx
-  tabs/ScopeTab.tsx
-  tabs/QuotesTab.tsx
-  tabs/OrderConfirmationTab.tsx
-  templates/scopeSchema.ts                   — definito quando passi i campi
-  templates/orderConfirmationSchema.ts
-  components/TemplateForm.tsx
-src/hooks/useProjects.ts                     — CRUD progetti
-src/hooks/useProjectScope.ts
-src/hooks/useOrderConfirmation.ts
-src/utils/pdf/generateScopePdf.ts
-src/utils/pdf/generateOrderConfirmationPdf.ts
-```
 
-## File da modificare
+Nessuna modifica strutturale alle tabelle esistenti.
 
-- `src/App.tsx` — route `/projects` e `/projects/:id`.
-- `src/components/app-sidebar.tsx` — voce "Progetti".
-- `src/pages/NewQuote.tsx` — supporto `?projectId=` (precompila cliente, salva `project_id`, redirect).
-- `src/pages/Quotes.tsx` / `QuoteListItem.tsx` — badge progetto se collegato.
-- `src/hooks/useQuotes.ts` — includere `project_id` in select/insert/update.
-- `src/types/quote.ts` — aggiungere `project_id?: string`.
+---
 
-## Migrazione DB (riepilogo per non tecnici)
+## File impattati
 
-- Crea tabella **Progetti** con cliente, stato, note.
-- Crea tabella **Scope di progetto** (un modulo per progetto).
-- Crea tabella **Conferme d'ordine** collegate al progetto.
-- Aggiunge il collegamento opzionale **progetto** ai preventivi esistenti (i vecchi preventivi restano validi senza progetto).
-- Solo l'utente proprietario può vedere/modificare i propri progetti, scope, conferme.
+**Nuovi**
+- `src/features/projects/templates/trattativaSchema.ts`
+- `src/features/projects/tabs/TrattativaTab.tsx`
+- `src/hooks/useTrattativa.ts`
+- `src/hooks/useProjectsOverview.ts`
 
-## Cose volutamente fuori scope per ora
+**Modificati**
+- `src/pages/Projects.tsx` — layout lista + icone
+- `src/pages/ProjectDetail.tsx` — rinomina tab, rimuove tab ODA, deep-linking via query param
+- `src/pages/NewQuote.tsx` — rimuove calcolatori embedded e bottone PDF sintetico
+- `src/utils/pdf/generateFullPdf.ts` — appende sintetico in coda
+- `src/utils/pdf/generateSyntheticPdf.ts` — estrae `renderSyntheticContent`
+- `src/hooks/usePdfGenerator.ts` — semplifica API
+- `src/components/app-sidebar.tsx` — (verifica: Fornitori resta, eventuali voci ODA rimosse)
 
-- Definizione campi specifici di Scope e Conferma Ordine (li darai nel prossimo messaggio — al momento parte come schema vuoto/placeholder).
-- Workflow di approvazione/firma elettronica.
-- Conversione automatica Scope → Preventivo.
+**Rimossi**
+- `src/features/projects/tabs/OrderConfirmationTab.tsx`
+- `src/features/projects/tabs/OrdiniAcquistoTab.tsx`
+- `src/features/projects/templates/orderConfirmationSchema.ts`
+- `src/hooks/useOrderConfirmation.ts`
+- `src/hooks/useOrdiniAcquisto.ts`
 
-## Passaggi successivi dopo approvazione
+---
 
-1. Migrazione DB.
-2. Hook + pagine Progetti (lista + dettaglio + tab Preventivi funzionante).
-3. `TemplateForm` generico + schemi Scope/Conferma (placeholder finché non passi i campi).
-4. Generatori PDF.
-5. Aggancio NewQuote ↔ progetto.
+## Note tecniche
+
+- Tabella `order_confirmations` viene riusata come storage Trattativa (campo `data` JSONB contiene `{ righe: [...], note, data_trattativa }`). Evita migration distruttive.
+- I dati ODA esistenti restano in DB ma non più accessibili da UI (recupero futuro possibile).
+- `usePdfGenerator` mantiene la firma `generatePdf(quoteData)`; il sintetico è sempre in appendice.

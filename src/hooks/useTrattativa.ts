@@ -3,18 +3,33 @@ import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { getErrorMessage } from "@/lib/errors"
 
-export interface OrderConfirmation {
+export interface TrattativaRiga {
+  id: string
+  descrizione: string
+  quantita: number
+  prezzo_unitario: number
+  fornitore_id: string | null
+  note?: string
+}
+
+export interface TrattativaData {
+  data_trattativa?: string
+  note?: string
+  righe: TrattativaRiga[]
+}
+
+export interface Trattativa {
   id: string
   user_id: string
   project_id: string
-  data: Record<string, unknown>
+  data: TrattativaData
   created_at: string
   updated_at: string
 }
 
-export const useOrderConfirmation = (projectId: string | undefined) =>
+export const useTrattativa = (projectId: string | undefined) =>
   useQuery({
-    queryKey: ["order-confirmation", projectId],
+    queryKey: ["trattativa", projectId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("order_confirmations" as any)
@@ -24,16 +39,16 @@ export const useOrderConfirmation = (projectId: string | undefined) =>
         .limit(1)
         .maybeSingle()
       if (error) throw error
-      return data as unknown as OrderConfirmation | null
+      return data as unknown as Trattativa | null
     },
     enabled: !!projectId,
   })
 
-export const useSaveOrderConfirmation = (projectId: string) => {
+export const useSaveTrattativa = (projectId: string) => {
   const qc = useQueryClient()
   const { toast } = useToast()
   return useMutation({
-    mutationFn: async ({ id, data }: { id?: string; data: Record<string, unknown> }) => {
+    mutationFn: async ({ id, data }: { id?: string; data: TrattativaData }) => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error("Non autenticato")
       if (id) {
@@ -55,8 +70,8 @@ export const useSaveOrderConfirmation = (projectId: string) => {
       return result
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["order-confirmation", projectId] })
-      toast({ title: "Conferma ordine salvata" })
+      qc.invalidateQueries({ queryKey: ["trattativa", projectId] })
+      toast({ title: "Trattativa salvata" })
     },
     onError: (e) =>
       toast({ title: "Errore", description: getErrorMessage(e), variant: "destructive" }),

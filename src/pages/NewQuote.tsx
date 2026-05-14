@@ -6,9 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import {
-  Plus, Trash2, Save, Copy, Calculator, ImagePlus, X, Palette,
+  Plus, Trash2, Save, Copy, Calculator, ImagePlus, X,
 } from "lucide-react"
-import { StoneCalculator } from "@/components/StoneCalculator"
 import { ProductSuggestions } from "@/components/ProductSuggestions"
 import { useToast } from "@/hooks/use-toast"
 import {
@@ -32,7 +31,6 @@ import { useSectionManager } from "@/hooks/useSectionManager"
 import { calculateGrandTotal } from "@/utils/quoteCalculations"
 import type { QuoteSection, PriceWarning } from "@/types/quote"
 import type { Product } from "@/hooks/useProducts"
-import { EnamelCostDialog } from "@/components/EnamelCostDialog"
 import type { EnamelPieceRow } from "@/components/EnamelCostCalculator"
 import { SortableItem } from "@/components/quotes/SortableItem"
 import { SectionRiskRow } from "@/components/quotes/SectionRiskRow"
@@ -121,15 +119,11 @@ const NewQuote = () => {
     notes: "",
     status: "draft",
   })
-  const [stoneCalculatorOpen, setStoneCalculatorOpen] = useState(false)
-  const [stoneCalculatorSectionId, setStoneCalculatorSectionId] = useState<string | null>(null)
   const [activeSuggestion, setActiveSuggestion] = useState<{
     sectionId: string; itemId: string; productId: string; productName: string
   } | null>(null)
   const suggestions = useProductSuggestions(activeSuggestion?.productId || null)
   const [enamelDataMap, setEnamelDataMap] = useState<Record<string, EnamelPieceRow[]>>({})
-  const [enamelDialogOpen, setEnamelDialogOpen] = useState(false)
-  const [enamelDialogSectionId, setEnamelDialogSectionId] = useState<string | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -415,35 +409,6 @@ const NewQuote = () => {
                   />
 
                   <div className="flex flex-wrap gap-2">
-                    <Button
-                      onClick={() => {
-                        setStoneCalculatorSectionId(section.id)
-                        setStoneCalculatorOpen(true)
-                      }}
-                      size="sm"
-                      variant="outline"
-                      className="gap-1.5"
-                    >
-                      <Calculator className="h-4 w-4" />
-                      Calc. Pietra
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setEnamelDialogSectionId(section.id)
-                        setEnamelDialogOpen(true)
-                      }}
-                      size="sm"
-                      variant="outline"
-                      className="gap-1.5"
-                    >
-                      <Palette className="h-4 w-4" />
-                      Costi Smalto
-                      {(enamelDataMap[section.id]?.length || 0) > 0 && (
-                        <span className="ml-1 bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 text-[10px] font-bold">
-                          {enamelDataMap[section.id].length}
-                        </span>
-                      )}
-                    </Button>
                     <SaveTemplateDialog
                       sectionName={section.name}
                       items={section.items}
@@ -664,28 +629,6 @@ const NewQuote = () => {
         </CardContent>
       </Card>
 
-      <StoneCalculator
-        open={stoneCalculatorOpen}
-        onOpenChange={setStoneCalculatorOpen}
-        onConfirm={(result) => {
-          if (stoneCalculatorSectionId) handleStoneCalculatorConfirm(stoneCalculatorSectionId, result)
-        }}
-      />
-
-      {enamelDialogSectionId && (
-        <EnamelCostDialog
-          open={enamelDialogOpen}
-          onOpenChange={(open) => {
-            setEnamelDialogOpen(open)
-            if (!open) setEnamelDialogSectionId(null)
-          }}
-          value={enamelDataMap[enamelDialogSectionId] || []}
-          onChange={(rows) =>
-            setEnamelDataMap((prev) => ({ ...prev, [enamelDialogSectionId!]: rows }))
-          }
-          sectionName={sections.find((s) => s.id === enamelDialogSectionId)?.name || ""}
-        />
-      )}
     </div>
   )
 }

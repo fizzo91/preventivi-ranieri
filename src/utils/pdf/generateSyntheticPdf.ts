@@ -1,11 +1,13 @@
-import { createPdfBase, classifyItems, calcRisksTotal, getRiskPercentageLabel, type QuoteData } from './pdfBase'
+import { createPdfBase, classifyItems, calcRisksTotal, getRiskPercentageLabel, type PdfCtx, type QuoteData } from './pdfBase'
 
-/** Generate the compact, tabular "synthetic" PDF format. */
-export async function generateSyntheticPdf(quoteData: QuoteData) {
-  const ctx = createPdfBase()
-  const { pdf, pageWidth, margin, contentWidth, checkPageBreak, addPageNumbers } = ctx
-
+/**
+ * Render the synthetic (compact tabular) summary into an existing PDF context.
+ * Used as appendix in the full PDF and as the body of the standalone synthetic PDF.
+ */
+export function renderSyntheticContent(ctx: PdfCtx, quoteData: QuoteData) {
+  const { pdf, pageWidth, margin, contentWidth, checkPageBreak } = ctx
   let y = ctx.getY()
+
   pdf.setFontSize(18)
   pdf.setFont('helvetica', 'bold')
   pdf.text('PREVENTIVO SINTETICO', pageWidth / 2, y, { align: 'center' })
@@ -106,14 +108,13 @@ export async function generateSyntheticPdf(quoteData: QuoteData) {
   pdf.text(`€${grandTot.toFixed(0)}`, cx[7] + 1, y + 6)
   pdf.setTextColor(0, 0, 0)
   y += 15
+  ctx.setY(y)
+}
 
-  // Footer
-  pdf.setFontSize(9)
-  pdf.setFont('helvetica', 'normal')
-  pdf.text(`Preventivo generato il ${new Date().toLocaleDateString('it-IT')}`, pageWidth / 2, y, { align: 'center' })
-  y += 5
-  pdf.text('Questo preventivo è valido per 30 giorni dalla data di emissione.', pageWidth / 2, y, { align: 'center' })
-
-  addPageNumbers()
-  pdf.save(`preventivo-sintetico-${quoteData.quoteNumber}.pdf`)
+/** Generate the standalone synthetic PDF (kept for backward-compat). */
+export async function generateSyntheticPdf(quoteData: QuoteData) {
+  const ctx = createPdfBase()
+  renderSyntheticContent(ctx, quoteData)
+  ctx.addPageNumbers()
+  ctx.pdf.save(`preventivo-sintetico-${quoteData.quoteNumber}.pdf`)
 }
