@@ -1,5 +1,5 @@
-import { Home, FileText, Plus, Settings, Calculator, Image, Wrench, AlignLeft, BookOpen, Bug, FolderKanban, Truck } from "lucide-react"
-import { NavLink, useLocation } from "react-router-dom"
+import { Home, Settings, Calculator, Image, Wrench, AlignLeft, BookOpen, Bug, FolderKanban, Truck, ClipboardList, FileText, Handshake } from "lucide-react"
+import { NavLink, useLocation, useMatch } from "react-router-dom"
 
 import {
   Sidebar,
@@ -10,6 +10,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Badge } from "@/components/ui/badge"
@@ -20,8 +23,6 @@ const items = [
   { title: "Dashboard", url: "/", icon: Home },
   { title: "Progetti", url: "/projects", icon: FolderKanban },
   { title: "Fornitori", url: "/fornitori", icon: Truck },
-  { title: "Nuovo Preventivo", url: "/new-quote", icon: Plus },
-  { title: "Preventivi", url: "/quotes", icon: FileText },
   { title: "Galleria", url: "/gallery", icon: Image },
   { title: "Descrizioni", url: "/descriptions", icon: AlignLeft },
   { title: "Prodotti", url: "/products", icon: Calculator },
@@ -31,10 +32,19 @@ const items = [
   { title: "Impostazioni", url: "/settings", icon: Settings },
 ]
 
+const projectSubItems = [
+  { title: "Project Scope", tab: "scope", icon: ClipboardList },
+  { title: "Preventivo", tab: "quotes", icon: FileText },
+  { title: "Trattativa", tab: "trattativa", icon: Handshake },
+]
+
 export function AppSidebar() {
   const { state } = useSidebar()
   const location = useLocation()
   const currentPath = location.pathname
+  const projectMatch = useMatch("/projects/:id")
+  const projectId = projectMatch?.params.id
+  const currentTab = new URLSearchParams(location.search).get("tab") ?? "scope"
   const pendingCount = usePendingRequestsCount()
   const { isAdmin } = useIsAdmin()
   const pendingBugs = usePendingBugsCount()
@@ -60,6 +70,7 @@ export function AppSidebar() {
                 if (item.url === "/settings" && (pendingCount > 0 || (isAdmin && pendingBugs > 0))) {
                   badgeCount = pendingCount + (isAdmin ? pendingBugs : 0)
                 }
+                const isProgetti = item.url === "/projects"
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={isActive(item.url)}>
@@ -73,6 +84,20 @@ export function AppSidebar() {
                         )}
                       </NavLink>
                     </SidebarMenuButton>
+                    {isProgetti && projectId && state === "expanded" && (
+                      <SidebarMenuSub>
+                        {projectSubItems.map((sub) => (
+                          <SidebarMenuSubItem key={sub.tab}>
+                            <SidebarMenuSubButton asChild isActive={currentTab === sub.tab}>
+                              <NavLink to={`/projects/${projectId}?tab=${sub.tab}`}>
+                                <sub.icon className="h-4 w-4" />
+                                <span>{sub.title}</span>
+                              </NavLink>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        ))}
+                      </SidebarMenuSub>
+                    )}
                   </SidebarMenuItem>
                 )
               })}
