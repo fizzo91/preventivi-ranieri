@@ -1,5 +1,7 @@
-import { Home, Settings, Calculator, Image, Wrench, AlignLeft, BookOpen, Bug, FolderKanban, Truck, ClipboardList, FileText, Handshake } from "lucide-react"
-import { NavLink, useLocation, useMatch } from "react-router-dom"
+import { useState } from "react"
+import { Home, Settings, Calculator, Image, Wrench, AlignLeft, BookOpen, Bug, FolderKanban, Truck, ClipboardList, FileText, Handshake, ChevronRight } from "lucide-react"
+import { NavLink, useLocation, useMatch, useNavigate } from "react-router-dom"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 import {
   Sidebar,
