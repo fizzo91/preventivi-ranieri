@@ -75,6 +75,60 @@ export function AppSidebar() {
                   badgeCount = pendingCount + (isAdmin ? pendingBugs : 0)
                 }
                 const isProgetti = item.url === "/projects"
+                if (isProgetti) {
+                  return (
+                    <Collapsible
+                      key={item.title}
+                      open={state === "expanded" ? projectsOpen : false}
+                      onOpenChange={setProjectsOpen}
+                      asChild
+                    >
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton
+                            isActive={currentPath.startsWith("/projects")}
+                            onClick={(e) => {
+                              if (state !== "expanded") {
+                                navigate("/projects")
+                                return
+                              }
+                              // toggle handled by Collapsible; also navigate
+                              navigate("/projects")
+                            }}
+                          >
+                            <item.icon className="h-4 w-4" />
+                            <span className="flex-1">{item.title}</span>
+                            {state === "expanded" && (
+                              <ChevronRight
+                                className={`h-4 w-4 transition-transform ${projectsOpen ? "rotate-90" : ""}`}
+                              />
+                            )}
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {projectSubItems.map((sub) => {
+                              const to = projectId
+                                ? `/projects/${projectId}?tab=${sub.tab}`
+                                : `/projects`
+                              const active = !!projectId && currentTab === sub.tab
+                              return (
+                                <SidebarMenuSubItem key={sub.tab}>
+                                  <SidebarMenuSubButton asChild isActive={active}>
+                                    <NavLink to={to}>
+                                      <sub.icon className="h-4 w-4" />
+                                      <span>{sub.title}</span>
+                                    </NavLink>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              )
+                            })}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
+                  )
+                }
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={isActive(item.url)}>
@@ -88,20 +142,6 @@ export function AppSidebar() {
                         )}
                       </NavLink>
                     </SidebarMenuButton>
-                    {isProgetti && projectId && state === "expanded" && (
-                      <SidebarMenuSub>
-                        {projectSubItems.map((sub) => (
-                          <SidebarMenuSubItem key={sub.tab}>
-                            <SidebarMenuSubButton asChild isActive={currentTab === sub.tab}>
-                              <NavLink to={`/projects/${projectId}?tab=${sub.tab}`}>
-                                <sub.icon className="h-4 w-4" />
-                                <span>{sub.title}</span>
-                              </NavLink>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    )}
                   </SidebarMenuItem>
                 )
               })}
