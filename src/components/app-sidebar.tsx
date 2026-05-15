@@ -43,6 +43,7 @@ const projectSubItems = [
 export function AppSidebar() {
   const { state } = useSidebar()
   const location = useLocation()
+  const navigate = useNavigate()
   const currentPath = location.pathname
   const projectMatch = useMatch("/projects/:id")
   const projectId = projectMatch?.params.id
@@ -50,6 +51,7 @@ export function AppSidebar() {
   const pendingCount = usePendingRequestsCount()
   const { isAdmin } = useIsAdmin()
   const pendingBugs = usePendingBugsCount()
+  const [projectsOpen, setProjectsOpen] = useState(currentPath.startsWith("/projects"))
 
   const isActive = (path: string) => currentPath === path
 
