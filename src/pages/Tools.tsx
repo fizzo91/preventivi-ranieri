@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch, Calculator, Package } from "lucide-react"
+import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch, Calculator, Package, Ruler as RulerIcon } from "lucide-react"
 import { ToolFloatingWindow } from "@/components/ToolFloatingWindow"
 import { ImperialConverter } from "@/components/ImperialConverter"
 import { CircleCalculator } from "@/components/CircleCalculator"
