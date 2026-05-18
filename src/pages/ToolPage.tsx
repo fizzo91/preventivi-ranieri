@@ -51,6 +51,8 @@ const ToolPage = () => {
         return <ClientResearch />
       case "calculator":
         return <ScientificCalculator defaultQuoteId={quoteId} defaultQuoteName={quoteName} />
+      case "imballo":
+        return <ImballoCalculator />
       default:
         return null
     }
