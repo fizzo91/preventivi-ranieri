@@ -9,6 +9,7 @@ import { VanityCalculator } from "@/components/VanityCalculator"
 import { ClientResearch } from "@/components/ClientResearch"
 import { ScientificCalculator } from "@/components/ScientificCalculator"
 import { ImballoCalculator } from "@/components/ImballoCalculator"
+import { MisureCalculator } from "@/components/MisureCalculator"
 
 type ToolId =
   | "imperial"
@@ -19,6 +20,7 @@ type ToolId =
   | "client-research"
   | "calculator"
   | "imballo"
+  | "misure"
 
 interface ToolDef {
   id: ToolId | "weight" | "dimensions"
