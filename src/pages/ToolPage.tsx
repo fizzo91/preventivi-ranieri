@@ -7,6 +7,7 @@ import { Glossary } from "@/components/Glossary"
 import { VanityCalculator } from "@/components/VanityCalculator"
 import { ClientResearch } from "@/components/ClientResearch"
 import { ScientificCalculator } from "@/components/ScientificCalculator"
+import { ImballoCalculator } from "@/components/ImballoCalculator"
 import { cn } from "@/lib/utils"
 import { MacWindowBar } from "@/components/MacWindowBar"
 
@@ -18,6 +19,7 @@ const toolMeta: Record<string, { title: string }> = {
   vanity: { title: "Calcolo Vanity" },
   "client-research": { title: "Ricerca Cliente AI" },
   calculator: { title: "Calcolatrice Scientifica" },
+  imballo: { title: "Calcolo Imballo Pietra Lavica" },
 }
 
 const ToolPage = () => {
