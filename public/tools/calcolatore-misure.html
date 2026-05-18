@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calcolatore Misure — Pietra Lavica</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f3ef;
+    --surface: #ffffff;
+    --border: #d8d4cc;
+    --border-light: #e8e5e0;
+    --text: #1a1916;
+    --muted: #7a766e;
+    --accent: #2a2520;
+    --highlight: #c8401a;
+    --highlight-bg: #fdf1ee;
+    --row-hover: #faf9f7;
+    --total-bg: #1a1916;
+    --total-text: #f5f3ef;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 24px;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  header h1 {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  header span {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .density-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .density-bar input {
+    width: 80px;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    border-radius: 2px;
+    text-align: right;
+  }
+
+  .density-bar input:focus { outline: 1px solid var(--accent); }
+
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead tr {
+    background: var(--accent);
+    color: var(--total-text);
+  }
+
+  thead th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 12px;
+    text-align: left;
+    white-space: nowrap;
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+
+  thead th:last-child { border-right: none; }
+  thead th.right { text-align: right; }
+  thead th.center { text-align: center; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border-light);
+    transition: background 0.1s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--row-hover); }
+
+  tbody td {
+    padding: 8px 12px;
+    vertical-align: middle;
+  }
+
+  td.num {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-align: right;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  td.computed {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-align: right;
+    color: var(--muted);
+  }
+
+  td.computed.has-value { color: var(--text); }
+
+  td.label-cell {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 32px;
+    text-align: center;
+    user-select: none;
+  }
+
+  input.dim {
+    width: 100%;
+    min-width: 60px;
+    padding: 5px 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    text-align: right;
+    border-radius: 2px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  input.dim:hover { border-color: var(--border); background: var(--bg); }
+  input.dim:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+  input.dim::placeholder { color: var(--border); }
+
+  input.desc-input {
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--text);
+    border-radius: 2px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  input.desc-input:hover { border-color: var(--border); background: var(--bg); }
+  input.desc-input:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+  input.desc-input::placeholder { color: var(--border); font-style: italic; }
+
+  .btn-del {
+    background: none;
+    border: none;
+    color: var(--border);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 4px 6px;
+    border-radius: 2px;
+    transition: color 0.15s;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .btn-del:hover { color: var(--highlight); }
+
+  tfoot tr { background: var(--total-bg); }
+
+  tfoot td {
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--total-text);
+    text-align: right;
+    white-space: nowrap;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+
+  tfoot td:last-child { border-right: none; }
+
+  tfoot td.tot-label {
+    text-align: left;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    font-size: 10px;
+  }
+
+  tfoot td.tot-val { font-weight: 500; font-size: 13px; opacity: 1; }
+  tfoot td.tot-empty { opacity: 0.2; }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: all 0.15s;
+  }
+
+  .btn-add {
+    background: var(--accent);
+    color: var(--total-text);
+    border-color: var(--accent);
+  }
+
+  .btn-add:hover { background: #2e2a25; }
+
+  .btn-clear {
+    background: transparent;
+    color: var(--muted);
+  }
+
+  .btn-clear:hover { border-color: var(--highlight); color: var(--highlight); }
+
+  .btn-print {
+    background: transparent;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  .btn-print:hover { border-color: var(--accent); color: var(--text); }
+
+  .note {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-light);
+  }
+
+  /* highlight peso se no spessore */
+  td.peso-missing { color: var(--border) !important; font-style: italic; }
+
+  @media print {
+    body { background: white; padding: 16px; }
+    .actions { display: none; }
+    .btn-del { display: none; }
+    tfoot { display: table-row-group; }
+    thead th { background: #222 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    tfoot tr { background: #222 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  @media (max-width: 700px) {
+    .col-desc, .col-desc-head { display: none; }
+    body { padding: 16px 8px; }
+    thead th, tbody td, tfoot td { padding: 7px 7px; }
+    input.dim { min-width: 48px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Calcolatore Misure</h1>
+    <span>Pietra Lavica Smaltata — Ranieri</span>
+  </header>
+
+  <div class="density-bar">
+    <span>Densità</span>
+    <input type="number" id="densita" value="3000" min="1" step="1" title="kg/m³">
+    <span>kg/m³</span>
+    <span style="margin-left:auto; font-size:11px; opacity:.5">* peso calcolato solo se spessore inserito</span>
+  </div>
+
+  <div class="table-wrap">
+    <table id="tbl">
+      <thead>
+        <tr>
+          <th style="width:32px" class="center">#</th>
+          <th class="col-desc-head" style="min-width:120px">Descrizione</th>
+          <th class="right" style="width:90px">L (mm)</th>
+          <th class="right" style="width:90px">W (mm)</th>
+          <th class="right" style="width:80px">Sp. (mm)</th>
+          <th class="right" style="width:60px">Qtà</th>
+          <th class="right" style="width:90px">m²/pz</th>
+          <th class="right" style="width:90px">Perim. (ml)</th>
+          <th class="right" style="width:80px">L.lungo (ml)</th>
+          <th class="right" style="width:90px">kg/pz</th>
+          <th style="width:32px"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+      <tfoot id="tfoot">
+        <tr>
+          <td></td>
+          <td class="col-desc tot-label">Totale</td>
+          <td></td><td></td><td></td>
+          <td id="tot-qty" class="tot-val tot-empty">—</td>
+          <td id="tot-mq" class="tot-val tot-empty">—</td>
+          <td id="tot-per" class="tot-val tot-empty">—</td>
+          <td class="tot-empty">—</td>
+          <td id="tot-kg" class="tot-val tot-empty">—</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-add" onclick="addRow()">+ Aggiungi riga</button>
+    <button class="btn btn-clear" onclick="clearAll()">Svuota</button>
+    <button class="btn btn-print" onclick="window.print()">Stampa / PDF</button>
+  </div>
+
+  <p class="note">Misure in mm · m² = L×W / 1.000.000 · Perimetro = 2×(L+W)/1000 · Peso = L×W×Sp×Densità / 10⁹</p>
+</div>
+
+<script>
+let rowCount = 0;
+
+function addRow(l, w, sp, qty, desc) {
+  rowCount++;
+  const n = rowCount;
+  const tbody = document.getElementById('tbody');
+  const tr = document.createElement('tr');
+  tr.id = 'row-' + n;
+  tr.innerHTML = `
+    <td class="label-cell">${n}</td>
+    <td class="col-desc" style="min-width:120px"><input class="desc-input" placeholder="descrizione…" value="${desc||''}" oninput="recalc()"></td>
+    <td class="num"><input class="dim" type="number" min="0" step="1" placeholder="—" value="${l||''}" oninput="recalc()"></td>
+    <td class="num"><input class="dim" type="number" min="0" step="1" placeholder="—" value="${w||''}" oninput="recalc()"></td>
+    <td class="num"><input class="dim" type="number" min="0" step="1" placeholder="—" value="${sp||''}" oninput="recalc()"></td>
+    <td class="num"><input class="dim" type="number" min="1" step="1" placeholder="1" value="${qty||1}" style="width:50px" oninput="recalc()"></td>
+    <td id="mq-${n}" class="computed">—</td>
+    <td id="per-${n}" class="computed">—</td>
+    <td id="ll-${n}" class="computed">—</td>
+    <td id="kg-${n}" class="computed">—</td>
+    <td><button class="btn-del" title="Elimina" onclick="delRow(${n})">×</button></td>
+  `;
+  tbody.appendChild(tr);
+  recalc();
+  const inputs = tr.querySelectorAll('input');
+  if (!l) inputs[1].focus();
+}
+
+function delRow(n) {
+  const row = document.getElementById('row-' + n);
+  if (row) row.remove();
+  recalc();
+}
+
+function clearAll() {
+  if (!confirm('Svuotare tutte le righe?')) return;
+  document.getElementById('tbody').innerHTML = '';
+  rowCount = 0;
+  recalc();
+}
+
+function recalc() {
+  const D = parseFloat(document.getElementById('densita').value) || 3000;
+  const rows = document.getElementById('tbody').querySelectorAll('tr');
+
+  let totQty = 0, totMq = 0, totPer = 0, totKg = 0;
+  let hasMq = false, hasPer = false, hasKg = false;
+
+  rows.forEach(tr => {
+    const id = tr.id.replace('row-', '');
+    const inputs = tr.querySelectorAll('input.dim');
+    const L = parseFloat(inputs[0].value);
+    const W = parseFloat(inputs[1].value);
+    const Sp = parseFloat(inputs[2].value);
+    const Qty = parseInt(inputs[3].value) || 1;
+
+    const mqCell = document.getElementById('mq-' + id);
+    const perCell = document.getElementById('per-' + id);
+    const llCell = document.getElementById('ll-' + id);
+    const kgCell = document.getElementById('kg-' + id);
+
+    if (!mqCell) return;
+
+    if (L > 0 && W > 0) {
+      const lm = L / 1000, wm = W / 1000;
+      const mq = lm * wm;
+      const per = 2 * (lm + wm);
+      const ll = Math.max(lm, wm);
+
+      mqCell.textContent = mq.toFixed(4);
+      mqCell.className = 'computed has-value';
+      perCell.textContent = per.toFixed(3);
+      perCell.className = 'computed has-value';
+      llCell.textContent = ll.toFixed(3);
+      llCell.className = 'computed has-value';
+
+      totQty += Qty;
+      totMq += mq * Qty;
+      totPer += per * Qty;
+      hasMq = true; hasPer = true;
+
+      if (Sp > 0 && !isNaN(Sp)) {
+        const spm = Sp / 1000;
+        const kg = lm * wm * spm * D;
+        kgCell.textContent = kg.toFixed(2);
+        kgCell.className = 'computed has-value';
+        totKg += kg * Qty;
+        hasKg = true;
+      } else {
+        kgCell.textContent = '—';
+        kgCell.className = 'computed';
+      }
+    } else {
+      mqCell.textContent = '—';
+      mqCell.className = 'computed';
+      perCell.textContent = '—';
+      perCell.className = 'computed';
+      llCell.textContent = '—';
+      llCell.className = 'computed';
+      kgCell.textContent = '—';
+      kgCell.className = 'computed';
+    }
+  });
+
+  const tq = document.getElementById('tot-qty');
+  const tm = document.getElementById('tot-mq');
+  const tp = document.getElementById('tot-per');
+  const tk = document.getElementById('tot-kg');
+
+  if (hasMq) {
+    tq.textContent = totQty;
+    tq.className = 'tot-val';
+    tm.textContent = totMq.toFixed(3) + ' m²';
+    tm.className = 'tot-val';
+    tp.textContent = totPer.toFixed(2) + ' ml';
+    tp.className = 'tot-val';
+  } else {
+    tq.textContent = '—'; tq.className = 'tot-val tot-empty';
+    tm.textContent = '—'; tm.className = 'tot-val tot-empty';
+    tp.textContent = '—'; tp.className = 'tot-val tot-empty';
+  }
+
+  if (hasKg) {
+    tk.textContent = totKg.toFixed(1) + ' kg';
+    tk.className = 'tot-val';
+  } else {
+    tk.textContent = '—';
+    tk.className = 'tot-val tot-empty';
+  }
+}
+
+// Start with 3 empty rows
+addRow(); addRow(); addRow();
+</script>
+</body>
+</html>

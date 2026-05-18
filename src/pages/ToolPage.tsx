@@ -8,6 +8,7 @@ import { VanityCalculator } from "@/components/VanityCalculator"
 import { ClientResearch } from "@/components/ClientResearch"
 import { ScientificCalculator } from "@/components/ScientificCalculator"
 import { ImballoCalculator } from "@/components/ImballoCalculator"
+import { MisureCalculator } from "@/components/MisureCalculator"
 import { cn } from "@/lib/utils"
 import { MacWindowBar } from "@/components/MacWindowBar"
 
@@ -20,6 +21,7 @@ const toolMeta: Record<string, { title: string }> = {
   "client-research": { title: "Ricerca Cliente AI" },
   calculator: { title: "Calcolatrice Scientifica" },
   imballo: { title: "Calcolo Imballo Pietra Lavica" },
+  misure: { title: "Calcolatore Misure Pietra Lavica" },
 }
 
 const ToolPage = () => {
@@ -53,6 +55,8 @@ const ToolPage = () => {
         return <ScientificCalculator defaultQuoteId={quoteId} defaultQuoteName={quoteName} />
       case "imballo":
         return <ImballoCalculator />
+      case "misure":
+        return <MisureCalculator />
       default:
         return null
     }
