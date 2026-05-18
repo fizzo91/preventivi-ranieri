@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch, Calculator } from "lucide-react"
+import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch, Calculator, Package } from "lucide-react"
 import { ToolFloatingWindow } from "@/components/ToolFloatingWindow"
 import { ImperialConverter } from "@/components/ImperialConverter"
 import { CircleCalculator } from "@/components/CircleCalculator"
@@ -8,6 +8,7 @@ import { Glossary } from "@/components/Glossary"
 import { VanityCalculator } from "@/components/VanityCalculator"
 import { ClientResearch } from "@/components/ClientResearch"
 import { ScientificCalculator } from "@/components/ScientificCalculator"
+import { ImballoCalculator } from "@/components/ImballoCalculator"
 
 type ToolId =
   | "imperial"
