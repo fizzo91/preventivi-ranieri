@@ -18,6 +18,7 @@ type ToolId =
   | "vanity"
   | "client-research"
   | "calculator"
+  | "imballo"
 
 interface ToolDef {
   id: ToolId | "weight" | "dimensions"
