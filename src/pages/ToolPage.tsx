@@ -21,6 +21,7 @@ const toolMeta: Record<string, { title: string }> = {
   "client-research": { title: "Ricerca Cliente AI" },
   calculator: { title: "Calcolatrice Scientifica" },
   imballo: { title: "Calcolo Imballo Pietra Lavica" },
+  misure: { title: "Calcolatore Misure Pietra Lavica" },
 }
 
 const ToolPage = () => {
