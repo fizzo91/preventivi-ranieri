@@ -8,6 +8,7 @@ import { VanityCalculator } from "@/components/VanityCalculator"
 import { ClientResearch } from "@/components/ClientResearch"
 import { ScientificCalculator } from "@/components/ScientificCalculator"
 import { ImballoCalculator } from "@/components/ImballoCalculator"
+import { MisureCalculator } from "@/components/MisureCalculator"
 import { cn } from "@/lib/utils"
 import { MacWindowBar } from "@/components/MacWindowBar"
 
