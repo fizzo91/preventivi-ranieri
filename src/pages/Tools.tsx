@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch, Calculator } from "lucide-react"
+import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch, Calculator, Package } from "lucide-react"
 import { ToolFloatingWindow } from "@/components/ToolFloatingWindow"
 import { ImperialConverter } from "@/components/ImperialConverter"
 import { CircleCalculator } from "@/components/CircleCalculator"
@@ -8,6 +8,7 @@ import { Glossary } from "@/components/Glossary"
 import { VanityCalculator } from "@/components/VanityCalculator"
 import { ClientResearch } from "@/components/ClientResearch"
 import { ScientificCalculator } from "@/components/ScientificCalculator"
+import { ImballoCalculator } from "@/components/ImballoCalculator"
 
 type ToolId =
   | "imperial"
@@ -17,6 +18,7 @@ type ToolId =
   | "vanity"
   | "client-research"
   | "calculator"
+  | "imballo"
 
 interface ToolDef {
   id: ToolId | "weight" | "dimensions"
@@ -38,6 +40,7 @@ const tools: ToolDef[] = [
   { id: "vanity", title: "Vanity", subtitle: "Stima Costi", icon: Bath, available: true, gradient: "from-teal-500 to-emerald-400", shadow: "shadow-teal-500/25", width: 720, height: 640 },
   { id: "client-research", title: "Ricerca Cliente", subtitle: "Info AI", icon: UserSearch, available: true, gradient: "from-rose-500 to-pink-400", shadow: "shadow-rose-500/25", width: 720, height: 640 },
   { id: "calculator", title: "Calcolatrice", subtitle: "Scientifica", icon: Calculator, available: true, gradient: "from-indigo-500 to-blue-400", shadow: "shadow-indigo-500/25", width: 640, height: 680 },
+  { id: "imballo", title: "Calcolo Imballo", subtitle: "Pietra Lavica", icon: Package, available: true, gradient: "from-stone-500 to-amber-600", shadow: "shadow-stone-500/25", width: 1100, height: 780 },
   { id: "weight", title: "Peso", subtitle: "Calcolatore", icon: Scale, available: false, gradient: "from-emerald-500 to-green-400", shadow: "shadow-emerald-500/25" },
   { id: "dimensions", title: "Dimensioni", subtitle: "Ottimizzatore", icon: Ruler, available: false, gradient: "from-emerald-500 to-green-400", shadow: "shadow-emerald-500/25" },
 ]
@@ -50,6 +53,7 @@ const toolTitles: Record<ToolId, string> = {
   vanity: "Calcolo Vanity",
   "client-research": "Ricerca Cliente AI",
   calculator: "Calcolatrice Scientifica",
+  imballo: "Calcolo Imballo Pietra Lavica",
 }
 
 const Tools = () => {
@@ -64,6 +68,7 @@ const Tools = () => {
       case "vanity": return <VanityCalculator />
       case "client-research": return <ClientResearch />
       case "calculator": return <ScientificCalculator />
+      case "imballo": return <ImballoCalculator />
     }
   }
 
