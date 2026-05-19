@@ -1,6 +1,6 @@
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
+import { Link } from "react-router-dom"
 import { useQuotes } from "@/hooks/useQuotes"
 import { useDashboardStats } from "@/hooks/useDashboardStats"
 import { LoadingSpinner } from "@/components/shared"
@@ -9,12 +9,10 @@ import { ThicknessCostChart } from "@/components/dashboard/ThicknessCostChart"
 import { TopRankingCard } from "@/components/dashboard/TopRankingCard"
 import { TagDistributionChart } from "@/components/dashboard/TagDistributionChart"
 import { RecentQuotesList } from "@/components/dashboard/RecentQuotesList"
-import { ProjectFormDialog } from "@/features/projects/ProjectFormDialog"
 
 const Dashboard = () => {
   const { data: quotes = [], isLoading } = useQuotes()
   const { recentQuotes, monthlyData, thicknessCosts, topThicknessesAndWorks, tagStats } = useDashboardStats(quotes)
-  const [openProject, setOpenProject] = useState(false)
 
   if (isLoading) return <LoadingSpinner />
 
@@ -22,9 +20,9 @@ const Dashboard = () => {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div><h1 className="text-3xl font-bold text-foreground">Dashboard</h1></div>
-        <Button size="lg" className="gap-2" onClick={() => setOpenProject(true)}>
-          <Plus className="h-4 w-4" />Nuovo Progetto
-        </Button>
+        <Link to="/new-quote">
+          <Button size="lg" className="gap-2"><Plus className="h-4 w-4" />Nuovo Preventivo</Button>
+        </Link>
       </div>
 
       <MonthlyChart data={monthlyData} />
@@ -37,8 +35,6 @@ const Dashboard = () => {
 
       <TagDistributionChart data={tagStats} />
       <RecentQuotesList quotes={recentQuotes} />
-
-      <ProjectFormDialog open={openProject} onOpenChange={setOpenProject} project={null} />
     </div>
   )
 }
