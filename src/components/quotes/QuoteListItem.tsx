@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
-import { Edit, Trash2, Copy, FileDown, User } from "lucide-react"
+import { Edit, Trash2, Copy, FileDown, FileText, User } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { QuoteDetailDialog } from "./QuoteDetailDialog"
 import { useAuth } from "@/contexts/AuthContext"
 import type { Quote } from "@/hooks/useQuotes"
@@ -10,13 +11,14 @@ interface QuoteListItemProps {
   onDuplicate: (quote: Quote) => void
   onDelete: (id: string) => void
   onGeneratePdf: (quote: Quote) => void
+  onGenerateSyntheticPdf: (quote: Quote) => void
   onExportJson: (quote: Quote) => void
   isDuplicating: boolean
   isDeleting: boolean
 }
 
 export const QuoteListItem = ({
-  quote, onDuplicate, onDelete, onGeneratePdf, onExportJson, isDuplicating, isDeleting
+  quote, onDuplicate, onDelete, onGeneratePdf, onGenerateSyntheticPdf, onExportJson, isDuplicating, isDeleting
 }: QuoteListItemProps) => {
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -44,10 +46,22 @@ export const QuoteListItem = ({
           </p>
         </div>
         <div className="flex gap-2">
-          <QuoteDetailDialog quote={quote} onGeneratePdf={onGeneratePdf} onExportJson={onExportJson} />
-          <Button variant="outline" size="sm" onClick={() => onGeneratePdf(quote)} title="Genera PDF">
-            <FileDown className="h-4 w-4" />
-          </Button>
+          <QuoteDetailDialog quote={quote} onGeneratePdf={onGeneratePdf} onGenerateSyntheticPdf={onGenerateSyntheticPdf} onExportJson={onExportJson} />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <FileDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onGeneratePdf(quote)}>
+                <FileDown className="h-4 w-4 mr-2" />PDF Completo
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onGenerateSyntheticPdf(quote)}>
+                <FileText className="h-4 w-4 mr-2" />PDF Sintetico
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           {isOwner && (
             <>
               <Button variant="outline" size="sm" onClick={() => navigate('/new-quote', { state: { editQuote: quote } })}>

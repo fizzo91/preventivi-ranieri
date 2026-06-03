@@ -1,1 +1,0 @@
-CREATE INDEX IF NOT EXISTS idx_order_confirmations_project ON public.order_confirmations(project_id);

@@ -1,14 +1,13 @@
 /**
  * Shared export utilities for JSON download
  */
-import type { Quote } from "@/hooks/useQuotes"
 
 /** Download data as a JSON file */
 export function downloadJson(data: unknown, filename: string): void {
   const dataStr = JSON.stringify(data, null, 2)
-  const blob = new Blob([dataStr], { type: "application/json" })
+  const blob = new Blob([dataStr], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
-  const link = document.createElement("a")
+  const link = document.createElement('a')
   link.href = url
   link.download = filename
   document.body.appendChild(link)
@@ -18,12 +17,11 @@ export function downloadJson(data: unknown, filename: string): void {
 }
 
 /** Export a single quote as JSON */
-export function exportQuoteJson(quote: Quote): void {
+export function exportQuoteJson(quote: any): void {
   downloadJson(quote, `preventivo-${quote.quote_number}.json`)
 }
 
 /** Export all quotes as JSON */
-export function exportAllQuotesJson(quotes: Quote[]): void {
-  const today = new Date().toISOString().split("T")[0]
-  downloadJson(quotes, `preventivi-${today}.json`)
+export function exportAllQuotesJson(quotes: any[]): void {
+  downloadJson(quotes, `preventivi-${new Date().toISOString().split('T')[0]}.json`)
 }

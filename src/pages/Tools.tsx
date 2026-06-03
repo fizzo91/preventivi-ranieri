@@ -1,80 +1,136 @@
-import { useState } from "react"
 import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch, Calculator } from "lucide-react"
-import { ToolFloatingWindow } from "@/components/ToolFloatingWindow"
-import { ImperialConverter } from "@/components/ImperialConverter"
-import { CircleCalculator } from "@/components/CircleCalculator"
-import { DescriptionAssistant } from "@/components/DescriptionAssistant"
-import { Glossary } from "@/components/Glossary"
-import { VanityCalculator } from "@/components/VanityCalculator"
-import { ClientResearch } from "@/components/ClientResearch"
-import { ScientificCalculator } from "@/components/ScientificCalculator"
+import { useNavigate } from "react-router-dom"
 
-type ToolId =
-  | "imperial"
-  | "circle"
-  | "descriptions"
-  | "glossary"
-  | "vanity"
-  | "client-research"
-  | "calculator"
-
-interface ToolDef {
-  id: ToolId | "weight" | "dimensions"
-  title: string
-  subtitle: string
-  icon: typeof Ruler
-  available: boolean
-  gradient: string
-  shadow: string
-  width?: number
-  height?: number
-}
-
-const tools: ToolDef[] = [
-  { id: "imperial", title: "Convertitore", subtitle: "Pollici → mm", icon: ArrowRightLeft, available: true, gradient: "from-blue-500 to-cyan-400", shadow: "shadow-blue-500/25", width: 520, height: 560 },
-  { id: "circle", title: "Cerchi", subtitle: "Area e Circ.", icon: Circle, available: true, gradient: "from-violet-500 to-purple-400", shadow: "shadow-violet-500/25", width: 520, height: 560 },
-  { id: "descriptions", title: "Descrizioni", subtitle: "Assistente AI", icon: FileText, available: true, gradient: "from-orange-500 to-amber-400", shadow: "shadow-orange-500/25", width: 720, height: 640 },
-  { id: "glossary", title: "Glossario", subtitle: "Terminologia", icon: BookOpen, available: true, gradient: "from-amber-500 to-yellow-400", shadow: "shadow-amber-500/25", width: 720, height: 640 },
-  { id: "vanity", title: "Vanity", subtitle: "Stima Costi", icon: Bath, available: true, gradient: "from-teal-500 to-emerald-400", shadow: "shadow-teal-500/25", width: 720, height: 640 },
-  { id: "client-research", title: "Ricerca Cliente", subtitle: "Info AI", icon: UserSearch, available: true, gradient: "from-rose-500 to-pink-400", shadow: "shadow-rose-500/25", width: 720, height: 640 },
-  { id: "calculator", title: "Calcolatrice", subtitle: "Scientifica", icon: Calculator, available: true, gradient: "from-indigo-500 to-blue-400", shadow: "shadow-indigo-500/25", width: 640, height: 680 },
-  { id: "weight", title: "Peso", subtitle: "Calcolatore", icon: Scale, available: false, gradient: "from-emerald-500 to-green-400", shadow: "shadow-emerald-500/25" },
-  { id: "dimensions", title: "Dimensioni", subtitle: "Ottimizzatore", icon: Ruler, available: false, gradient: "from-emerald-500 to-green-400", shadow: "shadow-emerald-500/25" },
+const tools = [
+  {
+    id: "imperial",
+    title: "Convertitore",
+    subtitle: "Pollici → mm",
+    icon: ArrowRightLeft,
+    available: true,
+    gradient: "from-blue-500 to-cyan-400",
+    shadow: "shadow-blue-500/25",
+  },
+  {
+    id: "circle",
+    title: "Cerchi",
+    subtitle: "Area e Circ.",
+    icon: Circle,
+    available: true,
+    gradient: "from-violet-500 to-purple-400",
+    shadow: "shadow-violet-500/25",
+  },
+  {
+    id: "descriptions",
+    title: "Descrizioni",
+    subtitle: "Assistente AI",
+    icon: FileText,
+    available: true,
+    gradient: "from-orange-500 to-amber-400",
+    shadow: "shadow-orange-500/25",
+  },
+  {
+    id: "glossary",
+    title: "Glossario",
+    subtitle: "Terminologia",
+    icon: BookOpen,
+    available: true,
+    gradient: "from-amber-500 to-yellow-400",
+    shadow: "shadow-amber-500/25",
+  },
+  {
+    id: "vanity",
+    title: "Vanity",
+    subtitle: "Stima Costi",
+    icon: Bath,
+    available: true,
+    gradient: "from-teal-500 to-emerald-400",
+    shadow: "shadow-teal-500/25",
+  },
+  {
+    id: "client-research",
+    title: "Ricerca Cliente",
+    subtitle: "Info AI",
+    icon: UserSearch,
+    available: true,
+    gradient: "from-rose-500 to-pink-400",
+    shadow: "shadow-rose-500/25",
+  },
+  {
+    id: "calculator",
+    title: "Calcolatrice",
+    subtitle: "Scientifica",
+    icon: Calculator,
+    available: true,
+    gradient: "from-indigo-500 to-blue-400",
+    shadow: "shadow-indigo-500/25",
+  },
+  {
+    id: "weight",
+    title: "Peso",
+    subtitle: "Calcolatore",
+    icon: Scale,
+    available: false,
+    gradient: "from-emerald-500 to-green-400",
+    shadow: "shadow-emerald-500/25",
+  },
+  {
+    id: "dimensions",
+    title: "Dimensioni",
+    subtitle: "Ottimizzatore",
+    icon: Ruler,
+    available: false,
+    gradient: "from-emerald-500 to-green-400",
+    shadow: "shadow-emerald-500/25",
+  },
 ]
 
-const toolTitles: Record<ToolId, string> = {
-  imperial: "Convertitore Pollici/Piedi → mm",
-  circle: "Calcolo Cerchi",
-  descriptions: "Assistente Descrizioni",
-  glossary: "Glossario Pietra",
-  vanity: "Calcolo Vanity",
-  "client-research": "Ricerca Cliente AI",
-  calculator: "Calcolatrice Scientifica",
-}
-
 const Tools = () => {
-  const [activeTool, setActiveTool] = useState<ToolId | null>(null)
+  const navigate = useNavigate()
 
-  const renderTool = (id: ToolId) => {
-    switch (id) {
-      case "imperial": return <ImperialConverter />
-      case "circle": return <CircleCalculator />
-      case "descriptions": return <DescriptionAssistant />
-      case "glossary": return <Glossary />
-      case "vanity": return <VanityCalculator />
-      case "client-research": return <ClientResearch />
-      case "calculator": return <ScientificCalculator />
+  const handleToolClick = (toolId: string) => {
+    const url = `/tool/${toolId}`
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      // @ts-ignore iOS Safari
+      window.navigator.standalone === true
+
+    // On mobile or PWA, in-app navigation is more reliable than popups
+    if (isMobile || isStandalone) {
+      navigate(url)
+      return
+    }
+
+    const sizes: Record<string, [number, number]> = {
+      imperial: [480, 600],
+      circle: [480, 650],
+      descriptions: [560, 800],
+      glossary: [520, 700],
+      vanity: [600, 850],
+      "client-research": [500, 700],
+      calculator: [700, 750],
+    }
+    const [w, h] = sizes[toolId] || [480, 600]
+    const left = (screen.width - w) / 2
+    const top = (screen.height - h) / 2
+    const popup = window.open(
+      url,
+      `tool-${toolId}`,
+      `width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no`
+    )
+    // Fallback if popup is blocked (e.g. inside iframe preview)
+    if (!popup || popup.closed || typeof popup.closed === "undefined") {
+      navigate(url)
     }
   }
-
-  const activeDef = activeTool ? tools.find((t) => t.id === activeTool) : null
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Strumenti</h1>
         <p className="text-muted-foreground mt-1">
-          Tocca uno strumento per aprirlo in una finestra flottante.
+          Tocca uno strumento per aprirlo in una nuova finestra.
         </p>
       </div>
 
@@ -83,7 +139,7 @@ const Tools = () => {
           <button
             key={tool.id}
             disabled={!tool.available}
-            onClick={() => tool.available && setActiveTool(tool.id as ToolId)}
+            onClick={() => tool.available && handleToolClick(tool.id)}
             className="group flex flex-col items-center gap-3 p-4 rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:pointer-events-none focus:outline-none"
           >
             <div
@@ -97,22 +153,16 @@ const Tools = () => {
               )}
             </div>
             <div className="text-center">
-              <div className="text-sm font-semibold text-foreground leading-tight">{tool.title}</div>
-              <div className="text-[11px] text-muted-foreground">{tool.subtitle}</div>
+              <div className="text-sm font-semibold text-foreground leading-tight">
+                {tool.title}
+              </div>
+              <div className="text-[11px] text-muted-foreground">
+                {tool.subtitle}
+              </div>
             </div>
           </button>
         ))}
       </div>
-
-      <ToolFloatingWindow
-        open={!!activeTool}
-        onClose={() => setActiveTool(null)}
-        title={activeTool ? toolTitles[activeTool] : ""}
-        defaultWidth={activeDef?.width ?? 720}
-        defaultHeight={activeDef?.height ?? 600}
-      >
-        {activeTool && renderTool(activeTool)}
-      </ToolFloatingWindow>
     </div>
   )
 }

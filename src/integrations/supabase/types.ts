@@ -50,48 +50,6 @@ export type Database = {
         }
         Relationships: []
       }
-      bug_reports: {
-        Row: {
-          admin_notes: string | null
-          created_at: string
-          description: string
-          id: string
-          page_url: string | null
-          status: string
-          title: string
-          updated_at: string
-          user_email: string
-          user_id: string
-          user_name: string | null
-        }
-        Insert: {
-          admin_notes?: string | null
-          created_at?: string
-          description: string
-          id?: string
-          page_url?: string | null
-          status?: string
-          title: string
-          updated_at?: string
-          user_email: string
-          user_id: string
-          user_name?: string | null
-        }
-        Update: {
-          admin_notes?: string | null
-          created_at?: string
-          description?: string
-          id?: string
-          page_url?: string | null
-          status?: string
-          title?: string
-          updated_at?: string
-          user_email?: string
-          user_id?: string
-          user_name?: string | null
-        }
-        Relationships: []
-      }
       calculations: {
         Row: {
           created_at: string | null
@@ -126,65 +84,6 @@ export type Database = {
             columns: ["quote_id"]
             isOneToOne: false
             referencedRelation: "quotes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      chat_conversations: {
-        Row: {
-          created_at: string
-          id: string
-          title: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          title?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          title?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      chat_messages: {
-        Row: {
-          content: string
-          conversation_id: string
-          created_at: string
-          id: string
-          role: string
-          user_id: string
-        }
-        Insert: {
-          content: string
-          conversation_id: string
-          created_at?: string
-          id?: string
-          role: string
-          user_id: string
-        }
-        Update: {
-          content?: string
-          conversation_id?: string
-          created_at?: string
-          id?: string
-          role?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chat_messages_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "chat_conversations"
             referencedColumns: ["id"]
           },
         ]
@@ -233,190 +132,6 @@ export type Database = {
           vat_number?: string | null
         }
         Relationships: []
-      }
-      counters: {
-        Row: {
-          chiave: string
-          valore: number
-        }
-        Insert: {
-          chiave: string
-          valore?: number
-        }
-        Update: {
-          chiave?: string
-          valore?: number
-        }
-        Relationships: []
-      }
-      fornitori: {
-        Row: {
-          categoria: string | null
-          created_at: string
-          email: string | null
-          id: string
-          pagamento_default: string | null
-          piva: string | null
-          ragione_sociale: string
-          referente: string | null
-          telefono: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          categoria?: string | null
-          created_at?: string
-          email?: string | null
-          id?: string
-          pagamento_default?: string | null
-          piva?: string | null
-          ragione_sociale: string
-          referente?: string | null
-          telefono?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          categoria?: string | null
-          created_at?: string
-          email?: string | null
-          id?: string
-          pagamento_default?: string | null
-          piva?: string | null
-          ragione_sociale?: string
-          referente?: string | null
-          telefono?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      oda_righe: {
-        Row: {
-          created_at: string
-          descrizione: string
-          id: string
-          oda_id: string
-          prezzo_unitario: number
-          quantita: number
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          descrizione: string
-          id?: string
-          oda_id: string
-          prezzo_unitario?: number
-          quantita?: number
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          descrizione?: string
-          id?: string
-          oda_id?: string
-          prezzo_unitario?: number
-          quantita?: number
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "oda_righe_oda_id_fkey"
-            columns: ["oda_id"]
-            isOneToOne: false
-            referencedRelation: "ordini_acquisto"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      order_confirmations: {
-        Row: {
-          created_at: string
-          data: Json
-          id: string
-          project_id: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          data?: Json
-          id?: string
-          project_id: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          data?: Json
-          id?: string
-          project_id?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "order_confirmations_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      ordini_acquisto: {
-        Row: {
-          created_at: string
-          created_by: string
-          fornitore_id: string | null
-          id: string
-          note: string | null
-          numero_oda: number
-          progetto_id: string | null
-          stato: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          created_by: string
-          fornitore_id?: string | null
-          id?: string
-          note?: string | null
-          numero_oda: number
-          progetto_id?: string | null
-          stato?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          created_by?: string
-          fornitore_id?: string | null
-          id?: string
-          note?: string | null
-          numero_oda?: number
-          progetto_id?: string | null
-          stato?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ordini_acquisto_fornitore_id_fkey"
-            columns: ["fornitore_id"]
-            isOneToOne: false
-            referencedRelation: "fornitori"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ordini_acquisto_progetto_id_fkey"
-            columns: ["progetto_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       products: {
         Row: {
@@ -505,86 +220,6 @@ export type Database = {
         }
         Relationships: []
       }
-      project_scopes: {
-        Row: {
-          created_at: string
-          data: Json
-          id: string
-          project_id: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          data?: Json
-          id?: string
-          project_id: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          data?: Json
-          id?: string
-          project_id?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "project_scopes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: true
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      projects: {
-        Row: {
-          client_address: string | null
-          client_company: string | null
-          client_email: string | null
-          client_name: string | null
-          client_phone: string | null
-          created_at: string
-          id: string
-          name: string
-          notes: string | null
-          status: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          client_address?: string | null
-          client_company?: string | null
-          client_email?: string | null
-          client_name?: string | null
-          client_phone?: string | null
-          created_at?: string
-          id?: string
-          name: string
-          notes?: string | null
-          status?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          client_address?: string | null
-          client_company?: string | null
-          client_email?: string | null
-          client_name?: string | null
-          client_phone?: string | null
-          created_at?: string
-          id?: string
-          name?: string
-          notes?: string | null
-          status?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       quotes: {
         Row: {
           client_address: string | null
@@ -601,7 +236,6 @@ export type Database = {
           id: string
           notes: string | null
           payment_terms: string | null
-          project_id: string | null
           quote_number: string
           sections: Json
           status: string
@@ -625,7 +259,6 @@ export type Database = {
           id?: string
           notes?: string | null
           payment_terms?: string | null
-          project_id?: string | null
           quote_number: string
           sections?: Json
           status?: string
@@ -649,7 +282,6 @@ export type Database = {
           id?: string
           notes?: string | null
           payment_terms?: string | null
-          project_id?: string | null
           quote_number?: string
           sections?: Json
           status?: string
@@ -664,13 +296,6 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "quotes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -747,7 +372,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      incrementa_oda_counter: { Args: never; Returns: number }
     }
     Enums: {
       app_role: "admin" | "user"
