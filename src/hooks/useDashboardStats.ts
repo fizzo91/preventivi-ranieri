@@ -2,6 +2,7 @@ import { useMemo } from "react"
 import type { Quote } from "@/hooks/useQuotes"
 import type { ThicknessCost } from "@/components/dashboard/ThicknessCostChart"
 import type { TagStats } from "@/components/dashboard/TagDistributionChart"
+import { median } from "@/utils/quoteCalculations"
 
 export const useDashboardStats = (quotes: Quote[]) => {
   const recentQuotes = useMemo(() =>
