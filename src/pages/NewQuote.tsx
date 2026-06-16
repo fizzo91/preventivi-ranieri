@@ -447,8 +447,8 @@ const NewQuote = () => {
                               </div>
                             </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
-                              <p className="font-medium">Prezzo {warning.type === 'above' ? 'sopra' : 'sotto'} la media per {warning.thickness} mm</p>
-                              <p className="text-xs mt-1">€/mq sezione: € {warning.sectionCostPerMq.toFixed(2)} — Media: € {warning.avgCostPerMq.toFixed(2)}/mq ({warning.type === 'above' ? '+' : '-'}{warning.pctDiff}%)</p>
+                              <p className="font-medium">Prezzo {warning.type === 'above' ? 'sopra' : 'sotto'} la mediana per {warning.thickness} mm</p>
+                              <p className="text-xs mt-1">€/mq sezione: € {warning.sectionCostPerMq.toFixed(2)} — Mediana: € {warning.avgCostPerMq.toFixed(2)}/mq ({warning.type === 'above' ? '+' : '-'}{warning.pctDiff}%)</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
