@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import { useQuotes } from "@/hooks/useQuotes"
+import { median } from "@/utils/quoteCalculations"
 
 export interface ThicknessAverage {
   thickness: number
@@ -11,7 +12,7 @@ export function useThicknessAverages() {
   const { data: quotes = [] } = useQuotes()
 
   const averages = useMemo(() => {
-    const map: { [key: number]: { totalCost: number; totalMq: number; count: number } } = {}
+    const map: { [key: number]: number[] } = {}
 
     quotes.forEach(quote => {
       const sections = quote.sections as any[]
@@ -55,22 +56,20 @@ export function useThicknessAverages() {
 
         const finitura = (section.engobbio || 0) + (section.finitura || 0)
         const totalCost = itemsTotal + rischio + finitura
-        const sectionQty = section.quantity || 1
+        const costPerMq = totalCost / mqReali
 
-        if (!map[spessore]) map[spessore] = { totalCost: 0, totalMq: 0, count: 0 }
-        map[spessore].totalCost += totalCost * sectionQty
-        map[spessore].totalMq += mqReali * sectionQty
-        map[spessore].count += sectionQty
+        if (!map[spessore]) map[spessore] = []
+        map[spessore].push(costPerMq)
       })
     })
 
     const result: { [thickness: number]: ThicknessAverage } = {}
-    Object.entries(map).forEach(([t, data]) => {
+    Object.entries(map).forEach(([t, samples]) => {
       const thickness = parseInt(t)
       result[thickness] = {
         thickness,
-        avgCostPerMq: data.totalMq > 0 ? data.totalCost / data.totalMq : 0,
-        sectionCount: data.count
+        avgCostPerMq: median(samples),
+        sectionCount: samples.length,
       }
     })
     return result
