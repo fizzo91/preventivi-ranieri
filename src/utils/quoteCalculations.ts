@@ -40,6 +40,14 @@ export function extractThickness(productName?: string): number | null {
   return match ? parseInt(match[1]) : null
 }
 
+/** Median of a numeric array. Returns 0 for empty arrays. */
+export function median(values: number[]): number {
+  if (!values || values.length === 0) return 0
+  const sorted = [...values].sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid]
+}
+
 /** Find the PIETRA item in a list of items */
 export function findPietraItem(items: any[]): any | undefined {
   return items.find(

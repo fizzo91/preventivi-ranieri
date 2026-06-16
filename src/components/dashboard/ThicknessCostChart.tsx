@@ -20,6 +20,7 @@ export const ThicknessCostChart = ({ data }: ThicknessCostChartProps) => (
   <Card>
     <CardHeader>
       <CardTitle>Costo Medio per Spessore (€/mq)</CardTitle>
+      <p className="text-xs text-muted-foreground">Mediana €/mq per sezione</p>
     </CardHeader>
     <CardContent>
       {data.length > 0 ? (
