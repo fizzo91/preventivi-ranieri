@@ -465,12 +465,14 @@ const NewQuote = () => {
                       )}
                       <div className="flex items-center gap-1.5">
                         <Label className="text-xs text-muted-foreground whitespace-nowrap">Qtà:</Label>
-                        <Input type="number" min="1" step="1" value={section.quantity || 1} onChange={(e) => {
-                          const qty = parseInt(e.target.value) || 1
-                          setSections(sections.map(s => s.id === section.id ? { ...s, quantity: Math.max(1, qty) } : s))
-                        }} className="h-8 w-16" />
+                        <Input type="number" min="0" step="0.01" value={section.quantity ?? 1} onChange={(e) => {
+                          const raw = e.target.value.replace(',', '.')
+                          const qty = parseFloat(raw)
+                          const safe = isNaN(qty) ? 1 : Math.max(0, qty)
+                          setSections(sections.map(s => s.id === section.id ? { ...s, quantity: safe } : s))
+                        }} className="h-8 w-20" />
                       </div>
-                      {(section.quantity || 1) > 1 && (
+                      {(section.quantity || 1) !== 1 && (
                         <div className="text-sm font-bold bg-primary/10 text-primary px-2 py-1 rounded whitespace-nowrap">Tot x{section.quantity}: € {(section.total * (section.quantity || 1)).toFixed(2)}</div>
                       )}
                     </div>
