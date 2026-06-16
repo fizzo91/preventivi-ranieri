@@ -607,14 +607,50 @@ const NewQuote = () => {
 
                 {/* Engobbio & Finitura */}
                 <div className="space-y-2 pt-4 border-t">
-                  <div className="flex items-center justify-between bg-muted/50 p-4 rounded-lg">
-                    <div>
+                  <div className="flex flex-wrap items-center justify-between gap-3 bg-muted/50 p-4 rounded-lg">
+                    <div className="min-w-[120px]">
                       <h4 className="font-semibold text-sm">Engobbio</h4>
                       <p className="text-xs text-muted-foreground italic">vedere preventivo allegato</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">€</span>
-                      <Input type="number" value={section.engobbio || 0} onChange={(e) => updateSection(section.id, 'engobbio', parseFloat(e.target.value) || 0)} className="w-32 text-right" step="0.01" />
+                    <div className="flex flex-wrap items-center gap-3 ml-auto">
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-muted-foreground">Dato</span>
+                        <span className="text-sm">€</span>
+                        <Input
+                          type="number"
+                          value={section.engobbioBase ?? section.engobbio ?? 0}
+                          onChange={(e) => {
+                            const base = parseFloat(e.target.value) || 0
+                            const pct = section.engobbioRiskPct || 0
+                            const total = base + (base * pct / 100)
+                            updateSection(section.id, 'engobbioBase', base)
+                            updateSection(section.id, 'engobbio', total)
+                          }}
+                          className="w-24 text-right"
+                          step="0.01"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-muted-foreground">Rischio</span>
+                        <Input
+                          type="number"
+                          value={section.engobbioRiskPct ?? 0}
+                          onChange={(e) => {
+                            const pct = parseFloat(e.target.value) || 0
+                            const base = section.engobbioBase ?? section.engobbio ?? 0
+                            const total = base + (base * pct / 100)
+                            updateSection(section.id, 'engobbioRiskPct', pct)
+                            updateSection(section.id, 'engobbio', total)
+                          }}
+                          className="w-20 text-right"
+                          step="0.01"
+                        />
+                        <span className="text-sm">%</span>
+                      </div>
+                      <div className="flex items-center gap-1 pl-2 border-l">
+                        <span className="text-xs text-muted-foreground">Totale</span>
+                        <span className="text-sm font-semibold">€ {(section.engobbio || 0).toFixed(2)}</span>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center justify-between bg-muted/50 p-4 rounded-lg">

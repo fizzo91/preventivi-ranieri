@@ -71,6 +71,8 @@ export function createEmptySection(name: string, id?: string): QuoteSection {
     items: [createEmptyItem(`${sectionId}-item`)],
     risks: [],
     engobbio: 0,
+    engobbioBase: 0,
+    engobbioRiskPct: 0,
     finitura: 0,
     total: 0,
     mqTotali: undefined,

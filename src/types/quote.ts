@@ -31,6 +31,8 @@ export interface QuoteSection {
   items: QuoteItem[]
   risks: Risk[]
   engobbio: number
+  engobbioBase?: number
+  engobbioRiskPct?: number
   finitura: number
   total: number
   mqTotali?: number

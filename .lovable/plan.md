@@ -1,38 +1,44 @@
+## Obiettivo
+Trasformare la riga "Engobbio" in tre campi sulla stessa riga:
+1. **Dato Engobbio** (€) — input manuale
+2. **Rischio %** — input manuale
+3. **Totale Engobbio** (€) — calcolato = `dato + (dato × rischio% / 100)`, mostrato in sola lettura
 
+Il valore totale resta quello usato nei calcoli della sezione (somma items + risks + engobbio + finitura) e nel PDF, così da non rompere la logica esistente.
 
-## Piano: Ristrutturazione pagina Impostazioni → Profilo Utente
+## Modifiche
 
-### Obiettivo
-Trasformare la pagina Impostazioni in una pagina profilo personale con: foto profilo, cambio password, statistiche e logout. I dati aziendali e la gestione tag restano nella stessa pagina ma riorganizzati.
+### 1. `src/types/quote.ts`
+Aggiungere due campi opzionali a `QuoteSection`:
+- `engobbioBase?: number` (dato inserito)
+- `engobbioRiskPct?: number` (rischio %)
 
-### Modifiche
+Il campo esistente `engobbio: number` continua a contenere il **totale** calcolato (retrocompatibilità con preventivi salvati, PDF, dashboard, calcoli).
 
-**1. Creare bucket storage `avatars`** (migrazione SQL)
-- Bucket pubblico per le foto profilo
-- RLS: utenti autenticati possono caricare/aggiornare/eliminare solo i propri file (path basato su `auth.uid()`)
+### 2. `src/pages/NewQuote.tsx` (righe ~608–619)
+Sostituire la riga Engobbio attuale con un layout a 3 campi sulla stessa riga:
 
-**2. Ristrutturare `src/pages/Settings.tsx`**
-- **Header profilo** in cima: avatar circolare con upload/cambio foto (click per selezionare file), nome utente, email, pulsante Logout
-- Upload foto: salva nel bucket `avatars`, aggiorna campo `logo` nel profilo con l'URL pubblico
-- **Sezioni sotto** (nell'ordine):
-  1. Dati Azienda (come ora)
-  2. Gestione Tag (come ora)
-  3. Sicurezza / Cambio Password (come ora)
-  4. Statistiche Dati (come ora)
-- Pulsante **Logout** ben visibile nell'header del profilo
+```text
+[ Engobbio ]   Dato: € [____]   Rischio: [__] %   Totale: € 0,00
+```
 
-**3. Aggiornare `src/contexts/AuthContext.tsx`**
-- Aggiungere campo `avatar_url` al tipo Profile (opzionale, possiamo usare il campo `logo` già esistente)
+Su mobile i campi vanno a capo (flex-wrap). Ogni `onChange` su Dato o Rischio:
+- aggiorna `engobbioBase` / `engobbioRiskPct`
+- ricalcola `engobbio = base + base * pct / 100` e lo salva nella sezione (così `calculateSectionTotal` continua a funzionare).
 
-### Dettagli tecnici
+Per fare un aggiornamento atomico dei 3 campi si userà la funzione `updateSection` esistente (eventualmente chiamata due volte oppure estesa per accettare un patch). Se `updateSection` accetta solo `(id, field, value)`, si introduce un piccolo helper locale che applica più campi insieme per evitare race con i ri-render.
 
-| File | Modifica |
-|------|----------|
-| Migrazione SQL | Creare bucket `avatars` + policy RLS |
-| `src/pages/Settings.tsx` | Aggiungere sezione avatar con upload, pulsante logout, riorganizzare layout |
-| `src/lib/fileValidation.ts` | Riutilizzare validazione esistente per immagini |
+### 3. `src/hooks/useSectionManager.ts`
+- Inizializzare nuove sezioni con `engobbioBase: 0`, `engobbioRiskPct: 0`.
+- Quando si caricano sezioni da DB/template, se `engobbioBase` è assente fare fallback: `engobbioBase = engobbio`, `engobbioRiskPct = 0` (così i preventivi vecchi restano coerenti).
+- Mappare i due nuovi campi nel salvataggio verso Supabase (colonne JSON delle sezioni — verifico se le sezioni sono salvate come JSONB o tabella dedicata prima di scrivere il codice; se JSONB nessuna migrazione serve).
 
-**Upload avatar**: validazione magic bytes (JPEG/PNG/WebP), max 2MB, upload a `avatars/{user_id}/avatar.{ext}`, salvataggio URL pubblico nel campo `logo` della tabella `profiles`.
+### 4. Nessuna modifica
+- `quoteCalculations.ts`: continua a usare `section.engobbio` (totale già aggiornato).
+- `usePdfGenerator.ts`: stampa il totale engobbio come oggi.
+- Dashboard / Cost analysis: invariati.
 
-**Logout**: usa `signOut()` già disponibile da `useAuth()`, con redirect a `/auth`.
-
+## Note tecniche
+- Mantengo lo stile coerente con la riga "Finitura" (lasciata invariata, salvo allineamento del wrap se necessario).
+- Rispetto la memoria progetto sui campi numerici (conversione punto→virgola già gestita globalmente).
+- Nessuna migrazione DB se le sezioni sono persistite come JSONB; verificherò in fase di build.
