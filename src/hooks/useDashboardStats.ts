@@ -30,7 +30,7 @@ export const useDashboardStats = (quotes: Quote[]) => {
   }, [quotes])
 
   const thicknessCosts = useMemo(() => {
-    const thicknessMap: { [key: number]: { totalPietra: number; totalRischio: number; totalFinitura: number; totalMq: number; count: number } } = {}
+    const thicknessMap: { [key: number]: { pietra: number[]; rischio: number[]; finitura: number[]; total: number[]; totalMq: number } } = {}
     quotes.forEach(quote => {
       const sections = quote.sections as any[]
       if (!Array.isArray(sections)) return
@@ -64,23 +64,23 @@ export const useDashboardStats = (quotes: Quote[]) => {
         }
         const finitura = (section.engobbio || 0) + (section.finitura || 0)
         const sectionQty = section.quantity || 1
-        if (!thicknessMap[spessore]) thicknessMap[spessore] = { totalPietra: 0, totalRischio: 0, totalFinitura: 0, totalMq: 0, count: 0 }
-        thicknessMap[spessore].totalPietra += pietraLavorazioni * sectionQty
-        thicknessMap[spessore].totalRischio += rischio * sectionQty
-        thicknessMap[spessore].totalFinitura += finitura * sectionQty
+        if (!thicknessMap[spessore]) thicknessMap[spessore] = { pietra: [], rischio: [], finitura: [], total: [], totalMq: 0 }
+        thicknessMap[spessore].pietra.push(pietraLavorazioni / mqReali)
+        thicknessMap[spessore].rischio.push(rischio / mqReali)
+        thicknessMap[spessore].finitura.push(finitura / mqReali)
+        thicknessMap[spessore].total.push((pietraLavorazioni + rischio + finitura) / mqReali)
         thicknessMap[spessore].totalMq += mqReali * sectionQty
-        thicknessMap[spessore].count += sectionQty
       })
     })
     return Object.entries(thicknessMap)
       .map(([thickness, data]): ThicknessCost => ({
         thickness: parseInt(thickness),
         label: `${thickness} mm`,
-        avgPietraPerMq: data.totalMq > 0 ? data.totalPietra / data.totalMq : 0,
-        avgRischioPerMq: data.totalMq > 0 ? data.totalRischio / data.totalMq : 0,
-        avgFinituraPerMq: data.totalMq > 0 ? data.totalFinitura / data.totalMq : 0,
-        averageCostPerMq: data.totalMq > 0 ? (data.totalPietra + data.totalRischio + data.totalFinitura) / data.totalMq : 0,
-        sectionCount: data.count,
+        avgPietraPerMq: median(data.pietra),
+        avgRischioPerMq: median(data.rischio),
+        avgFinituraPerMq: median(data.finitura),
+        averageCostPerMq: median(data.total),
+        sectionCount: data.total.length,
         totalMq: data.totalMq
       }))
       .sort((a, b) => a.thickness - b.thickness)
