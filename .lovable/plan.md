@@ -1,44 +1,34 @@
-## Obiettivo
-Trasformare la riga "Engobbio" in tre campi sulla stessa riga:
-1. **Dato Engobbio** (€) — input manuale
-2. **Rischio %** — input manuale
-3. **Totale Engobbio** (€) — calcolato = `dato + (dato × rischio% / 100)`, mostrato in sola lettura
+# Mediana €/mq per spessore
 
-Il valore totale resta quello usato nei calcoli della sezione (somma items + risks + engobbio + finitura) e nel PDF, così da non rompere la logica esistente.
+Oggi sia `useThicknessAverages` (avviso scostamento in NewQuote) sia `useDashboardStats.thicknessCosts` (grafico Dashboard) calcolano un rapporto `somma costi / somma mq` per spessore. Un singolo progetto da molti mq sposta il risultato. Passiamo alla **mediana dei €/mq calcolati per ciascuna sezione**, così ogni sezione conta uno indipendentemente dalla dimensione.
 
-## Modifiche
+## Cambi
 
-### 1. `src/types/quote.ts`
-Aggiungere due campi opzionali a `QuoteSection`:
-- `engobbioBase?: number` (dato inserito)
-- `engobbioRiskPct?: number` (rischio %)
+### 1. Nuovo helper `src/utils/quoteCalculations.ts`
+Aggiungere `median(values: number[]): number` (gestisce array vuoto → 0, ordina ascendente, media dei due centrali se pari).
 
-Il campo esistente `engobbio: number` continua a contenere il **totale** calcolato (retrocompatibilità con preventivi salvati, PDF, dashboard, calcoli).
+### 2. `src/hooks/useThicknessAverages.ts`
+- Per ogni sezione valida raccogliere `costPerMq = totalCost / mqReali` in un array per spessore (ignorare la moltiplicazione per `sectionQty`: una sezione = un campione).
+- `avgCostPerMq` (manteniamo il nome del campo per non rompere consumer) = `median(samples)`.
+- `sectionCount` = numero di campioni.
 
-### 2. `src/pages/NewQuote.tsx` (righe ~608–619)
-Sostituire la riga Engobbio attuale con un layout a 3 campi sulla stessa riga:
+### 3. `src/hooks/useDashboardStats.ts` → `thicknessCosts`
+Per ogni sezione valida calcolare e accumulare quattro campioni per spessore:
+- `pietraPerMq = pietraLavorazioni / mqReali`
+- `rischioPerMq = rischio / mqReali`
+- `finituraPerMq = finitura / mqReali`
+- `totalPerMq = (pietraLavorazioni + rischio + finitura) / mqReali`
 
-```text
-[ Engobbio ]   Dato: € [____]   Rischio: [__] %   Totale: € 0,00
-```
+Output:
+- `avgPietraPerMq`, `avgRischioPerMq`, `avgFinituraPerMq`, `averageCostPerMq` = mediana dei rispettivi array.
+- `sectionCount` = numero di sezioni considerate.
+- `totalMq` = somma `mqReali * sectionQty` (resta indicativo del volume; non più usato per la media).
 
-Su mobile i campi vanno a capo (flex-wrap). Ogni `onChange` su Dato o Rischio:
-- aggiorna `engobbioBase` / `engobbioRiskPct`
-- ricalcola `engobbio = base + base * pct / 100` e lo salva nella sezione (così `calculateSectionTotal` continua a funzionare).
+### 4. UI — comunicare il cambio metodo
+- `ThicknessCostChart`: aggiungere sottotitolo "Mediana €/mq per sezione" sotto il titolo della card.
+- `NewQuote` riga dell'avviso scostamento: cambiare "Media:" in "Mediana:" nel testo del warning.
 
-Per fare un aggiornamento atomico dei 3 campi si userà la funzione `updateSection` esistente (eventualmente chiamata due volte oppure estesa per accettare un patch). Se `updateSection` accetta solo `(id, field, value)`, si introduce un piccolo helper locale che applica più campi insieme per evitare race con i ri-render.
-
-### 3. `src/hooks/useSectionManager.ts`
-- Inizializzare nuove sezioni con `engobbioBase: 0`, `engobbioRiskPct: 0`.
-- Quando si caricano sezioni da DB/template, se `engobbioBase` è assente fare fallback: `engobbioBase = engobbio`, `engobbioRiskPct = 0` (così i preventivi vecchi restano coerenti).
-- Mappare i due nuovi campi nel salvataggio verso Supabase (colonne JSON delle sezioni — verifico se le sezioni sono salvate come JSONB o tabella dedicata prima di scrivere il codice; se JSONB nessuna migrazione serve).
-
-### 4. Nessuna modifica
-- `quoteCalculations.ts`: continua a usare `section.engobbio` (totale già aggiornato).
-- `usePdfGenerator.ts`: stampa il totale engobbio come oggi.
-- Dashboard / Cost analysis: invariati.
-
-## Note tecniche
-- Mantengo lo stile coerente con la riga "Finitura" (lasciata invariata, salvo allineamento del wrap se necessario).
-- Rispetto la memoria progetto sui campi numerici (conversione punto→virgola già gestita globalmente).
-- Nessuna migrazione DB se le sezioni sono persistite come JSONB; verificherò in fase di build.
+## Note
+- Nessuna modifica al DB.
+- Mantenere il campo `quantity` di sezione: la mediana è per sezione singola, ma una sezione con `quantity > 1` continua a contare come **una** sezione (il moltiplicatore serve ai totali economici, non alla rappresentatività del €/mq).
+- Soglia ±15% del warning resta invariata.
