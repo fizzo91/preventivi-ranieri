@@ -98,21 +98,40 @@ function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpd
         <Label>Prodotto</Label>
         <div className="flex gap-2">
           <div className="flex-1">
-            {item.productName && !item.productId ? (
-              <div className="h-10 px-3 py-2 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-md flex items-center font-medium text-amber-800 dark:text-amber-200">
-                {item.productName}
-              </div>
-            ) : (
-              <Combobox
-                options={productOptions}
-                value={item.productId}
-                placeholder="Cerca prodotto..."
-                searchPlaceholder="Digita per cercare..."
-                recentIds={recentProductIds}
-                onSelect={(value) => onSelectProduct(item.id, value)}
-              />
-            )}
+            {(() => {
+              const linkedProduct = item.productId ? products.find(p => p.id === item.productId) : null
+              const isOrphan = !!item.productName && (!item.productId || !linkedProduct)
+              if (isOrphan) {
+                return (
+                  <div className="flex items-stretch gap-2">
+                    <div className="h-10 px-3 py-2 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-md flex items-center font-medium text-amber-800 dark:text-amber-200 flex-1 min-w-0">
+                      <span className="truncate" title={item.productName}>{item.productName}</span>
+                      <span className="ml-2 text-xs uppercase tracking-wide opacity-70 shrink-0">archiviato</span>
+                    </div>
+                    <Combobox
+                      options={productOptions}
+                      value=""
+                      placeholder="Ricollega…"
+                      searchPlaceholder="Cerca prodotto attuale…"
+                      recentIds={recentProductIds}
+                      onSelect={(value) => onSelectProduct(item.id, value)}
+                    />
+                  </div>
+                )
+              }
+              return (
+                <Combobox
+                  options={productOptions}
+                  value={item.productId}
+                  placeholder="Cerca prodotto..."
+                  searchPlaceholder="Digita per cercare..."
+                  recentIds={recentProductIds}
+                  onSelect={(value) => onSelectProduct(item.id, value)}
+                />
+              )
+            })()}
           </div>
+
           <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" size="icon" className="shrink-0"><Plus className="h-4 w-4" /></Button>
