@@ -67,7 +67,7 @@ interface SortableItemProps {
   onUpdateItem: (id: string, field: keyof QuoteItem, value: any) => void
   onRemoveItem: (id: string) => void
   canRemove: boolean
-  onAddProduct: (product: Omit<Product, "id" | "user_id" | "created_at" | "updated_at">) => void
+  onAddProduct: (product: Omit<Product, "id" | "user_id" | "created_at" | "updated_at" | "archived" | "category_id" | "subcategory_id" | "code" | "notes">) => void
 }
 
 function SortableItem({ item, products, recentProductIds, onSelectProduct, onUpdateItem, onRemoveItem, canRemove, onAddProduct }: SortableItemProps) {
@@ -340,7 +340,7 @@ const NewQuote = () => {
 
   const totalAmount = calculateGrandTotal(sections)
 
-  const addProductHandler = async (product: Omit<Product, "id" | "user_id" | "created_at" | "updated_at">) => {
+  const addProductHandler = async (product: Omit<Product, "id" | "user_id" | "created_at" | "updated_at" | "archived" | "category_id" | "subcategory_id" | "code" | "notes">) => {
     await createProduct.mutateAsync(product)
     toast({ title: "Prodotto Aggiunto", description: `${product.name} è stato aggiunto alla lista prodotti` })
   }
