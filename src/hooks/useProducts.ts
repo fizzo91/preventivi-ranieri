@@ -51,7 +51,10 @@ export const useCreateProduct = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (product: Omit<Product, "id" | "user_id" | "created_at" | "updated_at" | "archived"> & { archived?: boolean }) => {
+    mutationFn: async (
+      product: Omit<Product, "id" | "user_id" | "created_at" | "updated_at" | "archived" | "category_id" | "subcategory_id" | "code" | "notes">
+        & Partial<Pick<Product, "archived" | "category_id" | "subcategory_id" | "code" | "notes">>
+    ) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
