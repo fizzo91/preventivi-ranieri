@@ -11,20 +11,35 @@ export interface Product {
   price_dt: number;
   category: string;
   unit: string;
+  category_id: string | null;
+  subcategory_id: string | null;
+  code: string | null;
+  notes: string | null;
+  archived: boolean;
   created_at: string;
   updated_at: string;
 }
 
-export const useProducts = () => {
+interface UseProductsOptions {
+  includeArchived?: boolean;
+}
+
+export const useProducts = (options: UseProductsOptions = {}) => {
+  const { includeArchived = false } = options;
   return useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", { includeArchived }],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("products")
         .select("*")
         .order("category")
         .order("name");
 
+      if (!includeArchived) {
+        query = query.eq("archived", false);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data as Product[];
     },
@@ -36,7 +51,10 @@ export const useCreateProduct = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (product: Omit<Product, "id" | "user_id" | "created_at" | "updated_at">) => {
+    mutationFn: async (
+      product: Omit<Product, "id" | "user_id" | "created_at" | "updated_at" | "archived" | "category_id" | "subcategory_id" | "code" | "notes">
+        & Partial<Pick<Product, "archived" | "category_id" | "subcategory_id" | "code" | "notes">>
+    ) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -99,6 +117,11 @@ export const useUpdateProduct = () => {
   });
 };
 
+/**
+ * "Cancella" un prodotto = lo archivia.
+ * In questo modo i preventivi storici che lo referenziano
+ * continuano a essere visualizzati correttamente.
+ */
 export const useDeleteProduct = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -107,7 +130,7 @@ export const useDeleteProduct = () => {
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from("products")
-        .delete()
+        .update({ archived: true })
         .eq("id", id);
 
       if (error) throw error;
@@ -115,8 +138,37 @@ export const useDeleteProduct = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       toast({
-        title: "Prodotto eliminato",
-        description: "Il prodotto è stato rimosso.",
+        title: "Prodotto archiviato",
+        description: "Il prodotto non comparirà nei nuovi preventivi, ma resta visibile in quelli esistenti.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Errore",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+};
+
+export const useRestoreProduct = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("products")
+        .update({ archived: false })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast({
+        title: "Prodotto ripristinato",
+        description: "Il prodotto è di nuovo selezionabile nei preventivi.",
       });
     },
     onError: (error: any) => {
