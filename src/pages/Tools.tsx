@@ -88,7 +88,7 @@ const tools = [
 
 const Tools = () => {
   const navigate = useNavigate()
-  const { openWindow, isOpen } = useFloatingWindows()
+  const { openWindow, windows, restoreWindow, bringToFront } = useFloatingWindows()
 
   const handleToolClick = (toolId: string) => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
