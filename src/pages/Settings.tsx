@@ -21,6 +21,7 @@ import { validateImageFile } from "@/lib/fileValidation"
 import { useNavigate } from "react-router-dom"
 import { useIsAdmin } from "@/hooks/useAccessRequests"
 import { AccessRequestsPanel } from "@/components/admin/AccessRequestsPanel"
+import { ProductImportExport } from "@/components/settings/ProductImportExport"
 
 const Settings = () => {
   const { toast } = useToast()
@@ -230,6 +231,12 @@ const Settings = () => {
       </Card>
 
       <Separator />
+
+      {/* Product list import/export */}
+      <ProductImportExport />
+
+      <Separator />
+
 
       {/* Admin: Access Requests */}
       {isAdmin && (
