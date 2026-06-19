@@ -1,5 +1,6 @@
 import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch, Calculator } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { useFloatingWindows } from "@/components/FloatingWindow"
 
 const tools = [
   {
@@ -87,42 +88,32 @@ const tools = [
 
 const Tools = () => {
   const navigate = useNavigate()
+  const { openWindow, windows, restoreWindow, bringToFront } = useFloatingWindows()
 
   const handleToolClick = (toolId: string) => {
-    const url = `/tool/${toolId}`
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
     const isStandalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       // @ts-ignore iOS Safari
       window.navigator.standalone === true
 
-    // On mobile or PWA, in-app navigation is more reliable than popups
+    // On mobile or PWA, use in-app navigation
     if (isMobile || isStandalone) {
-      navigate(url)
+      navigate(`/tool/${toolId}`)
       return
     }
 
-    const sizes: Record<string, [number, number]> = {
-      imperial: [480, 600],
-      circle: [480, 650],
-      descriptions: [560, 800],
-      glossary: [520, 700],
-      vanity: [600, 850],
-      "client-research": [500, 700],
-      calculator: [700, 750],
+    // Desktop: open as inline floating window
+    const existing = windows.find((w) => w.toolId === toolId)
+    if (existing) {
+      if (existing.minimized) {
+        restoreWindow(existing.id)
+      } else {
+        bringToFront(existing.id)
+      }
+      return
     }
-    const [w, h] = sizes[toolId] || [480, 600]
-    const left = (screen.width - w) / 2
-    const top = (screen.height - h) / 2
-    const popup = window.open(
-      url,
-      `tool-${toolId}`,
-      `width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no`
-    )
-    // Fallback if popup is blocked (e.g. inside iframe preview)
-    if (!popup || popup.closed || typeof popup.closed === "undefined") {
-      navigate(url)
-    }
+    openWindow(toolId)
   }
 
   return (
