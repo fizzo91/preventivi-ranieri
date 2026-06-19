@@ -2,6 +2,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { ReactNode } from "react"
 import { useAuth } from "@/contexts/AuthContext"
+import { FloatingWindowContainer } from "@/components/FloatingWindow"
 import {
   DropdownMenu,
   DropdownMenuContent,
