@@ -1,5 +1,6 @@
 import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch, Calculator } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { useFloatingWindows } from "@/components/FloatingWindow"
 
 const tools = [
   {
