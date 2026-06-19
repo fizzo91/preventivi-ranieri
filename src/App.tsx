@@ -30,32 +30,34 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/tool/:toolId" element={<ToolPage />} />
-            <Route
-              path="/*"
-              element={
-                <ProtectedRoute>
-                  <Layout>
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/new-quote" element={<NewQuote />} />
-                      <Route path="/quotes" element={<Quotes />} />
-                      <Route path="/gallery" element={<Gallery />} />
-                      <Route path="/descriptions" element={<Descriptions />} />
-                      <Route path="/products" element={<Products />} />
-                      <Route path="/tools" element={<Tools />} />
-                      <Route path="/guide" element={<Guide />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </Layout>
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
+          <FloatingWindowProvider>
+            <Routes>
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/tool/:toolId" element={<ToolPage />} />
+              <Route
+                path="/*"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/new-quote" element={<NewQuote />} />
+                        <Route path="/quotes" element={<Quotes />} />
+                        <Route path="/gallery" element={<Gallery />} />
+                        <Route path="/descriptions" element={<Descriptions />} />
+                        <Route path="/products" element={<Products />} />
+                        <Route path="/tools" element={<Tools />} />
+                        <Route path="/guide" element={<Guide />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </FloatingWindowProvider>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
