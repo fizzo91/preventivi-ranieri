@@ -1,4 +1,4 @@
-import { Home, FileText, Plus, Settings, Calculator, Image, Wrench, AlignLeft, BookOpen, Users, FolderTree } from "lucide-react"
+import { Home, FileText, Plus, Settings, Calculator, Image, Wrench, AlignLeft, BookOpen } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
 import {
@@ -24,14 +24,12 @@ const groups: { label: string; items: NavItem[] }[] = [
       { title: "Dashboard", url: "/", icon: Home },
       { title: "Nuovo Preventivo", url: "/new-quote", icon: Plus },
       { title: "Preventivi", url: "/quotes", icon: FileText },
-      { title: "Clienti", url: "/clients", icon: Users },
     ],
   },
   {
     label: "Anagrafiche",
     items: [
       { title: "Prodotti", url: "/products", icon: Calculator },
-      { title: "Categorie prodotti", url: "/product-categories", icon: FolderTree },
       { title: "Galleria", url: "/gallery", icon: Image },
       { title: "Descrizioni", url: "/descriptions", icon: AlignLeft },
     ],
