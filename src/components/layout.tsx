@@ -85,6 +85,8 @@ export function Layout({ children }: LayoutProps) {
             {children}
           </main>
         </div>
+
+        <FloatingWindowContainer />
       </div>
     </SidebarProvider>
   )
