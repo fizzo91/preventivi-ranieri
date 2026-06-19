@@ -104,10 +104,14 @@ const Tools = () => {
     }
 
     // Desktop: open as inline floating window
-    if (isOpen(toolId)) {
-      // Already open, just bring to front (handled by openWindow adding duplicates; avoid dupes by checking)
-      // But we allow only one instance per tool? Let's allow only one.
-      // For now we just open another; user can close extras.
+    const existing = windows.find((w) => w.toolId === toolId)
+    if (existing) {
+      if (existing.minimized) {
+        restoreWindow(existing.id)
+      } else {
+        bringToFront(existing.id)
+      }
+      return
     }
     openWindow(toolId)
   }
