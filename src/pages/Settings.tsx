@@ -232,6 +232,12 @@ const Settings = () => {
 
       <Separator />
 
+      {/* Product list import/export */}
+      <ProductImportExport />
+
+      <Separator />
+
+
       {/* Admin: Access Requests */}
       {isAdmin && (
         <>
