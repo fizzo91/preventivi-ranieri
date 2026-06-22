@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -223,7 +223,19 @@ const NewQuote = () => {
   const { data: editQuoteFromDb } = useQuote(editIdFromUrl || "")
   const editQuote = editQuoteFromState || editQuoteFromDb
 
-  const { data: products = [], isLoading: productsLoading } = useProducts()
+  const { data: allProducts = [], isLoading: productsLoading } = useProducts()
+  // Dedupe prodotti per nome normalizzato (case/spazi), tenendo il più recente
+  const products = useMemo(() => {
+    const map = new Map<string, Product>()
+    for (const p of allProducts) {
+      const key = (p.name || "").trim().toLowerCase()
+      const existing = map.get(key)
+      if (!existing || new Date(p.updated_at) > new Date(existing.updated_at)) {
+        map.set(key, p)
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name))
+  }, [allProducts])
   const recentProductIds = useRecentProductIds()
   const createProduct = useCreateProduct()
   const createQuote = useCreateQuote()
