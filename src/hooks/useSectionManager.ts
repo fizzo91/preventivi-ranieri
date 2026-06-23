@@ -275,7 +275,7 @@ export function useSectionManager(initialSections?: QuoteSection[]) {
     uploadSectionImage,
     removeSectionImage,
     loadFromTemplate,
-    addSuggestedProducts,
+    
     regenerateSignedUrls,
   }
 }
