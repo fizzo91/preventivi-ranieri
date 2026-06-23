@@ -256,23 +256,6 @@ export function useSectionManager(initialSections?: QuoteSection[]) {
     toast({ title: "Template caricato", description: `Sezione "${template.name}" creata dal template` })
   }, [toast])
 
-  const addSuggestedProducts = useCallback((sectionId: string, products: Product[]) => {
-    const newItems: QuoteItem[] = products.map((product, i) => ({
-      id: `${Date.now()}-${i}`,
-      productId: product.id,
-      productName: product.name,
-      category: product.category,
-      description: product.description || "",
-      quantity: 1,
-      price: product.price_dt,
-      unit: product.unit,
-      total: product.price_dt,
-    }))
-
-    setSections(prev => prev.map(s =>
-      s.id === sectionId ? { ...s, items: [...s.items, ...newItems] } : s
-    ))
-  }, [])
 
   return {
     sections,
