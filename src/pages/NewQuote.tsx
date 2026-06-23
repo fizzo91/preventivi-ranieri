@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
 import { Plus, Trash2, Save, GripVertical, Copy, Calculator, ImagePlus, X, AlertTriangle, TrendingDown, Palette } from "lucide-react"
 import { StoneCalculator, StoneCalculatorResult } from "@/components/StoneCalculator"
-import { ProductSuggestions } from "@/components/ProductSuggestions"
+
 import { useToast } from "@/hooks/use-toast"
 import {
   Dialog,
@@ -38,7 +38,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { useProducts, useCreateProduct } from "@/hooks/useProducts"
 import { useCreateQuote, useUpdateQuote, useQuote } from "@/hooks/useQuotes"
 import { useRecentProductIds } from "@/hooks/useRecentProducts"
-import { useProductSuggestions } from "@/hooks/useProductSuggestions"
+
 import { useAuth } from "@/contexts/AuthContext"
 import { TagInput } from "@/components/TagInput"
 import { ComplexityRiskIndicator } from "@/components/ComplexityRiskIndicator"
@@ -256,8 +256,6 @@ const NewQuote = () => {
   const [quoteData, setQuoteData] = useState({ number: `PREV-${Date.now()}`, date: new Date().toISOString().split('T')[0], validUntil: "", notes: "", status: "draft" })
   const [stoneCalculatorOpen, setStoneCalculatorOpen] = useState(false)
   const [stoneCalculatorSectionId, setStoneCalculatorSectionId] = useState<string | null>(null)
-  const [activeSuggestion, setActiveSuggestion] = useState<{ sectionId: string; itemId: string; productId: string; productName: string } | null>(null)
-  const suggestions = useProductSuggestions(activeSuggestion?.productId || null)
   const [enamelDataMap, setEnamelDataMap] = useState<Record<string, EnamelPieceRow[]>>({})
   const [enamelDialogOpen, setEnamelDialogOpen] = useState(false)
   const [enamelDialogSectionId, setEnamelDialogSectionId] = useState<string | null>(null)
@@ -323,20 +321,8 @@ const NewQuote = () => {
   }
 
   const handleAddItem = (sectionId: string) => {
-    const section = sections.find(s => s.id === sectionId)
-    const lastProduct = section?.items.filter(i => i.productId).slice(-1)[0]
-    const newItem = addItem(sectionId)
-    if (lastProduct) {
-      setActiveSuggestion({ sectionId, itemId: newItem.id, productId: lastProduct.productId, productName: lastProduct.productName })
-    }
+    addItem(sectionId)
   }
-
-  const handleAddSuggestions = useCallback((productIds: string[]) => {
-    if (!activeSuggestion) return
-    const selectedProducts = productIds.map(id => products.find(p => p.id === id)).filter((p): p is Product => !!p)
-    addSuggestedProducts(activeSuggestion.sectionId, selectedProducts)
-    setActiveSuggestion(null)
-  }, [activeSuggestion, products, addSuggestedProducts])
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event
@@ -569,9 +555,6 @@ const NewQuote = () => {
                             canRemove={section.items.length > 1}
                             onAddProduct={addProductHandler}
                           />
-                          {activeSuggestion?.sectionId === section.id && activeSuggestion?.itemId === item.id && suggestions.length > 0 && (
-                            <ProductSuggestions suggestions={suggestions} productName={activeSuggestion.productName} onAddSuggestions={handleAddSuggestions} onDismiss={() => setActiveSuggestion(null)} />
-                          )}
                           {itemIndex === section.items.length - 1 && (
                             <Button onClick={() => handleAddItem(section.id)} variant="ghost" size="sm" className="w-full gap-2 text-muted-foreground hover:text-foreground border border-dashed border-muted-foreground/30 hover:border-primary/50">
                               <Plus className="h-4 w-4" />Aggiungi voce
