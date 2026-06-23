@@ -249,7 +249,7 @@ const NewQuote = () => {
     addRisk, updateRisk, removeRisk,
     handleStoneCalculatorConfirm,
     uploadSectionImage, removeSectionImage,
-    loadFromTemplate, addSuggestedProducts, regenerateSignedUrls,
+    loadFromTemplate, regenerateSignedUrls,
   } = useSectionManager()
 
   const [clientData, setClientData] = useState({ name: "", email: "", phone: "", address: "", company: "" })
