@@ -1,4 +1,4 @@
-import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch, Calculator } from "lucide-react"
+import { Ruler, Scale, ArrowRightLeft, Circle, FileText, BookOpen, Bath, UserSearch, Calculator, Package } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useFloatingWindows } from "@/components/FloatingWindow"
 
@@ -65,6 +65,15 @@ const tools = [
     available: true,
     gradient: "from-indigo-500 to-blue-400",
     shadow: "shadow-indigo-500/25",
+  },
+  {
+    id: "imballi",
+    title: "Imballi",
+    subtitle: "Pietra Lavica",
+    icon: Package,
+    available: true,
+    gradient: "from-stone-500 to-amber-600",
+    shadow: "shadow-stone-500/25",
   },
   {
     id: "weight",

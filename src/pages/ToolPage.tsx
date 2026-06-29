@@ -7,6 +7,7 @@ import { Glossary } from "@/components/Glossary"
 import { VanityCalculator } from "@/components/VanityCalculator"
 import { ClientResearch } from "@/components/ClientResearch"
 import { ScientificCalculator } from "@/components/ScientificCalculator"
+import { PackagingCalculator } from "@/components/PackagingCalculator"
 import { cn } from "@/lib/utils"
 import { MacWindowBar } from "@/components/MacWindowBar"
 
@@ -18,6 +19,7 @@ const toolMeta: Record<string, { title: string }> = {
   vanity: { title: "Calcolo Vanity" },
   "client-research": { title: "Ricerca Cliente AI" },
   calculator: { title: "Calcolatrice Scientifica" },
+  imballi: { title: "Imballi Pietra Lavica" },
 }
 
 const ToolPage = () => {
@@ -48,6 +50,8 @@ const ToolPage = () => {
         return <ClientResearch />
       case "calculator":
         return <ScientificCalculator defaultQuoteId={quoteId} defaultQuoteName={quoteName} />
+      case "imballi":
+        return <PackagingCalculator />
       default:
         return null
     }
@@ -72,7 +76,7 @@ const ToolPage = () => {
         }}
         isFullscreen={isFullscreen}
       />
-      <div className={cn("flex-1 p-6 mx-auto w-full space-y-6", toolId === "calculator" ? "max-w-2xl" : "max-w-lg")}>
+      <div className={cn("flex-1 p-6 mx-auto w-full space-y-6", toolId === "calculator" || toolId === "imballi" ? "max-w-2xl" : "max-w-lg")}>
         {renderTool()}
       </div>
     </div>

@@ -245,7 +245,7 @@ function FloatingWindowItem({
         onMouseDown={handleMouseDown}
       />
       <div className="flex-1 overflow-auto">
-        <div className={cn("p-4 mx-auto w-full space-y-6", win.toolId === "calculator" ? "max-w-2xl" : "max-w-lg")}>
+        <div className={cn("p-4 mx-auto w-full space-y-6", win.toolId === "calculator" || win.toolId === "imballi" ? "max-w-2xl" : "max-w-lg")}>
           <ToolContent toolId={win.toolId} />
         </div>
       </div>
