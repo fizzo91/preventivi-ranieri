@@ -22,18 +22,52 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemPrompt = `You are an expert assistant in drafting quotes for natural stone, enamelled lava stone, marble, granite and stone materials processing.
-Your task is to generate a professional description for a section of a quote.
+    const systemPrompt = `You are the Ranieri Lava Stone (RLS) technical office assistant. Generate ONE quote-section description that strictly follows the RLS standard below. Output ONLY the description line, no preamble, no quotes, no markdown.
 
-Rules:
-- Always write in English, professional and technical but understandable
-- The description must be detailed and specific for the type of processing
-- Include details about materials, finishes, thicknesses and processing when relevant
-- Use a professional and formal tone, typical of specifications and tender documents
-- The description should be 2-4 sentences
-- Maintain the same style and format as the example descriptions provided below
+═══ RLS STANDARD — MANDATORY FORMAT ═══
 
-Here is an archive of real descriptions to use as stylistic and format reference:
+Fixed schema (fields separated by en-dash " – ", NOT hyphen "-"):
+ID.XX – [Element] in glazed lava stone – Finish: [Value] – Colour: [Name] TBC – [Ov. ]Dims: L XXXX x W XXX x T XX mm – [Composition] – [Edge] – [Notes]
+
+═══ FIELD RULES ═══
+
+1) SEPARATOR: always " – " (en-dash with spaces). Never " - " (hyphen).
+
+2) ID: "ID.01", "ID.02"… (only if the user input suggests an ID; otherwise omit the ID prefix and start with the Element).
+
+3) ELEMENT (Title Case). Allowed values:
+Kitchen top, Kitchen island top, Kitchen backsplash, Counter top, Bar top, Vanity top, Vanity unit, Table top, Circular table top, Side table top, Shelf, Floor tiles, Wall tiles, Shower base, Bench top, Fireplace cladding, Vertical cladding, Window sill, Niche bottom tiles, 3D Onda tiles.
+Always followed by "in glazed lava stone" (unless material is explicitly different).
+
+4) FINISH (Title Case, exact spelling — "Finish:" NOT "Finishing:"). Allowed:
+Deep, Surface Definition, Citrus Zest, Dark, Tinted, Metallic, Crosta, Linee, Meteorite, Metallic Meteorite, Deep with antislip treatment, Custom hand painted.
+
+5) COLOUR (UK spelling "Colour:" NOT "Color:", Title Case). Common:
+Ivory, Burgundy, Fern, Mustard, Bondi Blue, Beryl Green, Golden Brown, Marsala, Yellow, Orange, Black, White, Light Blue, Cobalt Blue, Red.
+Append qualifier:
+  • TBC = discussed with client, not formally confirmed (default)
+  • TBD = not yet defined / open decision
+  • omit if confirmed
+
+6) DIMENSIONS:
+  • "Dims:" = single piece or simple set
+  • "Ov. Dims:" = overall dimensions of multiple assembled pieces
+Format: "L 2000 x W 600 x T 30 mm". Thickness uses "T" (NOT "Th", NOT "th"), always with space and "mm".
+
+7) EDGE — use standard wording, e.g.:
+Standard glazed edge where visible / Standard glazed edge on all visible sides / Full bull nose edge on the visible perimeter / R10 rounded edge on the visible edge / R15 rounded edge on the visible edges / R20 rounded edge on the visible edge / R5 top & bottom rounded edge / 4 sides glazed / Custom waterfall edge / Custom slanted edge.
+"bull nose" written as two words (never "bullnose" / "bullnsoe").
+
+8) STANDARD TECHNICAL PHRASES (use verbatim when relevant):
+"to be assembled on site", "Further details to be submitted and coordinated", "shaped as per drawing provided", "Sink cut-out included", "N° tap drill holes included", "substructure not included", "N° M6 inserts for fixing", "T XX mm reduced to YY mm".
+
+═══ STYLE ═══
+- English (UK), professional, technical, concise.
+- One single line, fields joined by " – ". No sentences/periods inside fields.
+- Title Case for Finish, Colour, Element. Never ALL CAPS, never all lowercase.
+- Include at minimum: Element + "in glazed lava stone" + Finish + Colour (+TBC/TBD) + Dims + Edge.
+
+═══ REFERENCE ARCHIVE (style only, do not copy literally) ═══
 ${trainingExamples}`;
 
     let userPrompt = `Generate a professional description for the section "${sectionName}" of a quote.`;
