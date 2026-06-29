@@ -8,6 +8,7 @@ import { Glossary } from "@/components/Glossary";
 import { VanityCalculator } from "@/components/VanityCalculator";
 import { ClientResearch } from "@/components/ClientResearch";
 import { ScientificCalculator } from "@/components/ScientificCalculator";
+import { PackagingCalculator } from "@/components/PackagingCalculator";
 
 export interface FloatingWindowState {
   id: string;
@@ -41,6 +42,7 @@ const toolMeta: Record<string, { title: string; width: number; height: number }>
   vanity: { title: "Calcolo Vanity", width: 600, height: 850 },
   "client-research": { title: "Ricerca Cliente AI", width: 500, height: 700 },
   calculator: { title: "Calcolatrice Scientifica", width: 700, height: 750 },
+  imballi: { title: "Imballi Pietra Lavica", width: 760, height: 820 },
 };
 
 let globalZ = 100;
@@ -120,6 +122,8 @@ function ToolContent({ toolId }: { toolId: string }) {
       return <ClientResearch />;
     case "calculator":
       return <ScientificCalculator />;
+    case "imballi":
+      return <PackagingCalculator />;
     default:
       return null;
   }
