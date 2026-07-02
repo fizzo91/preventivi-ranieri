@@ -33,7 +33,7 @@ export const TagDistributionChart = ({ data }: TagDistributionChartProps) => (
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                label={({ tag, percent }) => `${tag} ${(percent * 100).toFixed(0)}%`}
+                label={(props: any) => `${props.tag} ${((props.percent ?? 0) * 100).toFixed(0)}%`}
                 labelLine={false}
               >
                 {data.map((_, index) => (
