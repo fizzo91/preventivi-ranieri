@@ -1,49 +1,53 @@
-# Vision AI nello strumento Descrizioni
 
-Integrare nel tool "Descrizioni" (già esistente) la possibilità di caricare uno screenshot/foto (render, disegno tecnico, moodboard) da cui l'AI riconosce gli elementi visibili e genera **una descrizione RLS per ciascuno**.
+## Obiettivo
 
-## UI — `src/components/DescriptionAssistant.tsx`
+Aggiungere in `Nuovo Preventivo` un pulsante **"Importa da Word"** che accetta un `.docx`, ne estrae il testo, usa l'AI per identificare sezioni (per titolo/capitolo) e voci (descrizione + quantità), fa match automatico sui prodotti del catalogo DT e mostra un'anteprima modificabile prima di aggiungere le sezioni al preventivo corrente.
 
-Nel blocco "Genera con AI" aggiungere sopra al campo testo:
-- Pulsante "Carica immagine" (input file, `accept="image/jpeg,image/png,image/webp"`).
-- Anteprima thumbnail con pulsante "Rimuovi".
-- Validazione via `validateImageFile` (già in `src/lib/fileValidation.ts`, magic bytes + max 5MB).
-- Conversione a base64 data URL in memoria (nessun upload su Storage — l'immagine viene solo passata alla edge function per l'analisi).
+## UX
 
-Il campo "Descrizione generica" diventa **facoltativo** quando è presente un'immagine (label "opzionale — hint aggiuntivo"). Il pulsante "Genera descrizione" è abilitato se c'è immagine **o** testo.
+1. In `src/pages/NewQuote.tsx` (o nel toolbar sezioni), nuovo bottone `Importa da Word` accanto ad "Aggiungi sezione".
+2. Click → dialog `WordImportDialog`:
+   - Step 1 — Upload `.docx` (max 5MB), validazione estensione + magic bytes (PK zip header).
+   - Step 2 — Loader "Analisi in corso…" mentre l'edge function elabora.
+   - Step 3 — Anteprima: lista sezioni proposte con voci (descrizione, quantità, mq, prodotto matchato con badge di confidenza, prezzo). L'utente può:
+     - Rinominare sezioni, rimuovere sezioni/voci
+     - Cambiare il prodotto matchato (Combobox su prodotti DT) o lasciare "Voce libera"
+     - Modificare quantità/mq
+   - Pulsante `Aggiungi al preventivo` → crea le sezioni via `useSectionManager`.
 
-Il riquadro "Risultato" diventa una **lista** di descrizioni:
-- Ogni item mostra la stringa RLS in `Textarea` editabile + pulsante "Copia".
-- Pulsante "Copia tutte" in cima (join con `\n`).
-- Se l'AI restituisce una sola descrizione (caso testo-only), la lista contiene un solo elemento — nessuna regressione.
+## Componenti / File
 
-## Edge function — `supabase/functions/generate-description/index.ts`
-
-- Accetta nel body opzionale `imageDataUrl: string` (data URL base64).
-- Se presente, costruisce il messaggio user in formato multimodale chat-completions:
+**Nuovi:**
+- `src/components/quotes/WordImportDialog.tsx` — dialog completo con i 3 step, tabella anteprima, mutation di conferma.
+- `supabase/functions/parse-word-quote/index.ts` — riceve `{ text: string, products: {id,name,category,price,unit}[] }`, chiama Lovable AI Gateway (`google/gemini-2.5-flash`) con `response_format: json_object` e prompt che chiede l'output:
+  ```json
+  { "sections": [{ "name": "...", "description": "...",
+      "items": [{ "description": "...", "quantity": 1, "mq": null,
+                  "matchedProductId": "uuid|null", "confidence": 0.0-1.0 }] }] }
   ```
-  content: [
-    { type: "text", text: "<istruzioni + eventuale hint>" },
-    { type: "image_url", image_url: { url: imageDataUrl } }
-  ]
-  ```
-- Modello: resta `google/gemini-3-flash-preview` (supporta input immagine T,I,A,V→T secondo il catalogo modelli).
-- System prompt: estendere quello RLS esistente aggiungendo una sezione "VISION MODE":
-  - Elencare tutti gli elementi visibili (top, backsplash, vanity, rivestimenti, ecc.).
-  - Per ciascuno produrre UNA riga RLS conforme.
-  - Se non deducibili, usare placeholder standard (`TBC`, `TBD`, dimensioni `L XXXX x W XXX x T XX mm`).
-- Output: chiedere JSON `{ "descriptions": string[] }` con `response_format: { type: "json_object" }` per parsing robusto lato client.
-- Retrocompatibilità: quando non c'è immagine, ritornare comunque `{ descriptions: [singola] }`; il client normalizza sempre a array. Rimuovere il vecchio `{ description }` con fallback che legge entrambi per una release.
+  Restituisce lo stesso JSON al client. `verify_jwt = true` di default; CORS headers standard; validazione input con Zod.
 
-## Errori e limiti
+**Modificati:**
+- `src/pages/NewQuote.tsx` — importa e monta `WordImportDialog`, passa callback per aggiungere sezioni tramite l'hook esistente.
+- `src/hooks/useSectionManager.ts` — se manca, aggiungere helper `addSectionsFromImport(sections)` che crea sezioni con item precompilati (prezzo/categoria dal prodotto matchato, altrimenti voce libera con price 0).
+- `package.json` — aggiungere `mammoth` per l'estrazione testo `.docx` lato client (evita di caricare binari in edge function).
 
-- 429 / 402 già gestiti — nessuna modifica.
-- Validazione client su dimensione file e MIME (magic bytes).
-- Toast di errore se il JSON non è parsabile.
+## Flusso tecnico
 
-## File toccati
+1. Client: `mammoth.extractRawText({ arrayBuffer })` → stringa con paragrafi separati da `\n`.
+2. Client: fetch prodotti DT (usa `useProducts`) → invia lista minimale [id, name, category, price, unit] all'edge function.
+3. Edge function `parse-word-quote`:
+   - Zod: `text: string.min(10).max(50000)`, `products: array`.
+   - Prompt system: "Sei un estrattore di preventivi in pietra lavica. Suddividi il testo per capitoli/titoli in `sections`. Ogni bullet/riga con quantità o mq è un item. Fai match su `products` per nome/descrizione, restituisci `matchedProductId` solo se confidence ≥ 0.6; altrimenti `null`. Estrai `quantity` (default 1) e `mq` (se presente)."
+   - Risposta AI → parse JSON → gestione errori 429/402 con messaggi user-friendly (già pattern usato in `generate-description`).
+4. Client mostra anteprima; alla conferma costruisce `QuoteSection[]` (tipi da `src/types/quote.ts`) e li aggiunge allo state del preventivo.
 
-- `src/components/DescriptionAssistant.tsx` — UI upload + preview + lista risultati.
-- `supabase/functions/generate-description/index.ts` — input immagine, prompt vision, output array.
+## Matching prodotti
 
-Nessuna modifica DB, storage, o altri tool.
+Il match lo fa l'AI passandogli il catalogo (nome+categoria). Fallback voce libera se `matchedProductId=null`. Il prezzo viene preso dal prodotto matchato; per voci libere il prezzo resta 0 e l'utente lo compila.
+
+## Fuori scopo
+
+- Nessun parsing di tabelle Word complesse (l'utente ha detto testo libero con elenchi).
+- Nessuna modifica al PDF/export.
+- Nessuna persistenza dell'import (i dati vanno direttamente nello state del preventivo in creazione).
