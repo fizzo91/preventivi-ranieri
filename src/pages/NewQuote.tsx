@@ -739,6 +739,14 @@ const NewQuote = () => {
           sectionName={sections.find(s => s.id === enamelDialogSectionId)?.name || ""}
         />
       )}
+      <WordImportDialog
+        open={wordImportOpen}
+        onOpenChange={setWordImportOpen}
+        products={products}
+        recentProductIds={recentProductIds}
+        onImport={appendSections}
+        nextSectionNumber={sections.length + 1}
+      />
     </div>
   )
 }
