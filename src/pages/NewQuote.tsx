@@ -250,8 +250,10 @@ const NewQuote = () => {
     addRisk, updateRisk, removeRisk,
     handleStoneCalculatorConfirm,
     uploadSectionImage, removeSectionImage,
-    loadFromTemplate, regenerateSignedUrls,
+    loadFromTemplate, appendSections, regenerateSignedUrls,
   } = useSectionManager()
+
+  const [wordImportOpen, setWordImportOpen] = useState(false)
 
   const [clientData, setClientData] = useState({ name: "", email: "", phone: "", address: "", company: "" })
   const [quoteData, setQuoteData] = useState({ number: `PREV-${Date.now()}`, date: new Date().toISOString().split('T')[0], validUntil: "", notes: "", status: "draft" })
@@ -685,8 +687,9 @@ const NewQuote = () => {
             </Card>
 
             <div className="flex justify-center">
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Button onClick={addSection} variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground"><Plus className="h-4 w-4" />Nuova Sezione</Button>
+                <Button onClick={() => setWordImportOpen(true)} variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground"><FileUp className="h-4 w-4" />Importa da Word</Button>
                 <LoadTemplateDialog onLoad={loadFromTemplate} />
               </div>
             </div>
