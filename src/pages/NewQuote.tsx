@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
-import { Plus, Trash2, Save, GripVertical, Copy, Calculator, ImagePlus, X, AlertTriangle, TrendingDown, Palette } from "lucide-react"
+import { Plus, Trash2, Save, GripVertical, Copy, Calculator, ImagePlus, X, AlertTriangle, TrendingDown, Palette, FileUp } from "lucide-react"
 import { StoneCalculator, StoneCalculatorResult } from "@/components/StoneCalculator"
+import { WordImportDialog } from "@/components/quotes/WordImportDialog"
 
 import { useToast } from "@/hooks/use-toast"
 import {
@@ -249,8 +250,10 @@ const NewQuote = () => {
     addRisk, updateRisk, removeRisk,
     handleStoneCalculatorConfirm,
     uploadSectionImage, removeSectionImage,
-    loadFromTemplate, regenerateSignedUrls,
+    loadFromTemplate, appendSections, regenerateSignedUrls,
   } = useSectionManager()
+
+  const [wordImportOpen, setWordImportOpen] = useState(false)
 
   const [clientData, setClientData] = useState({ name: "", email: "", phone: "", address: "", company: "" })
   const [quoteData, setQuoteData] = useState({ number: `PREV-${Date.now()}`, date: new Date().toISOString().split('T')[0], validUntil: "", notes: "", status: "draft" })
@@ -684,8 +687,9 @@ const NewQuote = () => {
             </Card>
 
             <div className="flex justify-center">
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Button onClick={addSection} variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground"><Plus className="h-4 w-4" />Nuova Sezione</Button>
+                <Button onClick={() => setWordImportOpen(true)} variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground"><FileUp className="h-4 w-4" />Importa da Word</Button>
                 <LoadTemplateDialog onLoad={loadFromTemplate} />
               </div>
             </div>
@@ -735,6 +739,14 @@ const NewQuote = () => {
           sectionName={sections.find(s => s.id === enamelDialogSectionId)?.name || ""}
         />
       )}
+      <WordImportDialog
+        open={wordImportOpen}
+        onOpenChange={setWordImportOpen}
+        products={products}
+        recentProductIds={recentProductIds}
+        onImport={appendSections}
+        nextSectionNumber={sections.length + 1}
+      />
     </div>
   )
 }

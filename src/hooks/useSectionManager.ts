@@ -256,6 +256,18 @@ export function useSectionManager(initialSections?: QuoteSection[]) {
     toast({ title: "Template caricato", description: `Sezione "${template.name}" creata dal template` })
   }, [toast])
 
+  const appendSections = useCallback((newSections: QuoteSection[]) => {
+    if (!newSections.length) return
+    setSections(prev => {
+      const isInitialEmpty = prev.length === 1 && prev[0].items.length === 1
+        && !prev[0].items[0].productId && !prev[0].items[0].productName
+        && prev[0].total === 0 && !prev[0].description
+      const base = isInitialEmpty ? [] : prev
+      return [...base, ...newSections]
+    })
+    toast({ title: "Import completato", description: `${newSections.length} ${newSections.length === 1 ? 'sezione aggiunta' : 'sezioni aggiunte'}` })
+  }, [toast])
+
 
   return {
     sections,
@@ -275,7 +287,8 @@ export function useSectionManager(initialSections?: QuoteSection[]) {
     uploadSectionImage,
     removeSectionImage,
     loadFromTemplate,
-    
+    appendSections,
+
     regenerateSignedUrls,
   }
 }
