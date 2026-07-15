@@ -178,14 +178,30 @@ export function WordImportDialog({ open, onOpenChange, products, recentProductId
             </div>
             <p className="text-xs text-center text-muted-foreground mt-4">
               Non sai come strutturare il documento?{" "}
-              <a
-                href="/templates/template-preventivo.docx"
-                download
+              <button
+                type="button"
                 className="text-primary underline hover:no-underline"
-                onClick={(e) => e.stopPropagation()}
+                onClick={async (e) => {
+                  e.stopPropagation()
+                  try {
+                    const res = await fetch("/templates/template-preventivo.docx")
+                    if (!res.ok) throw new Error(String(res.status))
+                    const blob = await res.blob()
+                    const url = URL.createObjectURL(blob)
+                    const a = document.createElement("a")
+                    a.href = url
+                    a.download = "template-preventivo.docx"
+                    document.body.appendChild(a)
+                    a.click()
+                    a.remove()
+                    setTimeout(() => URL.revokeObjectURL(url), 1000)
+                  } catch (err) {
+                    toast({ title: "Download non riuscito", description: "Riprova tra poco", variant: "destructive" })
+                  }
+                }}
               >
                 Scarica il template di esempio
-              </a>
+              </button>
             </p>
           </div>
         )}
