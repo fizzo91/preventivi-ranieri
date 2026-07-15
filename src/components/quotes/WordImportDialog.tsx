@@ -176,6 +176,17 @@ export function WordImportDialog({ open, onOpenChange, products, recentProductId
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f) }}
               />
             </div>
+            <p className="text-xs text-center text-muted-foreground mt-4">
+              Non sai come strutturare il documento?{" "}
+              <a
+                href="/templates/template-preventivo.docx"
+                download
+                className="text-primary underline hover:no-underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Scarica il template di esempio
+              </a>
+            </p>
           </div>
         )}
 
