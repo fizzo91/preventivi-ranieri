@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
-import { Plus, Trash2, Save, GripVertical, Copy, Calculator, ImagePlus, X, AlertTriangle, TrendingDown, Palette, FileUp } from "lucide-react"
+import { Plus, Trash2, Save, GripVertical, Copy, Calculator, ImagePlus, X, AlertTriangle, TrendingDown, Palette, FileUp, FolderOpen } from "lucide-react"
 import { StoneCalculator, StoneCalculatorResult } from "@/components/StoneCalculator"
 import { WordImportDialog } from "@/components/quotes/WordImportDialog"
+import { parseQuoteFile, writeQuoteFile, RPV_EXTENSION, type RpvFile } from "@/lib/quoteFile"
+
 
 import { useToast } from "@/hooks/use-toast"
 import {
