@@ -327,6 +327,105 @@ const NewQuote = () => {
     loadEditQuote()
   }, [editQuote])
 
+  // ── File .rpv.json: caricamento snapshot ─────────────────────────────
+  const loadRpvIntoForm = useCallback(async (rpv: RpvFile, handle: FileSystemFileHandle | null) => {
+    fileHandleRef.current = handle
+    setLinkedQuoteId(rpv.quoteId ?? null)
+    setClientData(rpv.client)
+    setQuoteData(rpv.quote)
+    const sectionsWithRisks = (rpv.sections || []).map((s: any) => ({ ...s, risks: s.risks || [] }))
+    const sectionsWithUrls = await regenerateSignedUrls(sectionsWithRisks)
+    setSections(sectionsWithUrls)
+    setEnamelDataMap(rpv.enamelData || {})
+    toast({
+      title: "Preventivo caricato dal file",
+      description: rpv.quoteId
+        ? "Il salvataggio aggiornerà il preventivo online collegato."
+        : "Il salvataggio creerà un nuovo preventivo online.",
+    })
+  }, [regenerateSignedUrls, setSections, toast])
+
+  const openFilePicker = useCallback(async () => {
+    // File System Access API (Chromium): permette poi la sovrascrittura in-place
+    const anyWin = window as any
+    if (anyWin.showOpenFilePicker) {
+      try {
+        const [handle] = await anyWin.showOpenFilePicker({
+          types: [{ description: "Preventivo Ranieri", accept: { "application/json": [RPV_EXTENSION, ".json"] } }],
+          multiple: false,
+        })
+        const file = await handle.getFile()
+        const rpv = await parseQuoteFile(file)
+        await loadRpvIntoForm(rpv, handle)
+        return
+      } catch (err: any) {
+        if (err?.name === "AbortError") return
+        console.warn("showOpenFilePicker fallito, fallback su input file:", err)
+      }
+    }
+    fileInputRef.current?.click()
+  }, [loadRpvIntoForm])
+
+  const handleFileInput = useCallback(async (file: File | null) => {
+    if (!file) return
+    try {
+      const rpv = await parseQuoteFile(file)
+      await loadRpvIntoForm(rpv, null)
+    } catch (err: any) {
+      toast({ title: "File non valido", description: err?.message || "Impossibile leggere il file.", variant: "destructive" })
+    }
+  }, [loadRpvIntoForm, toast])
+
+  // PWA File Handler API: apertura via doppio clic sul file
+  useEffect(() => {
+    const anyWin = window as any
+    if (!("launchQueue" in anyWin)) return
+    anyWin.launchQueue.setConsumer(async (launchParams: any) => {
+      if (!launchParams?.files?.length) return
+      const handle = launchParams.files[0] as FileSystemFileHandle
+      try {
+        const file = await handle.getFile()
+        const rpv = await parseQuoteFile(file)
+        await loadRpvIntoForm(rpv, handle)
+      } catch (err: any) {
+        toast({ title: "Apertura file fallita", description: err?.message || String(err), variant: "destructive" })
+      }
+    })
+  }, [loadRpvIntoForm, toast])
+
+  // Drag & drop globale sulla pagina
+  useEffect(() => {
+    const onDragOver = (e: DragEvent) => {
+      if (e.dataTransfer?.types?.includes("Files")) {
+        e.preventDefault()
+        setIsDraggingFile(true)
+      }
+    }
+    const onDragLeave = (e: DragEvent) => {
+      if ((e as any).relatedTarget === null) setIsDraggingFile(false)
+    }
+    const onDrop = async (e: DragEvent) => {
+      const file = e.dataTransfer?.files?.[0]
+      if (!file) return
+      e.preventDefault()
+      setIsDraggingFile(false)
+      if (!/\.json$/i.test(file.name)) {
+        toast({ title: "File non supportato", description: "Trascina un file .rpv.json o .json.", variant: "destructive" })
+        return
+      }
+      await handleFileInput(file)
+    }
+    window.addEventListener("dragover", onDragOver)
+    window.addEventListener("dragleave", onDragLeave)
+    window.addEventListener("drop", onDrop)
+    return () => {
+      window.removeEventListener("dragover", onDragOver)
+      window.removeEventListener("dragleave", onDragLeave)
+      window.removeEventListener("drop", onDrop)
+    }
+  }, [handleFileInput, toast])
+
+
   const handleSelectProduct = (sectionId: string, itemId: string, productId: string) => {
     const product = products.find(p => p.id === productId)
     if (product) selectProductInSection(sectionId, itemId, product)
