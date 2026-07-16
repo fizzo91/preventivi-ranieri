@@ -485,16 +485,44 @@ const NewQuote = () => {
     }
 
     try {
-      if (editQuote) {
-        await updateQuote.mutateAsync({ id: editQuote.id, ...payload })
+      let savedId: string | null = editQuote?.id ?? linkedQuoteId ?? null
+      if (editQuote?.id || linkedQuoteId) {
+        const id = (editQuote?.id ?? linkedQuoteId) as string
+        await updateQuote.mutateAsync({ id, ...payload })
+        savedId = id
       } else {
-        await createQuote.mutateAsync(payload)
+        const created: any = await createQuote.mutateAsync(payload)
+        savedId = created?.id ?? null
       }
+
+      // Aggiorna/scrivi il file .rpv.json locale
+      try {
+        const outcome = await writeQuoteFile(
+          {
+            quoteId: savedId,
+            client: clientData,
+            quote: quoteData,
+            sections,
+            enamelData: enamelDataMap,
+          },
+          fileHandleRef.current,
+        )
+        toast({
+          title: "Preventivo salvato",
+          description: outcome === "overwritten"
+            ? "File .rpv.json aggiornato in-place."
+            : "File .rpv.json aggiornato scaricato.",
+        })
+      } catch (err) {
+        console.warn("Errore scrittura file locale:", err)
+      }
+
       navigate('/quotes')
     } catch {
       toast({ title: "Errore", description: "Si è verificato un errore durante il salvataggio", variant: "destructive" })
     }
   }
+
 
   if (productsLoading) return <LoadingSpinner />
 
