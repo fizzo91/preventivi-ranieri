@@ -527,13 +527,36 @@ const NewQuote = () => {
   if (productsLoading) return <LoadingSpinner />
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8 relative">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json,.rpv.json,application/json"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0] ?? null
+          handleFileInput(f)
+          if (e.target) e.target.value = ""
+        }}
+      />
+      {isDraggingFile && (
+        <div className="fixed inset-0 z-50 bg-primary/20 backdrop-blur-sm border-4 border-dashed border-primary flex items-center justify-center pointer-events-none">
+          <div className="bg-background rounded-lg px-6 py-4 shadow-lg text-lg font-semibold">
+            Rilascia il file .rpv.json per aprirlo
+          </div>
+        </div>
+      )}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">{editQuote ? 'Modifica Preventivo' : 'Nuovo Preventivo'}</h1>
-          <p className="text-muted-foreground mt-1">Lavorazione Pietra Lavica Smaltata</p>
+          <h1 className="text-3xl font-bold text-foreground">{editQuote || linkedQuoteId ? 'Modifica Preventivo' : 'Nuovo Preventivo'}</h1>
+          <p className="text-muted-foreground mt-1">
+            Lavorazione Pietra Lavica Smaltata
+            {fileHandleRef.current && <span className="ml-2 text-xs text-primary">• collegato a file locale</span>}
+          </p>
         </div>
          <div className="flex flex-wrap gap-2">
+          <Button onClick={openFilePicker} variant="outline" className="gap-2" title="Apri un preventivo da file .rpv.json"><FolderOpen className="h-4 w-4" />Apri da file</Button>
+
           <Button onClick={() => {
             const quoteId = editQuote?.id || ""
             const quoteName = quoteData.number || ""
