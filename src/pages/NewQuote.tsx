@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
-import { Plus, Trash2, Save, GripVertical, Copy, Calculator, ImagePlus, X, AlertTriangle, TrendingDown, Palette, FileUp } from "lucide-react"
+import { Plus, Trash2, Save, GripVertical, Copy, Calculator, ImagePlus, X, AlertTriangle, TrendingDown, Palette, FileUp, FolderOpen } from "lucide-react"
 import { StoneCalculator, StoneCalculatorResult } from "@/components/StoneCalculator"
 import { WordImportDialog } from "@/components/quotes/WordImportDialog"
+import { parseQuoteFile, writeQuoteFile, RPV_EXTENSION, type RpvFile } from "@/lib/quoteFile"
+
 
 import { useToast } from "@/hooks/use-toast"
 import {
@@ -263,6 +265,13 @@ const NewQuote = () => {
   const [enamelDialogOpen, setEnamelDialogOpen] = useState(false)
   const [enamelDialogSectionId, setEnamelDialogSectionId] = useState<string | null>(null)
 
+  // File .rpv.json: handle sorgente (per sovrascrittura) + id preventivo collegato
+  const fileHandleRef = useRef<FileSystemFileHandle | null>(null)
+  const [linkedQuoteId, setLinkedQuoteId] = useState<string | null>(null)
+  const [isDraggingFile, setIsDraggingFile] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+
   const getSectionPriceWarning = (section: QuoteSection): PriceWarning | null => {
     const pietra = section.items.find(item => item.productName?.match(/^PIETRA/i))
     if (!pietra) return null
@@ -317,6 +326,105 @@ const NewQuote = () => {
     }
     loadEditQuote()
   }, [editQuote])
+
+  // ── File .rpv.json: caricamento snapshot ─────────────────────────────
+  const loadRpvIntoForm = useCallback(async (rpv: RpvFile, handle: FileSystemFileHandle | null) => {
+    fileHandleRef.current = handle
+    setLinkedQuoteId(rpv.quoteId ?? null)
+    setClientData(rpv.client)
+    setQuoteData(rpv.quote)
+    const sectionsWithRisks = (rpv.sections || []).map((s: any) => ({ ...s, risks: s.risks || [] }))
+    const sectionsWithUrls = await regenerateSignedUrls(sectionsWithRisks)
+    setSections(sectionsWithUrls)
+    setEnamelDataMap(rpv.enamelData || {})
+    toast({
+      title: "Preventivo caricato dal file",
+      description: rpv.quoteId
+        ? "Il salvataggio aggiornerà il preventivo online collegato."
+        : "Il salvataggio creerà un nuovo preventivo online.",
+    })
+  }, [regenerateSignedUrls, setSections, toast])
+
+  const openFilePicker = useCallback(async () => {
+    // File System Access API (Chromium): permette poi la sovrascrittura in-place
+    const anyWin = window as any
+    if (anyWin.showOpenFilePicker) {
+      try {
+        const [handle] = await anyWin.showOpenFilePicker({
+          types: [{ description: "Preventivo Ranieri", accept: { "application/json": [RPV_EXTENSION, ".json"] } }],
+          multiple: false,
+        })
+        const file = await handle.getFile()
+        const rpv = await parseQuoteFile(file)
+        await loadRpvIntoForm(rpv, handle)
+        return
+      } catch (err: any) {
+        if (err?.name === "AbortError") return
+        console.warn("showOpenFilePicker fallito, fallback su input file:", err)
+      }
+    }
+    fileInputRef.current?.click()
+  }, [loadRpvIntoForm])
+
+  const handleFileInput = useCallback(async (file: File | null) => {
+    if (!file) return
+    try {
+      const rpv = await parseQuoteFile(file)
+      await loadRpvIntoForm(rpv, null)
+    } catch (err: any) {
+      toast({ title: "File non valido", description: err?.message || "Impossibile leggere il file.", variant: "destructive" })
+    }
+  }, [loadRpvIntoForm, toast])
+
+  // PWA File Handler API: apertura via doppio clic sul file
+  useEffect(() => {
+    const anyWin = window as any
+    if (!("launchQueue" in anyWin)) return
+    anyWin.launchQueue.setConsumer(async (launchParams: any) => {
+      if (!launchParams?.files?.length) return
+      const handle = launchParams.files[0] as FileSystemFileHandle
+      try {
+        const file = await handle.getFile()
+        const rpv = await parseQuoteFile(file)
+        await loadRpvIntoForm(rpv, handle)
+      } catch (err: any) {
+        toast({ title: "Apertura file fallita", description: err?.message || String(err), variant: "destructive" })
+      }
+    })
+  }, [loadRpvIntoForm, toast])
+
+  // Drag & drop globale sulla pagina
+  useEffect(() => {
+    const onDragOver = (e: DragEvent) => {
+      if (e.dataTransfer?.types?.includes("Files")) {
+        e.preventDefault()
+        setIsDraggingFile(true)
+      }
+    }
+    const onDragLeave = (e: DragEvent) => {
+      if ((e as any).relatedTarget === null) setIsDraggingFile(false)
+    }
+    const onDrop = async (e: DragEvent) => {
+      const file = e.dataTransfer?.files?.[0]
+      if (!file) return
+      e.preventDefault()
+      setIsDraggingFile(false)
+      if (!/\.json$/i.test(file.name)) {
+        toast({ title: "File non supportato", description: "Trascina un file .rpv.json o .json.", variant: "destructive" })
+        return
+      }
+      await handleFileInput(file)
+    }
+    window.addEventListener("dragover", onDragOver)
+    window.addEventListener("dragleave", onDragLeave)
+    window.addEventListener("drop", onDrop)
+    return () => {
+      window.removeEventListener("dragover", onDragOver)
+      window.removeEventListener("dragleave", onDragLeave)
+      window.removeEventListener("drop", onDrop)
+    }
+  }, [handleFileInput, toast])
+
 
   const handleSelectProduct = (sectionId: string, itemId: string, productId: string) => {
     const product = products.find(p => p.id === productId)
@@ -377,27 +485,78 @@ const NewQuote = () => {
     }
 
     try {
-      if (editQuote) {
-        await updateQuote.mutateAsync({ id: editQuote.id, ...payload })
+      let savedId: string | null = editQuote?.id ?? linkedQuoteId ?? null
+      if (editQuote?.id || linkedQuoteId) {
+        const id = (editQuote?.id ?? linkedQuoteId) as string
+        await updateQuote.mutateAsync({ id, ...payload })
+        savedId = id
       } else {
-        await createQuote.mutateAsync(payload)
+        const created: any = await createQuote.mutateAsync(payload)
+        savedId = created?.id ?? null
       }
+
+      // Aggiorna/scrivi il file .rpv.json locale
+      try {
+        const outcome = await writeQuoteFile(
+          {
+            quoteId: savedId,
+            client: clientData,
+            quote: quoteData,
+            sections,
+            enamelData: enamelDataMap,
+          },
+          fileHandleRef.current,
+        )
+        toast({
+          title: "Preventivo salvato",
+          description: outcome === "overwritten"
+            ? "File .rpv.json aggiornato in-place."
+            : "File .rpv.json aggiornato scaricato.",
+        })
+      } catch (err) {
+        console.warn("Errore scrittura file locale:", err)
+      }
+
       navigate('/quotes')
     } catch {
       toast({ title: "Errore", description: "Si è verificato un errore durante il salvataggio", variant: "destructive" })
     }
   }
 
+
   if (productsLoading) return <LoadingSpinner />
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8 relative">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json,.rpv.json,application/json"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0] ?? null
+          handleFileInput(f)
+          if (e.target) e.target.value = ""
+        }}
+      />
+      {isDraggingFile && (
+        <div className="fixed inset-0 z-50 bg-primary/20 backdrop-blur-sm border-4 border-dashed border-primary flex items-center justify-center pointer-events-none">
+          <div className="bg-background rounded-lg px-6 py-4 shadow-lg text-lg font-semibold">
+            Rilascia il file .rpv.json per aprirlo
+          </div>
+        </div>
+      )}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">{editQuote ? 'Modifica Preventivo' : 'Nuovo Preventivo'}</h1>
-          <p className="text-muted-foreground mt-1">Lavorazione Pietra Lavica Smaltata</p>
+          <h1 className="text-3xl font-bold text-foreground">{editQuote || linkedQuoteId ? 'Modifica Preventivo' : 'Nuovo Preventivo'}</h1>
+          <p className="text-muted-foreground mt-1">
+            Lavorazione Pietra Lavica Smaltata
+            {fileHandleRef.current && <span className="ml-2 text-xs text-primary">• collegato a file locale</span>}
+          </p>
         </div>
          <div className="flex flex-wrap gap-2">
+          <Button onClick={openFilePicker} variant="outline" className="gap-2" title="Apri un preventivo da file .rpv.json"><FolderOpen className="h-4 w-4" />Apri da file</Button>
+
           <Button onClick={() => {
             const quoteId = editQuote?.id || ""
             const quoteName = quoteData.number || ""
