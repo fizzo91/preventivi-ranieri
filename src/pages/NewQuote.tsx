@@ -265,6 +265,13 @@ const NewQuote = () => {
   const [enamelDialogOpen, setEnamelDialogOpen] = useState(false)
   const [enamelDialogSectionId, setEnamelDialogSectionId] = useState<string | null>(null)
 
+  // File .rpv.json: handle sorgente (per sovrascrittura) + id preventivo collegato
+  const fileHandleRef = useRef<FileSystemFileHandle | null>(null)
+  const [linkedQuoteId, setLinkedQuoteId] = useState<string | null>(null)
+  const [isDraggingFile, setIsDraggingFile] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+
   const getSectionPriceWarning = (section: QuoteSection): PriceWarning | null => {
     const pietra = section.items.find(item => item.productName?.match(/^PIETRA/i))
     if (!pietra) return null
