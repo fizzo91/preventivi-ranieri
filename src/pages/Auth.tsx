@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,9 @@ type Mode = "login" | "reset" | "request";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const nextParam = searchParams.get("next");
+  const safeNext = nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/";
   const { toast } = useToast();
   const { signIn, session, resetPassword } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -24,7 +27,7 @@ const Auth = () => {
   const [requestForm, setRequestForm] = useState({ email: "", full_name: "", reason: "" });
 
   if (session) {
-    navigate("/");
+    navigate(safeNext);
     return null;
   }
 
@@ -42,7 +45,7 @@ const Auth = () => {
       setError(error.message);
       setLoading(false);
     } else {
-      navigate("/");
+      navigate(safeNext);
     }
   };
 
