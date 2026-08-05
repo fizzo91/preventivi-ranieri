@@ -845,6 +845,7 @@ const NewQuote = () => {
               <div className="flex gap-2 flex-wrap">
                 <Button onClick={addSection} variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground"><Plus className="h-4 w-4" />Nuova Sezione</Button>
                 <Button onClick={() => setWordImportOpen(true)} variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground"><FileUp className="h-4 w-4" />Importa da Word</Button>
+                <Button onClick={() => setAiQuoteOpen(true)} variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground"><Wand2 className="h-4 w-4" />Genera da testo (AI)</Button>
                 <LoadTemplateDialog onLoad={loadFromTemplate} />
               </div>
             </div>
