@@ -9,6 +9,7 @@ import { Combobox } from "@/components/ui/combobox"
 import { Plus, Trash2, Save, GripVertical, Copy, Calculator, ImagePlus, X, AlertTriangle, TrendingDown, Palette, FileUp, FolderOpen, Wand2 } from "lucide-react"
 import { StoneCalculator, StoneCalculatorResult } from "@/components/StoneCalculator"
 import { WordImportDialog } from "@/components/quotes/WordImportDialog"
+import { AiQuoteDialog } from "@/components/quotes/AiQuoteDialog"
 import { parseQuoteFile, writeQuoteFile, RPV_EXTENSION, type RpvFile } from "@/lib/quoteFile"
 
 
