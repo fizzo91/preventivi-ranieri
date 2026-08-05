@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Combobox } from "@/components/ui/combobox"
-import { Plus, Trash2, Save, GripVertical, Copy, Calculator, ImagePlus, X, AlertTriangle, TrendingDown, Palette, FileUp, FolderOpen } from "lucide-react"
+import { Plus, Trash2, Save, GripVertical, Copy, Calculator, ImagePlus, X, AlertTriangle, TrendingDown, Palette, FileUp, FolderOpen, Wand2 } from "lucide-react"
 import { StoneCalculator, StoneCalculatorResult } from "@/components/StoneCalculator"
 import { WordImportDialog } from "@/components/quotes/WordImportDialog"
+import { AiQuoteDialog } from "@/components/quotes/AiQuoteDialog"
 import { parseQuoteFile, writeQuoteFile, RPV_EXTENSION, type RpvFile } from "@/lib/quoteFile"
 
 
@@ -256,6 +257,7 @@ const NewQuote = () => {
   } = useSectionManager()
 
   const [wordImportOpen, setWordImportOpen] = useState(false)
+  const [aiQuoteOpen, setAiQuoteOpen] = useState(false)
 
   const [clientData, setClientData] = useState({ name: "", email: "", phone: "", address: "", company: "" })
   const [quoteData, setQuoteData] = useState({ number: `PREV-${Date.now()}`, date: new Date().toISOString().split('T')[0], validUntil: "", notes: "", status: "draft" })
@@ -844,6 +846,7 @@ const NewQuote = () => {
               <div className="flex gap-2 flex-wrap">
                 <Button onClick={addSection} variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground"><Plus className="h-4 w-4" />Nuova Sezione</Button>
                 <Button onClick={() => setWordImportOpen(true)} variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground"><FileUp className="h-4 w-4" />Importa da Word</Button>
+                <Button onClick={() => setAiQuoteOpen(true)} variant="ghost" className="gap-2 text-muted-foreground hover:text-foreground"><Wand2 className="h-4 w-4" />Genera da testo (AI)</Button>
                 <LoadTemplateDialog onLoad={loadFromTemplate} />
               </div>
             </div>
@@ -896,6 +899,14 @@ const NewQuote = () => {
       <WordImportDialog
         open={wordImportOpen}
         onOpenChange={setWordImportOpen}
+        products={products}
+        recentProductIds={recentProductIds}
+        onImport={appendSections}
+        nextSectionNumber={sections.length + 1}
+      />
+      <AiQuoteDialog
+        open={aiQuoteOpen}
+        onOpenChange={setAiQuoteOpen}
         products={products}
         recentProductIds={recentProductIds}
         onImport={appendSections}
