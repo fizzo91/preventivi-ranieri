@@ -904,6 +904,14 @@ const NewQuote = () => {
         onImport={appendSections}
         nextSectionNumber={sections.length + 1}
       />
+      <AiQuoteDialog
+        open={aiQuoteOpen}
+        onOpenChange={setAiQuoteOpen}
+        products={products}
+        recentProductIds={recentProductIds}
+        onImport={appendSections}
+        nextSectionNumber={sections.length + 1}
+      />
     </div>
   )
 }
