@@ -1,42 +1,30 @@
-## Preventivo come file `.json` locale
+# Preventivo da testo con AI (Claude)
 
-### Comportamento
+Nuovo strumento che trasforma una descrizione testuale del lavoro in una bozza di preventivo, agganciando automaticamente le voci al listino prodotti (DT).
 
-**File `.json` = snapshot completo del preventivo**
-- Contiene: cliente, sezioni, voci, prezzi, rischi, note, metadata (versione formato, id preventivo, data ultima modifica).
-- Estensione: `.rpv.json` (Ranieri Preventivo) per identificarlo con un'icona personalizzata sul sistema operativo.
+## Come funziona
 
-**Aprire il file (doppio clic → si apre nel preventivo)**
-1. Registrare un **file handler** via web manifest (`file_handlers` API + PWA installata).
-   - Il file `.rpv.json` viene associato all'app installata.
-   - Doppio clic lancia l'app aperta su `/new-quote?openFile=1`, l'app riceve il file via `launchQueue.setConsumer()`.
-   - Fallback per utenti senza PWA installata: dentro `/new-quote` un pulsante **"Apri da file"** + area drag & drop che accetta `.rpv.json`.
-2. All'apertura: parse del JSON, popolamento del form Nuovo Preventivo (usando la stessa logica dell'import JSON già esistente). Se il JSON contiene un `id` esistente per l'utente → carica quel preventivo in edit mode; altrimenti crea nuovo.
+1. Nella pagina preventivo, accanto a "Importa da Word", un nuovo pulsante **"Genera da testo (AI)"**.
+2. Si incolla il testo libero (email del cliente, appunti, capitolato).
+3. L'AI Claude analizza il testo, individua sezioni e voci con quantità e unità di misura.
+4. Ogni voce viene abbinata al prodotto più simile del listino DT, con un livello di confidenza.
+5. Si apre un'**anteprima da confermare**: sezioni, voci, prodotto abbinato, quantità, prezzo DT e totale.
+   - Le voci con confidenza bassa sono evidenziate.
+   - Si può cambiare il prodotto abbinato, correggere quantità, escludere una voce.
+6. Confermando, le sezioni vengono inserite nel preventivo aperto, con tutti i calcoli standard (totali, €/mq, rischi) invariati.
 
-**Salvare (download automatico del `.json` aggiornato)**
-- Ad ogni "Salva" riuscito nel backend:
-  - Serializza lo stato del preventivo in JSON.
-  - Trigger automatico del download del file `nome-cliente-YYYYMMDD.rpv.json`.
-  - Toast di conferma: "Preventivo salvato. File aggiornato scaricato."
-- Se il preventivo è stato aperto via `launchQueue` con `FileSystemFileHandle` in modalità read-write (Chromium desktop), sovrascrivere direttamente il file originale senza chiedere. Altrimenti fallback su download classico.
+## Chiave API Anthropic
 
-### Componenti tecnici
+Serve la tua API key Anthropic (console.anthropic.com → API Keys). Te la chiederò con il modulo sicuro: viene salvata come segreto lato backend e mai esposta nel browser. Modello previsto: Claude Sonnet più recente disponibile.
 
-| Area | Cosa fare |
-|---|---|
-| `public/manifest.webmanifest` | Aggiungere `file_handlers: [{ action: "/new-quote", accept: { "application/json": [".rpv.json"] } }]`. Il progetto è già PWA. |
-| `src/lib/quoteFile.ts` (nuovo) | `serializeQuote(quote): Blob` + `parseQuoteFile(file): QuoteData`. Riutilizza formato dell'export JSON esistente, aggiungendo header `{ format: "rpv", version: 1, ... }`. |
-| `src/pages/NewQuote.tsx` | Al mount: `if ('launchQueue' in window)` → `launchQueue.setConsumer(handleFiles)`. Salva l'eventuale `FileSystemFileHandle` in ref per riuso al salvataggio. |
-| `src/components/quotes/OpenFileButton.tsx` (nuovo) | Pulsante "Apri da file" + drag & drop overlay su tutta la pagina Nuovo Preventivo. |
-| Hook `useQuoteSave` (o punto attuale del save) | Dopo save success: `downloadOrOverwriteFile(quote, handleRef.current)`. |
-| Rimozione | Il pulsante/logica "Importa da Word" (WordImportDialog + edge function `parse-word-quote`) e il template `.docx` non servono più — chiedere se rimuoverli o tenerli come opzione secondaria. |
+## Dettagli tecnici
 
-### Limiti da comunicare all'utente
-
-- **Doppio clic diretto**: funziona solo se l'app è **installata come PWA** (Chrome/Edge desktop, Android). Su Safari/iOS il doppio clic apre il JSON come testo — l'utente deve trascinarlo nell'app.
-- **Sovrascrittura in-place del file**: solo Chromium desktop con PWA installata. Altrove ogni salvataggio scarica una nuova copia (l'utente la sposta manualmente nella cartella progetto sovrascrivendo).
-- Il file `.json` da solo **non è un backup completo** se contiene riferimenti a immagini caricate nel bucket `section-charts`: gli URL firmati scadono. Opzioni: (a) accettarlo, (b) inlineare le immagini come base64 nel JSON (file più pesante). Da confermare.
-
-### Domande aperte prima di implementare
-1. Cosa fare con l'import da Word appena costruito: **rimuoverlo**, tenerlo come opzione, o convertirlo in un secondo formato di apertura?
-2. Immagini delle sezioni: **link ai URL** (leggeri, dipendono dal cloud) o **inline base64** (autonomi, file più grandi)?
+- Nuova edge function `quote-from-text`:
+  - valida input (zod) e richiede JWT valido;
+  - carica i prodotti non archiviati dell'utente (id, nome, codice, categoria, unità, price_dt) tramite il token dell'utente, così l'RLS resta rispettata;
+  - passa a Claude testo + catalogo compatto, con output JSON strutturato (sezioni → voci con `product_id`, `quantity`, `unit`, `confidence`, `matched_name`);
+  - se il catalogo è grande, pre-filtro lato server (match testuale) per contenere i token;
+  - gestione esplicita degli errori 401/429/insufficienti crediti Anthropic.
+- Nuovo componente `src/components/quotes/AiQuoteDialog.tsx` con textarea, stato di caricamento e tabella di anteprima editabile.
+- Riuso delle utility esistenti (`quoteCalculations`, struttura `QuoteSection`/`QuoteItem` in `src/types/quote.ts`) per costruire le sezioni: nessuna modifica alla logica di calcolo.
+- Aggancio in `src/pages/NewQuote.tsx` accanto all'import Word, con la stessa funzione di inserimento sezioni.
