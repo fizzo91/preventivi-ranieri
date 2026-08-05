@@ -256,6 +256,7 @@ const NewQuote = () => {
   } = useSectionManager()
 
   const [wordImportOpen, setWordImportOpen] = useState(false)
+  const [aiQuoteOpen, setAiQuoteOpen] = useState(false)
 
   const [clientData, setClientData] = useState({ name: "", email: "", phone: "", address: "", company: "" })
   const [quoteData, setQuoteData] = useState({ number: `PREV-${Date.now()}`, date: new Date().toISOString().split('T')[0], validUntil: "", notes: "", status: "draft" })
