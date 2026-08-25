@@ -814,5 +814,180 @@ export const usePdfGenerator = () => {
     }
   }
 
-  return { generatePdf, generateSyntheticPdf }
+  // ── CATEGORY SUMMARY PDF ──
+  const generateCategoryPdf = async (quoteData: QuoteData) => {
+    try {
+      const ctx = createPdfBase()
+      const { pdf, pageWidth, margin, contentWidth, checkPageBreak, addPageNumbers } = ctx
+
+      let y = ctx.getY()
+      pdf.setFontSize(18)
+      pdf.setFont('helvetica', 'bold')
+      pdf.text('RIEPILOGO PER CATEGORIE', pageWidth / 2, y, { align: 'center' })
+      y += 8
+      pdf.setFontSize(11)
+      pdf.setFont('helvetica', 'normal')
+      pdf.text(`N. ${quoteData.quoteNumber}`, pageWidth / 2, y, { align: 'center' })
+      y += 6
+      pdf.text(`${quoteData.client.name}${quoteData.client.company ? ` – ${quoteData.client.company}` : ''}`, pageWidth / 2, y, { align: 'center' })
+      y += 12
+
+      const grand: Record<string, number> = { PIETRA: 0, LAVORAZIONI: 0, ENGOBBIO: 0, SMALTATURA: 0, ALTRI: 0, RISCHI: 0, TOTALE: 0 }
+
+      for (const section of quoteData.sections || []) {
+        const c = classifyByCategory(section, quoteData.enamelData)
+        const rischio = calcRisksTotal(section)
+        const qty = section.quantity || 1
+        const base = c.PIETRA.total + c.LAVORAZIONI.total + c.ENGOBBIO.total + c.SMALTATURA.total + c.ALTRI.total + rischio
+        const sectionTotal = base * qty
+
+        grand.PIETRA += c.PIETRA.total * qty
+        grand.LAVORAZIONI += c.LAVORAZIONI.total * qty
+        grand.ENGOBBIO += c.ENGOBBIO.total * qty
+        grand.SMALTATURA += c.SMALTATURA.total * qty
+        grand.ALTRI += c.ALTRI.total * qty
+        grand.RISCHI += rischio * qty
+        grand.TOTALE += sectionTotal
+
+        ctx.setY(y); checkPageBreak(50); y = ctx.getY()
+
+        // Section title
+        pdf.setFillColor(30, 64, 175)
+        pdf.rect(margin, y, contentWidth, 8, 'F')
+        pdf.setFontSize(10)
+        pdf.setFont('helvetica', 'bold')
+        pdf.setTextColor(255, 255, 255)
+        pdf.text(qty > 1 ? `${section.name} (x${qty})` : section.name, margin + 2, y + 5.5)
+        pdf.setTextColor(0, 0, 0)
+        y += 10
+
+        const rows: { label: string; detail: string; value: number }[] = [
+          { label: 'PIETRA', detail: c.PIETRA.labels, value: c.PIETRA.total },
+          { label: 'LAVORAZIONI', detail: c.LAVORAZIONI.labels, value: c.LAVORAZIONI.total },
+          { label: 'ENGOBBIO', detail: c.ENGOBBIO.labels, value: c.ENGOBBIO.total },
+          { label: 'SMALTATURA', detail: c.SMALTATURA.labels, value: c.SMALTATURA.total },
+        ]
+        if (c.ALTRI.total > 0 || c.ALTRI.labels) {
+          rows.push({ label: 'ALTRI COSTI', detail: c.ALTRI.labels, value: c.ALTRI.total })
+        }
+
+        pdf.setFontSize(8)
+        let alt = 0
+        for (const row of rows) {
+          const detailLines = row.detail ? pdf.splitTextToSize(row.detail, contentWidth - 68) : []
+          const rowH = Math.max(6, 4 + detailLines.length * 3.5)
+          ctx.setY(y); if (checkPageBreak(rowH + 6)) { y = ctx.getY() } 
+          if (alt % 2 === 0) {
+            pdf.setFillColor(248, 250, 252)
+            pdf.rect(margin, y, contentWidth, rowH, 'F')
+          }
+          pdf.setFont('helvetica', 'bold')
+          pdf.text(row.label, margin + 3, y + 4)
+          pdf.setFont('helvetica', 'normal')
+          pdf.setTextColor(110, 110, 110)
+          pdf.setFontSize(6.5)
+          detailLines.forEach((line: string, i: number) => pdf.text(line, margin + 45, y + 4 + i * 3.5))
+          pdf.setFontSize(8)
+          pdf.setTextColor(0, 0, 0)
+          pdf.setFont('helvetica', 'bold')
+          pdf.text(`€ ${row.value.toFixed(2)}`, margin + contentWidth - 3, y + 4, { align: 'right' })
+          y += rowH
+          alt++
+        }
+
+        // Risks
+        const risks = section.risks || []
+        y += 2
+        ctx.setY(y); checkPageBreak(10 + risks.length * 5); y = ctx.getY()
+        pdf.setFontSize(8)
+        pdf.setFont('helvetica', 'bold')
+        pdf.text('RISCHI APPLICATI', margin + 3, y + 4)
+        pdf.text(`€ ${rischio.toFixed(2)}`, margin + contentWidth - 3, y + 4, { align: 'right' })
+        y += 6
+        pdf.setFontSize(7)
+        pdf.setFont('helvetica', 'normal')
+        if (risks.length === 0) {
+          pdf.setTextColor(130, 130, 130)
+          pdf.text('Nessun rischio applicato', margin + 6, y + 3)
+          pdf.setTextColor(0, 0, 0)
+          y += 6
+        } else {
+          const itemsTotal = (section.items || []).reduce((s: number, i: any) => s + (i.quantity * i.price), 0)
+          for (const risk of risks) {
+            const target = risk.appliedToItemId === 'SECTION_TOTAL'
+              ? 'Totale sezione'
+              : ((section.items || []).find((it: any) => it.id === risk.appliedToItemId)?.productName || 'Voce')
+            const base2 = risk.appliedToItemId === 'SECTION_TOTAL'
+              ? itemsTotal
+              : (() => { const it = (section.items || []).find((i: any) => i.id === risk.appliedToItemId); return it ? it.quantity * it.price : 0 })()
+            const amount = base2 * ((risk.percentage || 0) / 100)
+            pdf.text(`• ${risk.percentage}% su ${target}${risk.description ? ` – ${risk.description}` : ''}`, margin + 6, y + 3)
+            pdf.text(`€ ${amount.toFixed(2)}`, margin + contentWidth - 3, y + 3, { align: 'right' })
+            y += 5
+          }
+        }
+
+        // Section total
+        y += 1
+        pdf.setFillColor(226, 232, 240)
+        pdf.rect(margin, y, contentWidth, 7, 'F')
+        pdf.setFontSize(9)
+        pdf.setFont('helvetica', 'bold')
+        pdf.text('TOTALE SEZIONE', margin + 3, y + 5)
+        pdf.text(`€ ${sectionTotal.toFixed(2)}`, margin + contentWidth - 3, y + 5, { align: 'right' })
+        y += 12
+      }
+
+      // Grand recap
+      ctx.setY(y); checkPageBreak(60); y = ctx.getY()
+      pdf.setFillColor(30, 64, 175)
+      pdf.rect(margin, y, contentWidth, 8, 'F')
+      pdf.setFontSize(10)
+      pdf.setFont('helvetica', 'bold')
+      pdf.setTextColor(255, 255, 255)
+      pdf.text('TOTALE PREVENTIVO PER CATEGORIA', margin + 2, y + 5.5)
+      pdf.setTextColor(0, 0, 0)
+      y += 10
+
+      const recap: [string, number][] = [
+        ['PIETRA', grand.PIETRA],
+        ['LAVORAZIONI', grand.LAVORAZIONI],
+        ['ENGOBBIO', grand.ENGOBBIO],
+        ['SMALTATURA', grand.SMALTATURA],
+        ['ALTRI COSTI', grand.ALTRI],
+        ['RISCHI', grand.RISCHI],
+      ]
+      pdf.setFontSize(9)
+      recap.forEach(([label, value], i) => {
+        if (i % 2 === 0) { pdf.setFillColor(248, 250, 252); pdf.rect(margin, y, contentWidth, 6.5, 'F') }
+        pdf.setFont('helvetica', 'normal')
+        pdf.text(label, margin + 3, y + 4.5)
+        pdf.setFont('helvetica', 'bold')
+        pdf.text(`€ ${value.toFixed(2)}`, margin + contentWidth - 3, y + 4.5, { align: 'right' })
+        y += 6.5
+      })
+      y += 2
+      pdf.setFillColor(30, 64, 175)
+      pdf.rect(margin, y, contentWidth, 9, 'F')
+      pdf.setFontSize(11)
+      pdf.setFont('helvetica', 'bold')
+      pdf.setTextColor(255, 255, 255)
+      pdf.text('TOTALE', margin + 3, y + 6.2)
+      pdf.text(`€ ${grand.TOTALE.toFixed(2)}`, margin + contentWidth - 3, y + 6.2, { align: 'right' })
+      pdf.setTextColor(0, 0, 0)
+      y += 15
+
+      pdf.setFontSize(8)
+      pdf.setFont('helvetica', 'normal')
+      pdf.text(`Documento generato il ${new Date().toLocaleDateString('it-IT')}`, pageWidth / 2, y, { align: 'center' })
+
+      addPageNumbers()
+      pdf.save(`riepilogo-categorie-${quoteData.quoteNumber}.pdf`)
+    } catch (error) {
+      console.error('Errore durante la generazione del PDF categorie:', error)
+      throw error
+    }
+  }
+
+  return { generatePdf, generateSyntheticPdf, generateCategoryPdf }
 }
