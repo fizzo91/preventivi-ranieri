@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Eye, FileDown, FileText, FileJson } from "lucide-react"
+import { Eye, FileDown, FileText, FileJson, LayoutList } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { getStatusColor } from "@/utils/quoteHelpers"
 import type { Quote } from "@/hooks/useQuotes"
@@ -10,10 +10,11 @@ interface QuoteDetailDialogProps {
   quote: Quote
   onGeneratePdf: (quote: Quote) => void
   onGenerateSyntheticPdf: (quote: Quote) => void
+  onGenerateCategoryPdf: (quote: Quote) => void
   onExportJson: (quote: Quote) => void
 }
 
-export const QuoteDetailDialog = ({ quote, onGeneratePdf, onGenerateSyntheticPdf, onExportJson }: QuoteDetailDialogProps) => (
+export const QuoteDetailDialog = ({ quote, onGeneratePdf, onGenerateSyntheticPdf, onGenerateCategoryPdf, onExportJson }: QuoteDetailDialogProps) => (
   <Dialog>
     <DialogTrigger asChild>
       <Button variant="outline" size="sm">
@@ -37,6 +38,9 @@ export const QuoteDetailDialog = ({ quote, onGeneratePdf, onGenerateSyntheticPdf
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onGenerateSyntheticPdf(quote)}>
                   <FileText className="h-4 w-4 mr-2" />PDF Sintetico
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onGenerateCategoryPdf(quote)}>
+                  <LayoutList className="h-4 w-4 mr-2" />PDF Categorie
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
