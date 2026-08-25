@@ -42,6 +42,61 @@ function classifyItems(items: any[]) {
   }
 }
 
+
+/** Classify a section's costs into the reporting categories */
+function classifyByCategory(
+  section: any,
+  enamelData: EnamelPieceRow[] | Record<string, EnamelPieceRow[]> | null | undefined
+) {
+  const buckets: Record<string, { total: number; parts: string[] }> = {
+    PIETRA: { total: 0, parts: [] },
+    LAVORAZIONI: { total: 0, parts: [] },
+    ENGOBBIO: { total: 0, parts: [] },
+    SMALTATURA: { total: 0, parts: [] },
+    ALTRI: { total: 0, parts: [] },
+  }
+
+  for (const item of section.items || []) {
+    const cat = (item.category || '').toString().toUpperCase()
+    const name = (item.productName || '').toString().toUpperCase()
+    const total = (item.quantity || 0) * (item.price || 0)
+    let key: string
+    if (cat === 'PIETRA' || /^PIETRA/.test(name)) key = 'PIETRA'
+    else if (/ENGOBBI/.test(cat) || /ENGOBBI/.test(name)) key = 'ENGOBBIO'
+    else if (/SMALT/.test(cat) || /SMALT/.test(name)) key = 'SMALTATURA'
+    else if (cat) key = 'LAVORAZIONI'
+    else key = 'ALTRI'
+    buckets[key].total += total
+    if (item.productName) buckets[key].parts.push(item.productName)
+  }
+
+  if (section.engobbio) {
+    buckets.ENGOBBIO.total += section.engobbio
+    buckets.ENGOBBIO.parts.push(
+      section.engobbioRiskPct
+        ? `Engobbio sezione (base + ${section.engobbioRiskPct}% rischio)`
+        : 'Engobbio sezione'
+    )
+  }
+  const enamel = getEnamelTotalForSection(section.id, enamelData)
+  if (enamel) {
+    buckets.SMALTATURA.total += enamel
+    buckets.SMALTATURA.parts.push('Calcolo costi smalto')
+  }
+  if (section.finitura) {
+    buckets.SMALTATURA.total += section.finitura
+    buckets.SMALTATURA.parts.push('Finitura')
+  }
+
+  return {
+    PIETRA: { total: buckets.PIETRA.total, labels: buckets.PIETRA.parts.join(', ') },
+    LAVORAZIONI: { total: buckets.LAVORAZIONI.total, labels: buckets.LAVORAZIONI.parts.join(', ') },
+    ENGOBBIO: { total: buckets.ENGOBBIO.total, labels: buckets.ENGOBBIO.parts.join(', ') },
+    SMALTATURA: { total: buckets.SMALTATURA.total, labels: buckets.SMALTATURA.parts.join(', ') },
+    ALTRI: { total: buckets.ALTRI.total, labels: buckets.ALTRI.parts.join(', ') },
+  }
+}
+
 /** Helper: compute enamel total for a section */
 function getEnamelTotalForSection(sectionId: string, enamelData: EnamelPieceRow[] | Record<string, EnamelPieceRow[]> | null | undefined): number {
   if (!enamelData) return 0
