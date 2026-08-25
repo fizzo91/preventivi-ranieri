@@ -43,6 +43,15 @@ function classifyItems(items: any[]) {
 }
 
 
+/** Extract finish type and colour from a section description, e.g. "Finishing: DEEP - Colour: Burgundy" */
+function extractFinishType(description?: string): string {
+  if (!description) return ''
+  const finish = description.match(/finish(?:ing)?\s*[:\-]\s*([^\n\-–—;]{1,40})/i)?.[1]?.trim()
+  const colour = description.match(/colou?r\s*[:\-]\s*([^\n\-–—;]{1,40})/i)?.[1]?.trim()
+  const parts = [finish, colour].filter(Boolean)
+  return parts.join(' – ')
+}
+
 /** Classify a section's costs into the reporting categories */
 function classifyByCategory(
   section: any,
@@ -84,8 +93,9 @@ function classifyByCategory(
     buckets.SMALTATURA.parts.push('Calcolo costi smalto')
   }
   if (section.finitura) {
+    const finishType = extractFinishType(section.description)
     buckets.SMALTATURA.total += section.finitura
-    buckets.SMALTATURA.parts.push('Finitura')
+    buckets.SMALTATURA.parts.push(finishType ? `Finitura: ${finishType}` : 'Finitura')
   }
 
   return {
@@ -222,7 +232,7 @@ function renderSectionCostSummary(
     { label: 'Lavorazioni', value: lavorazioniTotal },
     { label: riskLabel ? `Rischio (${riskLabel})` : 'Rischio', value: rischio },
     { label: 'Engobbio', value: engobbio },
-    { label: 'Finitura', value: finitura },
+    { label: (() => { const f = extractFinishType(section.description); return f ? `Finitura (${f})` : 'Finitura' })(), value: finitura },
   ]
 
   pdf.setFontSize(8)
