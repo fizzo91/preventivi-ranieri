@@ -20,7 +20,7 @@ const Quotes = () => {
   const { data: quotes = [], isLoading } = useQuotes()
   const deleteQuote = useDeleteQuote()
   const createQuote = useCreateQuote()
-  const { generatePdf, generateSyntheticPdf } = usePdfGenerator()
+  const { generatePdf, generateSyntheticPdf, generateCategoryPdf } = usePdfGenerator()
   const { data: allCalculations = [] } = useCalculations()
   const { toast } = useToast()
 
@@ -95,6 +95,14 @@ const Quotes = () => {
     }
   }
 
+  const handleGenerateCategoryPdf = async (quote: any) => {
+    try {
+      await generateCategoryPdf(buildQuotePayload(quote))
+    } catch {
+      toast({ title: "Errore", description: "Errore durante la generazione del PDF categorie.", variant: "destructive" })
+    }
+  }
+
   const handleExportJson = (quote: any) => {
     exportQuoteJson(quote)
     toast({ title: "Export completato", description: "Il preventivo è stato esportato in JSON" })
@@ -164,6 +172,7 @@ const Quotes = () => {
                         onDelete={handleDeleteQuote}
                         onGeneratePdf={handleGeneratePdf}
                         onGenerateSyntheticPdf={handleGenerateSyntheticPdf}
+                        onGenerateCategoryPdf={handleGenerateCategoryPdf}
                         onExportJson={handleExportJson}
                         isDuplicating={createQuote.isPending}
                         isDeleting={deleteQuote.isPending}

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Edit, Trash2, Copy, FileDown, FileText, User } from "lucide-react"
+import { Edit, Trash2, Copy, FileDown, FileText, LayoutList, User } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { QuoteDetailDialog } from "./QuoteDetailDialog"
@@ -12,13 +12,14 @@ interface QuoteListItemProps {
   onDelete: (id: string) => void
   onGeneratePdf: (quote: Quote) => void
   onGenerateSyntheticPdf: (quote: Quote) => void
+  onGenerateCategoryPdf: (quote: Quote) => void
   onExportJson: (quote: Quote) => void
   isDuplicating: boolean
   isDeleting: boolean
 }
 
 export const QuoteListItem = ({
-  quote, onDuplicate, onDelete, onGeneratePdf, onGenerateSyntheticPdf, onExportJson, isDuplicating, isDeleting
+  quote, onDuplicate, onDelete, onGeneratePdf, onGenerateSyntheticPdf, onGenerateCategoryPdf, onExportJson, isDuplicating, isDeleting
 }: QuoteListItemProps) => {
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -46,7 +47,7 @@ export const QuoteListItem = ({
           </p>
         </div>
         <div className="flex gap-2">
-          <QuoteDetailDialog quote={quote} onGeneratePdf={onGeneratePdf} onGenerateSyntheticPdf={onGenerateSyntheticPdf} onExportJson={onExportJson} />
+          <QuoteDetailDialog quote={quote} onGeneratePdf={onGeneratePdf} onGenerateSyntheticPdf={onGenerateSyntheticPdf} onGenerateCategoryPdf={onGenerateCategoryPdf} onExportJson={onExportJson} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
@@ -59,6 +60,9 @@ export const QuoteListItem = ({
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onGenerateSyntheticPdf(quote)}>
                 <FileText className="h-4 w-4 mr-2" />PDF Sintetico
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onGenerateCategoryPdf(quote)}>
+                <LayoutList className="h-4 w-4 mr-2" />PDF Categorie
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
