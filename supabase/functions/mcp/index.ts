@@ -131,18 +131,136 @@ var list_products_default = defineTool4({
   }
 });
 
+// src/lib/mcp/tools/calculate-cost-draft.ts
+import { defineTool as defineTool5 } from "npm:@lovable.dev/mcp-js@0.23.0";
+import { z as z5 } from "npm:zod@^4.4.3";
+
+// src/lib/costEngine.ts
+var money = (value) => Math.round((value + Number.EPSILON) * 100) / 100;
+function calculateCostSection(input) {
+  const warnings = [];
+  if (!(input.finishedSqm > 0)) throw new Error("finishedSqm must be greater than zero");
+  if (input.riskPercent < 0) throw new Error("riskPercent cannot be negative");
+  const referenceSqm = input.secondCutSqm && input.secondCutSqm > 0 ? input.secondCutSqm : input.finishedSqm;
+  const allowedSlabSqm = money(input.finishedSqm * 1.3);
+  if (input.slabSqm && input.slabSqm > allowedSlabSqm) {
+    warnings.push(`Slab area ${input.slabSqm.toFixed(2)} sqm exceeds the +30% limit (${allowedSlabSqm.toFixed(2)} sqm).`);
+  }
+  const componentSubtotal = money(input.components.reduce((sum, component) => {
+    if (component.quantity < 0 || component.unitPrice < 0) {
+      throw new Error(`Negative value in component ${component.code}`);
+    }
+    return sum + component.quantity * component.unitPrice;
+  }, 0));
+  const riskBase = money(componentSubtotal + input.engobbio + input.finishCost);
+  const riskAmount = money(riskBase * input.riskPercent / 100);
+  const total = money(riskBase + riskAmount);
+  const costPerSqm = money(total / referenceSqm);
+  const tolerancePercent = input.averageTolerancePercent ?? 15;
+  let status = "unavailable";
+  let differencePercent = null;
+  if (input.averageCostPerSqm && input.averageCostPerSqm > 0) {
+    differencePercent = money((costPerSqm - input.averageCostPerSqm) / input.averageCostPerSqm * 100);
+    status = differencePercent > tolerancePercent ? "above" : differencePercent < -tolerancePercent ? "below" : "within";
+  }
+  if (/deep/i.test(input.finish ?? "") && input.engobbio <= 0) {
+    warnings.push("DEEP finish without an engobbio cost.");
+  }
+  return {
+    name: input.name,
+    referenceSqm: money(referenceSqm),
+    allowedSlabSqm,
+    componentSubtotal,
+    engobbio: money(input.engobbio),
+    finishCost: money(input.finishCost),
+    riskBase,
+    riskAmount,
+    total,
+    costPerSqm,
+    averageCheck: { status, differencePercent, tolerancePercent },
+    warnings
+  };
+}
+
+// src/lib/mcp/tools/calculate-cost-draft.ts
+var calculate_cost_draft_default = defineTool5({
+  name: "calculate_cost_draft",
+  title: "Calcola bozza costo",
+  description: "Calcola in modo deterministico il costo di una sezione. Non salva e non modifica alcun preventivo.",
+  inputSchema: {
+    name: z5.string().min(1),
+    finished_sqm: z5.number().positive(),
+    second_cut_sqm: z5.number().positive().nullable().optional(),
+    slab_sqm: z5.number().positive().nullable().optional(),
+    finish: z5.string().nullable().optional(),
+    components: z5.array(z5.object({
+      code: z5.string().min(1),
+      description: z5.string(),
+      quantity: z5.number().nonnegative(),
+      unit_price: z5.number().nonnegative()
+    })),
+    engobbio: z5.number().nonnegative(),
+    finish_cost: z5.number().nonnegative(),
+    risk_percent: z5.number().nonnegative(),
+    average_cost_per_sqm: z5.number().positive().nullable().optional()
+  },
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async (args) => {
+    const result = calculateCostSection({
+      name: args.name,
+      finishedSqm: args.finished_sqm,
+      secondCutSqm: args.second_cut_sqm,
+      slabSqm: args.slab_sqm,
+      finish: args.finish,
+      components: args.components.map((item) => ({
+        code: item.code,
+        description: item.description,
+        quantity: item.quantity,
+        unitPrice: item.unit_price
+      })),
+      engobbio: args.engobbio,
+      finishCost: args.finish_cost,
+      riskPercent: args.risk_percent,
+      averageCostPerSqm: args.average_cost_per_sqm,
+      averageTolerancePercent: 15
+    });
+    return {
+      content: [{ type: "text", text: JSON.stringify(result) }],
+      structuredContent: { result }
+    };
+  }
+});
+
+// src/lib/mcp/tools/import-zoho-project-draft.ts
+import { defineTool as defineTool6 } from "npm:@lovable.dev/mcp-js@0.23.0";
+import { z as z6 } from "npm:zod@^4.4.3";
+var import_zoho_project_draft_default = defineTool6({
+  name: "import_zoho_project_draft",
+  title: "Importa progetto Zoho in bozza",
+  description: "Legge Deal, quotation, note e allegati da Zoho e genera un dossier tecnico. Non modifica Zoho o WorkDrive.",
+  inputSchema: { deal_id: z6.string().regex(/^\d{10,25}$/).describe("ID numerico del Deal Zoho") },
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
+  handler: async ({ deal_id }, ctx) => {
+    if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Non autenticato" }], isError: true };
+    const response = await fetch(`${process.env.SUPABASE_URL}/functions/v1/zoho-project-draft`, { method: "POST", headers: { Authorization: `Bearer ${ctx.getToken()}`, "Content-Type": "application/json" }, body: JSON.stringify({ deal_id, write_to_workdrive: false }) });
+    const payload = await response.json();
+    if (!response.ok) return { content: [{ type: "text", text: payload.error ?? "Import failed" }], isError: true };
+    return { content: [{ type: "text", text: JSON.stringify(payload) }], structuredContent: payload };
+  }
+});
+
 // src/lib/mcp/index.ts
 var projectRef = "ahyazehjcodmvyddchuk";
 var mcp_default = defineMcp({
   name: "preventivi-ranieri-mcp",
   title: "Preventivi Ranieri",
-  version: "0.1.0",
-  instructions: "Strumenti in sola lettura per consultare preventivi, clienti e prodotti (listino DT) dell'utente autenticato. Ogni chiamata rispetta le policy RLS: vengono restituiti solo i dati dell'utente collegato.",
+  version: "0.3.0",
+  instructions: "Strumenti in sola lettura per consultare preventivi, clienti e prodotti, importare dossier Zoho e calcolare bozze costo deterministiche. Nessuna modifica automatica dei record CRM.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated"
   }),
-  tools: [list_quotes_default, get_quote_default, list_clients_default, list_products_default]
+  tools: [list_quotes_default, get_quote_default, list_clients_default, list_products_default, calculate_cost_draft_default, import_zoho_project_draft_default]
 });
 
 // lovable-mcp-supabase-entry.ts
