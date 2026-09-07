@@ -1,6 +1,6 @@
-project_id = "ahyazehjcodmvyddchuk"
+project_id = "pbmgwtotunpisptxlniy"
 
 [functions.zoho-project-draft]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 entrypoint = "./functions/zoho-project-draft/index.ts"

@@ -9,9 +9,9 @@ export async function sendTelegramCompletion(input: {
   if (!token || !chatId) return { sent: false, reason: "not_configured" }
 
   const lines = [
-    "✅ Agenti CRM e COSTO: elaborazione completata",
+    "✅ Agente quotation: report completato",
     input.dealName || input.quoteSubject,
-    `Dossier tecnico: completato (${input.dossierConfidence})`,
+    `Report: completato (${input.dossierConfidence})`,
     "Stato Zoho invariato: Richiesta",
   ]
   if (input.workdriveUrl) lines.push(`WorkDrive: ${input.workdriveUrl}`)
