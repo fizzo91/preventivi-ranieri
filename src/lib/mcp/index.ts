@@ -13,9 +13,9 @@ const projectRef = import.meta.env.VITE_SUPABASE_PROJECT_ID ?? "project-ref-unse
 export default defineMcp({
   name: "preventivi-ranieri-mcp",
   title: "Preventivi Ranieri",
-  version: "0.3.0",
+  version: "0.4.0",
   instructions:
-    "Strumenti in sola lettura per consultare preventivi, clienti e prodotti, importare dossier Zoho e calcolare bozze costo deterministiche. Nessuna modifica automatica dei record CRM.",
+    "Consulta preventivi, clienti e prodotti; per le quotation richieste crea cartelle WorkDrive e report Word senza modificare costi o stato Zoho.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
