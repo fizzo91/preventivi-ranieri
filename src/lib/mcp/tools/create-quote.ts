@@ -2,9 +2,9 @@ declare const process: { env: Record<string, string | undefined> };
 import { createClient } from "@supabase/supabase-js";
 import { defineTool, type ToolContext } from "@lovable.dev/mcp-js";
 import { z } from "zod";
+class ToolError extends Error {}
 
 function sb(ctx: ToolContext) {
-class ToolError extends Error {}
   return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false },
@@ -49,6 +49,7 @@ export default defineTool({
   },
   annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   handler: async (args, ctx) => {
+   try {
     if (!ctx.isAuthenticated()) throw new ToolError("Non autenticato");
     const client = sb(ctx);
     const userId = ctx.getUserId();
@@ -119,5 +120,8 @@ export default defineTool({
       content: [{ type: "text", text: `Preventivo ${data.quote_number} creato. Totale €${data.total_amount}. Apri: ${url}` }],
       structuredContent: { id: data.id, quote_number: data.quote_number, total_amount: Number(data.total_amount), url },
     };
+   } catch (e) {
+    return { content: [{ type: "text", text: e instanceof Error ? e.message : String(e) }], isError: true };
+   }
   },
 });
