@@ -1,6 +1,6 @@
-declare const process: { env: Record<string, string | undefined> };
 import { defineTool } from "@lovable.dev/mcp-js"
 import { z } from "zod"
+import { supabaseUrl } from "../supabase"
 
 export default defineTool({
   name: "import_zoho_project_draft",
@@ -10,7 +10,7 @@ export default defineTool({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
   handler: async ({ deal_id }, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text" as const, text: "Non autenticato" }], isError: true }
-    const response = await fetch(`${process.env.SUPABASE_URL}/functions/v1/zoho-project-draft`, { method: "POST", headers: { Authorization: `Bearer ${ctx.getToken()}`, "Content-Type": "application/json" }, body: JSON.stringify({ deal_id, write_to_workdrive: false }) })
+    const response = await fetch(`${supabaseUrl()}/functions/v1/zoho-project-draft`, { method: "POST", headers: { Authorization: `Bearer ${ctx.getToken()}`, "Content-Type": "application/json" }, body: JSON.stringify({ deal_id, write_to_workdrive: false }) })
     const payload = await response.json()
     if (!response.ok) return { content: [{ type: "text" as const, text: payload.error ?? "Import failed" }], isError: true }
     return { content: [{ type: "text" as const, text: JSON.stringify(payload) }], structuredContent: payload }
