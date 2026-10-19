@@ -249,18 +249,140 @@ var import_zoho_project_draft_default = defineTool6({
   }
 });
 
+// src/lib/mcp/tools/create-quote.ts
+import { createClient as createClient5 } from "npm:@supabase/supabase-js@^2.108.2";
+import { defineTool as defineTool7, ToolError } from "npm:@lovable.dev/mcp-js@0.23.0";
+import { z as z7 } from "npm:zod@^4.4.3";
+function sb5(ctx) {
+  return createClient5(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
+    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+}
+var uid = () => crypto.randomUUID();
+var r2 = (n) => Math.round(n * 100) / 100;
+var itemSchema = z7.object({
+  product_id: z7.string().uuid().describe("UUID del prodotto ottenuto da list_products. Il prezzo DT viene letto dal listino."),
+  quantity: z7.number().nonnegative(),
+  description: z7.string().optional().describe("Nota opzionale sulla voce."),
+  risk_percent: z7.number().min(0).max(100).optional().describe("Rischio % applicato a questa singola voce.")
+});
+var sectionSchema = z7.object({
+  name: z7.string().min(1),
+  description: z7.string().optional().describe("Descrizione tecnica della sezione."),
+  quantity: z7.number().positive().optional().describe("Moltiplicatore sezione (default 1)."),
+  mq_totali: z7.number().nonnegative().optional(),
+  items: z7.array(itemSchema).min(1),
+  section_risk_percent: z7.number().min(0).max(100).optional().describe("Rischio % sul totale voci della sezione."),
+  engobbio_base: z7.number().nonnegative().optional().describe("Costo engobbio \u20AC (base)."),
+  engobbio_risk_percent: z7.number().min(0).max(100).optional(),
+  finitura: z7.number().nonnegative().optional().describe("Costo finitura/smaltatura \u20AC."),
+  tags: z7.array(z7.string()).optional()
+});
+var create_quote_default = defineTool7({
+  name: "create_quote",
+  title: "Crea preventivo",
+  description: "Crea e salva un nuovo preventivo con sezioni e voci. Usa prima list_products per trovare i product_id; i prezzi sono presi dal listino DT.",
+  inputSchema: {
+    client_name: z7.string().min(1),
+    client_company: z7.string().optional(),
+    client_email: z7.string().optional(),
+    client_phone: z7.string().optional(),
+    notes: z7.string().optional(),
+    sections: z7.array(sectionSchema).min(1)
+  },
+  annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+  handler: async (args, ctx) => {
+    if (!ctx.isAuthenticated()) throw new ToolError("Non autenticato");
+    const client = sb5(ctx);
+    const userId = ctx.getUserId();
+    if (!userId) throw new ToolError("Utente non identificato");
+    const ids = [...new Set(args.sections.flatMap((s) => s.items.map((i) => i.product_id)))];
+    const { data: products, error: pErr } = await client.from("products").select("id, name, category, unit, price_dt").in("id", ids);
+    if (pErr) throw new ToolError(pErr.message);
+    const pMap = new Map((products ?? []).map((p) => [p.id, p]));
+    const missing = ids.filter((id) => !pMap.has(id));
+    if (missing.length) throw new ToolError(`Prodotti non trovati: ${missing.join(", ")}`);
+    const sections = args.sections.map((s) => {
+      const items = s.items.map((i) => {
+        const p = pMap.get(i.product_id);
+        const price = Number(p.price_dt) || 0;
+        return {
+          id: uid(),
+          productId: p.id,
+          productName: p.name,
+          category: p.category,
+          description: i.description ?? "",
+          quantity: i.quantity,
+          price,
+          unit: p.unit,
+          total: r2(price * i.quantity),
+          _risk: i.risk_percent
+        };
+      });
+      const itemsTotal = items.reduce((a, i) => a + i.total, 0);
+      const risks = [];
+      for (const it of items) {
+        if (it._risk) risks.push({ id: uid(), description: `Rischio ${it.productName}`, percentage: it._risk, appliedToItemId: it.id, amount: r2(it.total * it._risk / 100) });
+      }
+      if (s.section_risk_percent) {
+        risks.push({ id: uid(), description: "Rischio sezione", percentage: s.section_risk_percent, appliedToItemId: "SECTION_TOTAL", amount: r2(itemsTotal * s.section_risk_percent / 100) });
+      }
+      const eb = s.engobbio_base ?? 0;
+      const engobbio = r2(eb + eb * (s.engobbio_risk_percent ?? 0) / 100);
+      const finitura = s.finitura ?? 0;
+      const total = r2(itemsTotal + risks.reduce((a, r) => a + r.amount, 0) + engobbio + finitura);
+      return {
+        id: uid(),
+        name: s.name,
+        description: s.description ?? "",
+        items: items.map(({ _risk, ...rest }) => rest),
+        risks,
+        engobbio,
+        engobbioBase: eb,
+        engobbioRiskPct: s.engobbio_risk_percent ?? 0,
+        finitura,
+        total,
+        mqTotali: s.mq_totali,
+        euroPerMq: s.mq_totali ? r2(total / s.mq_totali) : void 0,
+        tags: s.tags ?? [],
+        quantity: s.quantity ?? 1
+      };
+    });
+    const totalAmount = r2(sections.reduce((a, s) => a + s.total * s.quantity, 0));
+    const { data, error } = await client.from("quotes").insert({
+      user_id: userId,
+      quote_number: `PREV-${Date.now()}`,
+      date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+      client_name: args.client_name,
+      client_company: args.client_company ?? null,
+      client_email: args.client_email ?? null,
+      client_phone: args.client_phone ?? null,
+      notes: args.notes ?? null,
+      sections: JSON.parse(JSON.stringify(sections)),
+      total_amount: totalAmount
+    }).select("id, quote_number, total_amount").single();
+    if (error) throw new ToolError(error.message);
+    const url = `https://preventivi-ranieri.lovable.app/new-quote?edit=${data.id}`;
+    return {
+      content: [{ type: "text", text: `Preventivo ${data.quote_number} creato. Totale \u20AC${data.total_amount}. Apri: ${url}` }],
+      structuredContent: { id: data.id, quote_number: data.quote_number, total_amount: Number(data.total_amount), url }
+    };
+  }
+});
+
 // src/lib/mcp/index.ts
 var projectRef = "ahyazehjcodmvyddchuk";
 var mcp_default = defineMcp({
   name: "preventivi-ranieri-mcp",
   title: "Preventivi Ranieri",
-  version: "0.3.0",
-  instructions: "Strumenti in sola lettura per consultare preventivi, clienti e prodotti, importare dossier Zoho e calcolare bozze costo deterministiche. Nessuna modifica automatica dei record CRM.",
+  version: "0.4.0",
+  instructions: "Strumenti per consultare preventivi, clienti e prodotti (listino DT), calcolare bozze costo e creare nuovi preventivi. Per creare un preventivo: cerca prima i prodotti con list_products, poi chiama create_quote con i product_id e le quantit\xE0.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated"
   }),
-  tools: [list_quotes_default, get_quote_default, list_clients_default, list_products_default, calculate_cost_draft_default, import_zoho_project_draft_default]
+  tools: [list_quotes_default, get_quote_default, list_clients_default, list_products_default, calculate_cost_draft_default, import_zoho_project_draft_default, create_quote_default]
 });
 
 // lovable-mcp-supabase-entry.ts

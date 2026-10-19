@@ -113,7 +113,7 @@ export default defineTool({
       .single();
     if (error) throw new ToolError(error.message);
 
-    const url = `https://preventivi-ranieri.lovable.app/quotes/new?edit=${data.id}`;
+    const url = `https://preventivi-ranieri.lovable.app/new-quote?edit=${data.id}`;
     return {
       content: [{ type: "text", text: `Preventivo ${data.quote_number} creato. Totale €${data.total_amount}. Apri: ${url}` }],
       structuredContent: { id: data.id, quote_number: data.quote_number, total_amount: Number(data.total_amount), url },
