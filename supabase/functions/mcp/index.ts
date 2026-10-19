@@ -251,9 +251,11 @@ var import_zoho_project_draft_default = defineTool6({
 
 // src/lib/mcp/tools/create-quote.ts
 import { createClient as createClient5 } from "npm:@supabase/supabase-js@^2.108.2";
-import { defineTool as defineTool7, ToolError } from "npm:@lovable.dev/mcp-js@0.23.0";
+import { defineTool as defineTool7 } from "npm:@lovable.dev/mcp-js@0.23.0";
 import { z as z7 } from "npm:zod@^4.4.3";
 function sb5(ctx) {
+  class ToolError2 extends Error {
+  }
   return createClient5(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false }

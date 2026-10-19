@@ -1,9 +1,10 @@
 declare const process: { env: Record<string, string | undefined> };
 import { createClient } from "@supabase/supabase-js";
-import { defineTool, ToolError, type ToolContext } from "@lovable.dev/mcp-js";
+import { defineTool, type ToolContext } from "@lovable.dev/mcp-js";
 import { z } from "zod";
 
 function sb(ctx: ToolContext) {
+class ToolError extends Error {}
   return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false },
