@@ -8,6 +8,58 @@ import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@0.23.0";
 // src/lib/mcp/tools/list-quotes.ts
 import { defineTool } from "npm:@lovable.dev/mcp-js@0.23.0";
 import { z } from "npm:zod@^4.4.3";
+
+// src/lib/mcp/supabase.ts
+import { createClient } from "npm:@supabase/supabase-js@^2.108.2";
+function runtimeEnv(name) {
+  const runtime = globalThis;
+  return runtime.Deno?.env?.get?.(name) ?? runtime.process?.env?.[name];
+}
+function configuredEnv(names) {
+  for (const name of names) {
+    const value = runtimeEnv(name)?.trim();
+    if (value) return value;
+  }
+  return void 0;
+}
+function supabaseProjectUrl() {
+  const url = configuredEnv(["SUPABASE_URL", "VITE_SUPABASE_URL"]);
+  if (!url) throw new Error("SUPABASE_URL (o VITE_SUPABASE_URL) mancante");
+  return url;
+}
+function supabasePublishableKey() {
+  const direct = configuredEnv([
+    "SUPABASE_PUBLISHABLE_KEY",
+    "VITE_SUPABASE_PUBLISHABLE_KEY"
+  ]);
+  if (direct) return direct;
+  const keyset = runtimeEnv("SUPABASE_PUBLISHABLE_KEYS");
+  if (keyset) {
+    try {
+      const parsed = JSON.parse(keyset);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        const keys = parsed;
+        const key = [keys.default, ...Object.values(keys)].find((v) => typeof v === "string" && v.trim().startsWith("sb_publishable_"))?.trim();
+        if (key) return key;
+      }
+    } catch {
+    }
+  }
+  const legacy = configuredEnv(["SUPABASE_ANON_KEY", "VITE_SUPABASE_ANON_KEY"]);
+  if (legacy) return legacy;
+  throw new Error("SUPABASE_PUBLISHABLE_KEY, SUPABASE_PUBLISHABLE_KEYS o SUPABASE_ANON_KEY mancante");
+}
+function supabaseForUser(ctx) {
+  return createClient(supabaseProjectUrl(), supabasePublishableKey(), {
+    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+}
+function supabaseUrl() {
+  return supabaseProjectUrl();
+}
+
+// src/lib/mcp/tools/list-quotes.ts
 var list_quotes_default = defineTool({
   name: "list_quotes",
   title: "Elenca preventivi",
@@ -19,7 +71,7 @@ var list_quotes_default = defineTool({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ limit, client_name }, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Non autenticato" }], isError: true };
-    let q = sb(ctx).from("quotes").select("id, quote_number, client_name, date, status, total_amount, created_at").order("created_at", { ascending: false }).limit(limit ?? 20);
+    let q = supabaseForUser(ctx).from("quotes").select("id, quote_number, client_name, date, status, total_amount, created_at").order("created_at", { ascending: false }).limit(limit ?? 20);
     if (client_name) q = q.ilike("client_name", `%${client_name}%`);
     const { data, error } = await q;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
@@ -41,7 +93,7 @@ var get_quote_default = defineTool2({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ id }, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Non autenticato" }], isError: true };
-    const { data, error } = await sb(ctx).from("quotes").select("*").eq("id", id).maybeSingle();
+    const { data, error } = await supabaseForUser(ctx).from("quotes").select("*").eq("id", id).maybeSingle();
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     if (!data) return { content: [{ type: "text", text: "Preventivo non trovato" }], isError: true };
     return {
@@ -65,7 +117,7 @@ var list_clients_default = defineTool3({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ search, limit }, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Non autenticato" }], isError: true };
-    let q = sb(ctx).from("clients").select("id, name, company, email, phone, vat_number, created_at").order("name").limit(limit ?? 50);
+    let q = supabaseForUser(ctx).from("clients").select("id, name, company, email, phone, vat_number, created_at").order("name").limit(limit ?? 50);
     if (search) q = q.or(`name.ilike.%${search}%,company.ilike.%${search}%,email.ilike.%${search}%`);
     const { data, error } = await q;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
@@ -91,7 +143,7 @@ var list_products_default = defineTool4({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ search, include_archived, limit }, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Non autenticato" }], isError: true };
-    let q = sb(ctx).from("products").select("id, name, code, category, unit, price_dt, archived").order("name").limit(limit ?? 100);
+    let q = supabaseForUser(ctx).from("products").select("id, name, code, category, unit, price_dt, archived").order("name").limit(limit ?? 100);
     if (!include_archived) q = q.eq("archived", false);
     if (search) q = q.or(`name.ilike.%${search}%,code.ilike.%${search}%,category.ilike.%${search}%`);
     const { data, error } = await q;
@@ -214,7 +266,7 @@ var import_zoho_project_draft_default = defineTool6({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
   handler: async ({ deal_id }, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Non autenticato" }], isError: true };
-    const response = await fetch(`${process.env.SUPABASE_URL}/functions/v1/zoho-project-draft`, { method: "POST", headers: { Authorization: `Bearer ${ctx.getToken()}`, "Content-Type": "application/json" }, body: JSON.stringify({ deal_id, write_to_workdrive: false }) });
+    const response = await fetch(`${supabaseUrl()}/functions/v1/zoho-project-draft`, { method: "POST", headers: { Authorization: `Bearer ${ctx.getToken()}`, "Content-Type": "application/json" }, body: JSON.stringify({ deal_id, write_to_workdrive: false }) });
     const payload = await response.json();
     if (!response.ok) return { content: [{ type: "text", text: payload.error ?? "Import failed" }], isError: true };
     return { content: [{ type: "text", text: JSON.stringify(payload) }], structuredContent: payload };
@@ -262,7 +314,7 @@ var create_quote_default = defineTool7({
   handler: async (args, ctx) => {
     try {
       if (!ctx.isAuthenticated()) throw new ToolError("Non autenticato");
-      const client = sb(ctx);
+      const client = supabaseForUser(ctx);
       const userId = ctx.getUserId();
       if (!userId) throw new ToolError("Utente non identificato");
       const ids = [...new Set(args.sections.flatMap((s) => s.items.map((i) => i.product_id)))];

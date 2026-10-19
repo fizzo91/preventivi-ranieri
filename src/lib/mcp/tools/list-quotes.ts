@@ -13,7 +13,7 @@ export default defineTool({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ limit, client_name }, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Non autenticato" }], isError: true };
-    let q = sb(ctx)
+    let q = supabaseForUser(ctx)
       .from("quotes")
       .select("id, quote_number, client_name, date, status, total_amount, created_at")
       .order("created_at", { ascending: false })

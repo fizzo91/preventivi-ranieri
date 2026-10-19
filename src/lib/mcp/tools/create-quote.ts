@@ -43,7 +43,7 @@ export default defineTool({
   handler: async (args, ctx) => {
    try {
     if (!ctx.isAuthenticated()) throw new ToolError("Non autenticato");
-    const client = sb(ctx);
+    const client = supabaseForUser(ctx);
     const userId = ctx.getUserId();
     if (!userId) throw new ToolError("Utente non identificato");
 

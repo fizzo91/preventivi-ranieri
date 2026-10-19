@@ -14,7 +14,7 @@ export default defineTool({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ search, include_archived, limit }, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Non autenticato" }], isError: true };
-    let q = sb(ctx)
+    let q = supabaseForUser(ctx)
       .from("products")
       .select("id, name, code, category, unit, price_dt, archived")
       .order("name")
