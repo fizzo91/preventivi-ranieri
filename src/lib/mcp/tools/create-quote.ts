@@ -1,15 +1,7 @@
-declare const process: { env: Record<string, string | undefined> };
-import { createClient } from "@supabase/supabase-js";
-import { defineTool, type ToolContext } from "@lovable.dev/mcp-js";
+import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
+import { supabaseForUser } from "../supabase";
 class ToolError extends Error {}
-
-function sb(ctx: ToolContext) {
-  return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
-    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-}
 
 const uid = () => crypto.randomUUID();
 const r2 = (n: number) => Math.round(n * 100) / 100;

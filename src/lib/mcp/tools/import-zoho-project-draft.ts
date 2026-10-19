@@ -1,6 +1,6 @@
-declare const process: { env: Record<string, string | undefined> };
 import { defineTool } from "@lovable.dev/mcp-js"
 import { z } from "zod"
+import { supabaseUrl } from "../supabase"
 
 export default defineTool({
   name: "import_zoho_project_draft",

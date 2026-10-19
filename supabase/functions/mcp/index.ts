@@ -6,15 +6,8 @@
 import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@0.23.0";
 
 // src/lib/mcp/tools/list-quotes.ts
-import { createClient } from "npm:@supabase/supabase-js@^2.108.2";
 import { defineTool } from "npm:@lovable.dev/mcp-js@0.23.0";
 import { z } from "npm:zod@^4.4.3";
-function sb(ctx) {
-  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
-    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
-}
 var list_quotes_default = defineTool({
   name: "list_quotes",
   title: "Elenca preventivi",
@@ -38,15 +31,8 @@ var list_quotes_default = defineTool({
 });
 
 // src/lib/mcp/tools/get-quote.ts
-import { createClient as createClient2 } from "npm:@supabase/supabase-js@^2.108.2";
 import { defineTool as defineTool2 } from "npm:@lovable.dev/mcp-js@0.23.0";
 import { z as z2 } from "npm:zod@^4.4.3";
-function sb2(ctx) {
-  return createClient2(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
-    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
-}
 var get_quote_default = defineTool2({
   name: "get_quote",
   title: "Dettaglio preventivo",
@@ -55,7 +41,7 @@ var get_quote_default = defineTool2({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ id }, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Non autenticato" }], isError: true };
-    const { data, error } = await sb2(ctx).from("quotes").select("*").eq("id", id).maybeSingle();
+    const { data, error } = await sb(ctx).from("quotes").select("*").eq("id", id).maybeSingle();
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     if (!data) return { content: [{ type: "text", text: "Preventivo non trovato" }], isError: true };
     return {
@@ -66,15 +52,8 @@ var get_quote_default = defineTool2({
 });
 
 // src/lib/mcp/tools/list-clients.ts
-import { createClient as createClient3 } from "npm:@supabase/supabase-js@^2.108.2";
 import { defineTool as defineTool3 } from "npm:@lovable.dev/mcp-js@0.23.0";
 import { z as z3 } from "npm:zod@^4.4.3";
-function sb3(ctx) {
-  return createClient3(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
-    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
-}
 var list_clients_default = defineTool3({
   name: "list_clients",
   title: "Elenca clienti",
@@ -86,7 +65,7 @@ var list_clients_default = defineTool3({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ search, limit }, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Non autenticato" }], isError: true };
-    let q = sb3(ctx).from("clients").select("id, name, company, email, phone, vat_number, created_at").order("name").limit(limit ?? 50);
+    let q = sb(ctx).from("clients").select("id, name, company, email, phone, vat_number, created_at").order("name").limit(limit ?? 50);
     if (search) q = q.or(`name.ilike.%${search}%,company.ilike.%${search}%,email.ilike.%${search}%`);
     const { data, error } = await q;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
@@ -98,15 +77,8 @@ var list_clients_default = defineTool3({
 });
 
 // src/lib/mcp/tools/list-products.ts
-import { createClient as createClient4 } from "npm:@supabase/supabase-js@^2.108.2";
 import { defineTool as defineTool4 } from "npm:@lovable.dev/mcp-js@0.23.0";
 import { z as z4 } from "npm:zod@^4.4.3";
-function sb4(ctx) {
-  return createClient4(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
-    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
-}
 var list_products_default = defineTool4({
   name: "list_products",
   title: "Elenca prodotti",
@@ -119,7 +91,7 @@ var list_products_default = defineTool4({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ search, include_archived, limit }, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Non autenticato" }], isError: true };
-    let q = sb4(ctx).from("products").select("id, name, code, category, unit, price_dt, archived").order("name").limit(limit ?? 100);
+    let q = sb(ctx).from("products").select("id, name, code, category, unit, price_dt, archived").order("name").limit(limit ?? 100);
     if (!include_archived) q = q.eq("archived", false);
     if (search) q = q.or(`name.ilike.%${search}%,code.ilike.%${search}%,category.ilike.%${search}%`);
     const { data, error } = await q;
@@ -250,17 +222,10 @@ var import_zoho_project_draft_default = defineTool6({
 });
 
 // src/lib/mcp/tools/create-quote.ts
-import { createClient as createClient5 } from "npm:@supabase/supabase-js@^2.108.2";
 import { defineTool as defineTool7 } from "npm:@lovable.dev/mcp-js@0.23.0";
 import { z as z7 } from "npm:zod@^4.4.3";
 var ToolError = class extends Error {
 };
-function sb5(ctx) {
-  return createClient5(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
-    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
-}
 var uid = () => crypto.randomUUID();
 var r2 = (n) => Math.round(n * 100) / 100;
 var itemSchema = z7.object({
@@ -297,7 +262,7 @@ var create_quote_default = defineTool7({
   handler: async (args, ctx) => {
     try {
       if (!ctx.isAuthenticated()) throw new ToolError("Non autenticato");
-      const client = sb5(ctx);
+      const client = sb(ctx);
       const userId = ctx.getUserId();
       if (!userId) throw new ToolError("Utente non identificato");
       const ids = [...new Set(args.sections.flatMap((s) => s.items.map((i) => i.product_id)))];
